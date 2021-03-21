@@ -38,6 +38,11 @@
             <artifactId>ecolls</artifactId>
             <version>1.10</version>
         </dependency>
+        <dependency>
+            <groupId>xyz.cofe</groupId>
+            <artifactId>fs</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
 </project>
