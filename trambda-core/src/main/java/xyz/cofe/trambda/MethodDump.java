@@ -306,8 +306,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitTypeInsn(int opcode, String type){
-        dump("TypeInsn",opcode,type);
-        super.visitTypeInsn(opcode, type);
+        emit(new TypeInsn(opcode,type));
     }
 
     /**

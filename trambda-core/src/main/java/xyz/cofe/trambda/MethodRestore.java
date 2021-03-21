@@ -181,11 +181,15 @@ public class MethodRestore {
             else if( bc instanceof MethodInsn )build((MethodInsn) bc);
             else if( bc instanceof IntInsn )build((IntInsn) bc);
             else if( bc instanceof LdcInsn )build((LdcInsn) bc);
+            else if( bc instanceof TypeInsn )build((TypeInsn) bc);
         }
     }
 
     protected void build(Code code){ mv.visitCode(); }
     protected void build(End end){ mv.visitEnd(); }
+    protected void build(TypeInsn tinst){
+        mv.visitTypeInsn(tinst.getOpcode(), tinst.getOperand());
+    }
     protected void build(Label lbl){ mv.visitLabel( labels.computeIfAbsent(lbl.getName(), n -> new org.objectweb.asm.Label()) ); }
     protected void build(LineNumber ln){
         var lbl = labels.computeIfAbsent(ln.getLabel(), n -> new org.objectweb.asm.Label());
