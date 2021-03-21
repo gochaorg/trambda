@@ -6,9 +6,11 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -55,6 +57,7 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
      * @param listener Подписчик.
      * @return Интерфес для отсоединения подписчика
      */
+    @SuppressWarnings("UnusedReturnValue")
     public AutoCloseable addListener(TrListener listener){
         return listeners.addListener(listener);
     }
@@ -232,7 +235,7 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
     //endregion
 
     //region processing message
-    protected void received( RawPackReadonly pack ){
+    protected void received(RawPackReadonly pack){
         if( !pack.isPayloadChecksumMatched() ){
             log.warn("received bad payload");
             return;
@@ -255,8 +258,11 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
     protected void process(Message msg, TcpHeader header){
         if(msg instanceof Ping ){
             process((Ping) msg, header);
+        }else if(msg instanceof Compile){
+            process((Compile) msg, header);
         }
     }
+
     protected void process(Ping ping, TcpHeader header){
         try{
             var sid = header.getSid();
@@ -269,8 +275,31 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
             log.error("fail send response");
         }
     }
+
+    protected final AtomicInteger compileId = new AtomicInteger();
+    protected final Map<Integer,Object> compiled = new ConcurrentHashMap<>();
+    protected void process(Compile compile,TcpHeader header){
+        var sid = header.getSid();
+        log.info("compile request, sid={}",sid.map(Objects::toString).orElse("?"));
+
+        int cid = compileId.incrementAndGet();
+        CompileResult cres = new CompileResult();
+        cres.setKey(cid);
+        compiled.put(cid, compile);
+
+        try{
+            if( sid.isPresent() ){
+                proto.send(cres, TcpHeader.referrer.create(sid.get()));
+            } else {
+                proto.send(cres);
+            }
+        } catch( IOException e ) {
+            log.error("fail send response",e);
+        }
+    }
     //endregion
 
+    //region SessionFinished
     public static class SessionFinished implements TrEvent {
         public SessionFinished(TcpSession session){
             if( session==null )throw new IllegalArgumentException( "session==null" );
@@ -280,4 +309,5 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         private final TcpSession session;
         public TcpSession getSession(){ return session; }
     }
+    //endregion
 }

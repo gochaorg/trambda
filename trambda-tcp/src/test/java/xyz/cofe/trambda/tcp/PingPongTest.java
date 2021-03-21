@@ -5,28 +5,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
+import static xyz.cofe.trambda.tcp.LOG.*;
 
-public class ClientServerTest {
-    private static final Logger log = LoggerFactory.getLogger(ClientServerTest.class);
+public class PingPongTest {
+    private static final Logger log = LoggerFactory.getLogger(PingPongTest.class);
     private int port = ThreadLocalRandom.current().nextInt(40000)+10000;
-
-    private void level(Class logger, Level lvl){
-        var lgr = LoggerFactory.getLogger(logger);
-        if( lgr instanceof ch.qos.logback.classic.Logger ){
-            var l = (ch.qos.logback.classic.Logger)lgr;
-            l.setLevel(lvl);
-        }
-    }
-    private void level(Level lvl,Class ... loggers){
-        for(var lg : loggers){
-            level(lg,lvl);
-        }
-    }
 
     @Test
     public void test02(){

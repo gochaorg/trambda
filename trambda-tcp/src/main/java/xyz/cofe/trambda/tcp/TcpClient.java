@@ -4,14 +4,20 @@ import java.io.IOError;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
+import xyz.cofe.trambda.bc.MethodDef;
 
 public class TcpClient implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
@@ -123,7 +129,11 @@ public class TcpClient implements AutoCloseable {
     }
 
     @Override
-    public synchronized void close() throws Exception{
+    public synchronized void close() {
+        shutdown();
+    }
+
+    public synchronized void shutdown() {
         if( socketReaderThread.getId()==Thread.currentThread().getId() ){
             throw new IllegalStateException("can't close from self");
         }
@@ -194,17 +204,159 @@ public class TcpClient implements AutoCloseable {
         log.info("reader closed");
     }
     //endregion
-    //region processing
+
+    //region client api
+    //region processing messages
+    private final Map<Integer,Consumer<? extends Message>> responseConsumers = new ConcurrentHashMap<>();
+    private final Map<Integer,Consumer<ErrMessage>> errorConsumers = new ConcurrentHashMap<>();
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile BiConsumer<ErrMessage,TcpHeader> unbindedErrorConsumer = (err, hdr) -> {
+        log.error("accept unbinded error on request {} message: {}", hdr.getReferrer(), err.getMessage());
+    };
+    @SuppressWarnings("FieldMayBeFinal")
+    private volatile BiConsumer<Message,TcpHeader> unbindedMessageConsumer = (msg, hdr) -> {
+        log.error("accept unbinded message on request {} detail: {}", hdr.getReferrer(), msg);
+    };
+
     protected void process(Message msg, TcpHeader header){
-        if(msg instanceof Pong ){
-            while( true ){
-                var cons = pongConsumers.poll();
-                if( cons==null )break;
-                cons.accept((Pong) msg);
+        log.info("process {}, message.sid {}", msg.getClass(), header.getSid());
+        if( msg instanceof Pong ){
+            process((Pong) msg, header);
+        }else if( msg instanceof ErrMessage ){
+            var refIdOpt = header.getReferrer();
+            if( refIdOpt.isPresent() ){
+                var refId = refIdOpt.get();
+                responseConsumers.remove(refId);
+
+                var cons = errorConsumers.remove(refId);
+                if( cons!=null ){
+                    cons.accept((ErrMessage) msg);
+                    return;
+                }
+            }
+
+            var cons = unbindedErrorConsumer;
+            if( cons!=null ){
+                cons.accept((ErrMessage) msg, header);
+            }
+        }else{
+            var refIdOpt = header.getReferrer();
+            if( refIdOpt.isPresent() ){
+                var refId = refIdOpt.get();
+                errorConsumers.remove(refId);
+
+                @SuppressWarnings("rawtypes") Consumer cons = responseConsumers.remove(refId);
+                if( cons!=null ){
+                    try {
+                        //noinspection unchecked
+                        cons.accept(msg);
+                        return;
+                    } catch( Throwable err ){
+                        log.error("accept message error",err);
+                    }
+                }
+            }
+
+            var cons = unbindedMessageConsumer;
+            if( cons!=null ){
+                cons.accept(msg, header);
             }
         }
     }
+
     private final Queue<Consumer<Pong>> pongConsumers = new ConcurrentLinkedQueue<>();
+    protected void process(Pong pong, TcpHeader header){
+        while( true ){
+            var cons = pongConsumers.poll();
+            if( cons==null )break;
+            cons.accept(pong);
+        }
+    }
+
+    public class ResultConsumer<Req extends Message,Res extends Message> {
+        private final Req req;
+
+        public ResultConsumer(Req req){
+            if( req==null )throw new IllegalArgumentException( "req==null" );
+            this.req = req;
+        }
+
+        private volatile Consumer<? extends Message> consumer;
+        public ResultConsumer<Req,Res> onSuccess(Consumer<Res> response){
+            if( response==null )throw new IllegalArgumentException( "response==null" );
+            consumer = response;
+            return this;
+        }
+
+        private volatile Consumer<ErrMessage> errConsumer;
+        public ResultConsumer<Req,Res> onFail(Consumer<ErrMessage> response){
+            if( response==null )throw new IllegalArgumentException( "response==null" );
+            errConsumer = response;
+            return this;
+        }
+
+        public void send(){
+            try{
+                proto.send(req, msgId -> {
+                    if( consumer!=null )responseConsumers.put(msgId,consumer);
+                    if( errConsumer!=null )errorConsumers.put(msgId,errConsumer);
+                });
+            } catch( IOException e ) {
+                throw new IOError(e);
+            }
+        }
+
+        public Res fetch(){
+            AtomicReference<Res> res = new AtomicReference<>(null);
+            AtomicReference<ErrMessage> err = new AtomicReference<>(null);
+            final Object sync = ResultConsumer.this;
+
+            try{
+                synchronized( sync ){
+                    proto.send(req, msgId -> {
+                        responseConsumers.put(msgId, msg -> {
+                            synchronized( sync ){
+                                //noinspection unchecked
+                                res.set((Res) msg);
+                                sync.notifyAll();
+                            }
+                        });
+                        errorConsumers.put(msgId, err0 -> {
+                            synchronized( sync ){
+                                err.set(err0);
+                                sync.notifyAll();
+                            }
+                        });
+                    });
+                    try{
+                        sync.wait();
+                    } catch( InterruptedException e ) {
+                        throw new IOError(e);
+                    }
+                }
+            } catch( IOException e ) {
+                throw new IOError(e);
+            }
+
+            var errMsg = err.get();
+            if( errMsg!=null ){
+                throw new RuntimeException(errMsg.getMessage());
+            }
+
+            return res.get();
+        }
+    }
+    //endregion
+
+    //region compile()
+    public ResultConsumer<Compile,CompileResult> compile(MethodDef methodDef){
+        if( methodDef==null )throw new IllegalArgumentException( "methodDef==null" );
+        Compile cmpl = new Compile();
+        cmpl.setMethodDef(methodDef);
+        return new ResultConsumer<>(cmpl);
+    }
+    //endregion
+    //region ping()
     public void ping(Consumer<Pong> consumer){
         if( consumer==null )throw new IllegalArgumentException( "consumer==null" );
         pongConsumers.add(consumer);
@@ -214,5 +366,6 @@ public class TcpClient implements AutoCloseable {
             throw new IOError(e);
         }
     }
+    //endregion
     //endregion
 }

@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,13 +72,16 @@ public class TcpProtocol {
     }
 
     @SafeVarargs
-    public final int sendRaw(String method, byte[] payload, HeaderValue<? extends Object>... headerValues) throws IOException {
+    public final int sendRaw(String method, byte[] payload, Consumer<Integer> sendId, HeaderValue<? extends Object>... headerValues) throws IOException {
         log().debug("sendRaw {} payload length {}",
             method,
             payload!=null ? payload.length : 0
         );
 
         int id = sid.incrementAndGet();
+        if( sendId!=null ){
+            sendId.accept(id);
+        }
 
         // write header
         //noinspection unchecked,rawtypes
@@ -112,7 +116,23 @@ public class TcpProtocol {
         if( message==null )throw new IllegalArgumentException( "message==null" );
 
         log().debug("send {}", message);
-        return sendRaw(message.getClass().getSimpleName(), Message.serialize(message), headerValues);
+        return sendRaw(
+            message.getClass().getSimpleName(),
+            Message.serialize(message),
+            null,
+            headerValues);
+    }
+
+    @SafeVarargs
+    public final int send(Message message,Consumer<Integer> sid, HeaderValue<? extends Object> ... headerValues) throws IOException {
+        if( message==null )throw new IllegalArgumentException( "message==null" );
+
+        log().debug("send {}", message);
+        return sendRaw(
+            message.getClass().getSimpleName(),
+            Message.serialize(message),
+            sid,
+            headerValues);
     }
 
     public Optional<RawPack> receiveRaw() throws IOException {
