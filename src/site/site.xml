@@ -1,0 +1,15 @@
+<project name="watch server processes">
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.8</version>
+    </skin>
+    <body>
+        <menu name="Overview">
+            <item name="intro" href="intro.html" />
+            <!-- <item name="FAQ" href="faq.html" /> -->
+        </menu>
+        <menu ref="reports"/>
+        <footer><![CDATA[All rights reserved.]]></footer>
+    </body>
+</project>
