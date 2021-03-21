@@ -8,9 +8,12 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.cofe.ecolls.ListenersHelper;
 
 public class TcpSession extends Thread implements Comparable<TcpSession> {
     private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
@@ -26,6 +29,98 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
     }
+
+    //region listeners
+    protected final ListenersHelper<TrListener,TrEvent> listeners = new ListenersHelper<>(TrListener::trEvent);
+
+    /**
+     * Проверка наличия подписчика в списке обработки
+     * @param listener подписчик
+     * @return true - есть в списке обработки
+     */
+    public boolean hasListener(TrListener listener){
+        return listeners.hasListener(listener);
+    }
+
+    /**
+     * Получение списка подписчиков
+     * @return подписчики
+     */
+    public Set<TrListener> getListeners(){
+        return listeners.getListeners();
+    }
+
+    /**
+     * Добавление подписчика.
+     * @param listener Подписчик.
+     * @return Интерфес для отсоединения подписчика
+     */
+    public AutoCloseable addListener(TrListener listener){
+        return listeners.addListener(listener);
+    }
+
+    /**
+     * Добавление подписчика.
+     * @param listener Подписчик.
+     * @param weakLink true - добавить как weak ссылку / false - как hard ссылку
+     * @return Интерфес для отсоединения подписчика
+     */
+    public AutoCloseable addListener(TrListener listener, boolean weakLink){
+        return listeners.addListener(listener, weakLink);
+    }
+
+    /**
+     * Удаление подписчика из списка обработки
+     * @param listener подписчик
+     */
+    public void removeListener(TrListener listener){
+        listeners.removeListener(listener);
+    }
+
+    public void removeAllListeners(){
+        listeners.removeAllListeners();
+    }
+
+    /**
+     * Запустить выполнение кода в блоке, и не рассылать уведомления до завершения блока кода
+     * @param run блок кода
+     */
+    protected void withQueue(Runnable run){
+        listeners.withQueue(run);
+    }
+
+    /**
+     * Запустить выполнение кода в блоке, и не рассылать уведомления до завершения блока кода
+     * @param run блок кода
+     * @return возвращаемое значение
+     */
+    protected <T> T withQueue(Supplier<T> run){
+        return listeners.withQueue(run);
+    }
+
+    /**
+     * Рассылка уведомления подписчикам
+     * @param event уведомление
+     */
+    protected void fireEvent(TrEvent event){
+        listeners.fireEvent(event);
+    }
+
+    /**
+     * Добавляет событие в очередь
+     * @param ev событие
+     */
+    protected void addEvent(TrEvent ev){
+        listeners.addEvent(ev);
+    }
+
+    /**
+     * Отправляет события из очереди подписчикам
+     */
+    protected void runEventQueue(){
+        listeners.runEventQueue();
+    }
+    //endregion
 
     //region socketInfo
     public SocketAddress getLocalAddress(){ return socket.getLocalSocketAddress(); }
@@ -67,7 +162,6 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         }
     }
     //endregion
-
     //region equals(), hashCode(), compareTo()
     @Override
     public boolean equals(Object o){
@@ -88,7 +182,7 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         return Integer.compare(id, o.id);
     }
     //endregion
-
+    //region close()
     public void close(){
         if( !socket.isClosed() ){
             try{
@@ -98,7 +192,8 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
             }
         }
     }
-
+    //endregion
+    //region run()
     @Override
     public void run(){
         while( true ){
@@ -131,8 +226,12 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
                 log.warn("socket close error");
             }
         }
-    }
 
+        fireEvent(new SessionFinished(this));
+    }
+    //endregion
+
+    //region processing message
     protected void received( RawPackReadonly pack ){
         if( !pack.isPayloadChecksumMatched() ){
             log.warn("received bad payload");
@@ -169,5 +268,16 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         } catch( IOException e ) {
             log.error("fail send response");
         }
+    }
+    //endregion
+
+    public static class SessionFinished implements TrEvent {
+        public SessionFinished(TcpSession session){
+            if( session==null )throw new IllegalArgumentException( "session==null" );
+            this.session = session;
+        }
+
+        private final TcpSession session;
+        public TcpSession getSession(){ return session; }
     }
 }

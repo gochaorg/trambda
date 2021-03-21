@@ -32,7 +32,11 @@
             <groupId>xyz.cofe</groupId>
             <artifactId>text</artifactId>
             <version>1.0</version>
-<!--            <scope>test</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>xyz.cofe</groupId>
+            <artifactId>ecolls</artifactId>
+            <version>1.10</version>
         </dependency>
     </dependencies>
 

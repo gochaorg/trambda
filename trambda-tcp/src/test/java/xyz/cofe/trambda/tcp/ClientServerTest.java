@@ -53,6 +53,7 @@ public class ClientServerTest {
             server.setDaemon(true);
             server.start();
             server.setName("server");
+            server.addListener(System.out::println);
         } catch( IOException e ) {
             e.printStackTrace();
             return;
