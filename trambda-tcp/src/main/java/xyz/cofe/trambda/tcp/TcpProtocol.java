@@ -206,7 +206,7 @@ public class TcpProtocol {
                     }
 
                     log().debug("need read {}, pos={} count={} markpos={}",need,bufStrm.pos(), bufStrm.count(), bufStrm.markpos());
-                    readed = bufStrm.read(buff,0,need);
+                    readed = bufStrm.read(buff,0,Math.min(need,buff.length));
                     if( readed<=0 ){
                         throw new IOException("broken message, input stream EOF");
                     }

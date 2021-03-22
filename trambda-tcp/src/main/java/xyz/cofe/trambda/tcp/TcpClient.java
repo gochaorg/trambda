@@ -356,6 +356,15 @@ public class TcpClient implements AutoCloseable {
         return new ResultConsumer<>(cmpl);
     }
     //endregion
+    public ResultConsumer<Execute,ExecuteResult> execute(CompileResult cres){
+        if( cres==null )throw new IllegalArgumentException( "cres==null" );
+
+        Execute exec = new Execute();
+        exec.setKey(cres.getKey());
+        exec.setHash(cres.getHash());
+
+        return new ResultConsumer<>(exec);
+    }
     //region ping()
     public void ping(Consumer<Pong> consumer){
         if( consumer==null )throw new IllegalArgumentException( "consumer==null" );
