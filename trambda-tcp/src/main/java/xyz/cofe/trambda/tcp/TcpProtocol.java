@@ -118,7 +118,7 @@ public class TcpProtocol {
         log().debug("send {}", message);
         return sendRaw(
             message.getClass().getSimpleName(),
-            Message.serialize(message),
+            Serializer.toBytes(message),
             null,
             headerValues);
     }
@@ -130,7 +130,7 @@ public class TcpProtocol {
         log().debug("send {}", message);
         return sendRaw(
             message.getClass().getSimpleName(),
-            Message.serialize(message),
+            Serializer.toBytes(message),
             sid,
             headerValues);
     }

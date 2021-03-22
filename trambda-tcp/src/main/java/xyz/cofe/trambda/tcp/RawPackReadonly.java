@@ -67,7 +67,7 @@ public class RawPackReadonly extends RawPack {
                 return message;
             }
 
-            message = Message.deserialize(payload);
+            message = Serializer.fromBytes(payload);
             messageComputed = true;
             return message;
         }

@@ -15,6 +15,7 @@ import java.util.zip.CRC32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.text.Text;
+import static xyz.cofe.trambda.tcp.Hash.md5;
 
 public class TcpHeader {
     private static final Logger log = LoggerFactory.getLogger(TcpHeader.class);
@@ -118,15 +119,6 @@ public class TcpHeader {
         var chSum = new CRC32();
         chSum.update(data,off,size);
         return chSum.getValue();
-    }
-    private static byte[] md5(byte[] data,int off,int size){
-        try{
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(data,off,size);
-            return md.digest();
-        } catch( NoSuchAlgorithmException e ) {
-            throw new UnsupportedOperationException("md5 impl not found", e);
-        }
     }
 
     private static final Pattern methodNamePattern = Pattern.compile("(?i)[\\w\\d\\-_.]+");

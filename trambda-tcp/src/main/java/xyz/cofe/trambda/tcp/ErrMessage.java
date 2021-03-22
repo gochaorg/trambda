@@ -8,4 +8,7 @@ public class ErrMessage implements Message {
         this.message = message;
         return this;
     }
+    public ErrMessage error(Throwable err){
+        return this;
+    }
 }

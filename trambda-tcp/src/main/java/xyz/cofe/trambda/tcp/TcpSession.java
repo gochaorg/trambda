@@ -2,6 +2,7 @@ package xyz.cofe.trambda.tcp;
 
 import java.io.IOError;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -16,6 +17,11 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
+import xyz.cofe.text.Text;
+import xyz.cofe.trambda.MethodRestore;
+import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.tcp.demo.IEnv;
+import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 
 public class TcpSession extends Thread implements Comparable<TcpSession> {
     private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
@@ -260,9 +266,10 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
             process((Ping) msg, header);
         }else if(msg instanceof Compile){
             process((Compile) msg, header);
+        }else if(msg instanceof Execute){
+            process((Execute) msg, header);
         }
     }
-
     protected void process(Ping ping, TcpHeader header){
         try{
             var sid = header.getSid();
@@ -276,25 +283,164 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         }
     }
 
+    //region compile
     protected final AtomicInteger compileId = new AtomicInteger();
-    protected final Map<Integer,Object> compiled = new ConcurrentHashMap<>();
+    protected final Map<Integer, Method> compiled = new ConcurrentHashMap<>();
+    protected final Map<String, Integer> methodDefHash2compileKey = new ConcurrentHashMap<>();
+
+    protected Method compile(MethodDef mdef, String hash){
+        log.info("compile '{}' hash {}",mdef.getName(),hash);
+
+        var clName = TcpSession.class.getName().toLowerCase()+".Build1";
+        var methName = "lambda1";
+
+        log.debug("generate bytecode "+clName+" method "+methName);
+        var byteCode = new MethodRestore().className(clName).methodName(methName).methodDef(mdef).generate();
+
+        log.debug("create classloader");
+        ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader()) {
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException{
+                if( name!=null && name.equals(clName) ){
+                    return defineClass(name,byteCode,0,byteCode.length);
+                }
+                return super.findClass(name);
+            }
+        };
+
+        log.debug("try load class "+clName);
+        //noinspection rawtypes
+        Class c = null;
+        try{
+            c = Class.forName(clName,true,cl);
+        } catch( ClassNotFoundException e ) {
+            throw new Error(e);
+        }
+
+        Method m = null;
+        log.debug("find method "+methName);
+        for( var delMeth : c.getDeclaredMethods() ){
+            if( delMeth.getName().equals(methName) ){
+                m = delMeth;
+                break;
+            }
+        }
+
+        if( m==null ){
+            throw new Error("compiled method '"+methName+"' not found");
+        }
+
+        return m;
+    }
     protected void process(Compile compile,TcpHeader header){
         var sid = header.getSid();
         log.info("compile request, sid={}",sid.map(Objects::toString).orElse("?"));
 
-        int cid = compileId.incrementAndGet();
-        CompileResult cres = new CompileResult();
-        cres.setKey(cid);
-        compiled.put(cid, compile);
-
         try{
-            if( sid.isPresent() ){
-                proto.send(cres, TcpHeader.referrer.create(sid.get()));
-            } else {
-                proto.send(cres);
+            var mdef = compile.getMethodDef();
+            if( mdef==null ){
+                throw new IllegalArgumentException("compile.getMethodDef() == null");
             }
-        } catch( IOException e ) {
-            log.error("fail send response",e);
+
+            var mdefBytes = Serializer.toBytes(mdef);
+            var hash = Text.encodeHex(Hash.md5(mdefBytes,0,mdefBytes.length));
+            log.debug("mdef hash {}",hash);
+
+            CompileResult cres = new CompileResult();
+            int cid = -1;
+
+            if( methodDefHash2compileKey.containsKey(hash) ){
+                cid = methodDefHash2compileKey.get(hash);
+                var meth = compiled.get(cid);
+                if( meth==null ){
+                    log.warn("compiled method not found for key={} hash={}",cid, hash);
+                }
+            }else {
+                var m = compile(mdef,hash);
+                cid = compileId.incrementAndGet();
+
+                log.info("compiled {} hash {} id {}",m,hash,id);
+                compiled.put(cid,m);
+            }
+
+            cres.setKey(cid);
+            cres.setHash(hash);
+
+            try{
+                if( sid.isPresent() ){
+                    proto.send(cres, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send(cres);
+                }
+            } catch( IOException e ) {
+                log.error("fail send response", e);
+            }
+        } catch( Throwable err ){
+            log.error("compile fail {}",err.getMessage(),err);
+            try{
+                var msg = new ErrMessage().error(err);
+                if( sid.isPresent() ){
+                    proto.send(msg, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send(msg);
+                }
+            } catch( IOException e ) {
+                log.error("fail send response", e);
+            }
+        }
+    }
+    //endregion
+
+    protected final IEnv env = new LinuxEnv();
+
+    protected void process(Execute exec, TcpHeader header){
+        var sid = header.getSid();
+        log.info("execute request, sid={}",sid.map(Objects::toString).orElse("?"));
+
+        try {
+            if( exec.getKey() == null && exec.getHash() == null ){
+                throw new IllegalArgumentException("execute method key and hash is null");
+            }
+
+            var m = compiled.get( exec.getKey()!=null ? exec.getKey() : methodDefHash2compileKey.get(exec.getHash()) );
+            if( m==null ){
+                throw new IllegalArgumentException("execute method not found " + exec);
+            }
+
+            long t0 = System.currentTimeMillis();
+            long t0n = System.nanoTime();
+            Object value = m.invoke(null,env);
+            long t1 = System.nanoTime();
+            long t1n = System.currentTimeMillis();
+
+            ExecuteResult execRes = new ExecuteResult();
+            execRes.setValue(value);
+            execRes.setStarted(t0);
+            execRes.setStartedNano(t0n);
+            execRes.setFinished(t1);
+            execRes.setFinishedNano(t1n);
+
+            try{
+                if( sid.isPresent() ){
+                    proto.send(execRes, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send(execRes);
+                }
+            } catch( IOException e ) {
+                log.error("fail send response", e);
+            }
+        } catch( Throwable err ){
+            log.error("execute fail {}",err.getMessage(),err);
+            try{
+                var msg = new ErrMessage().error(err);
+                if( sid.isPresent() ){
+                    proto.send(msg, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send(msg);
+                }
+            } catch( IOException e ) {
+                log.error("fail send response", e);
+            }
         }
     }
     //endregion
