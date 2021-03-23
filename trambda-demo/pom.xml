@@ -14,6 +14,8 @@
     <modules>
         <module>tr-demo-api</module>
         <module>tr-demo-client</module>
+        <module>tr-demo-serv</module>
+        <module>tr-demo-client-kotlin</module>
     </modules>
 
     <properties>

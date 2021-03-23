@@ -1,33 +1,33 @@
 package xyz.cofe.trambda.tcp;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 
-public class TcpServer extends Thread implements AutoCloseable {
+public class TcpServer<ENV> extends Thread implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(TcpServer.class);
 
     protected final ServerSocket socket;
     protected final Set<TcpSession> sessions;
     protected final Map<Integer,Long> fireClosed = new ConcurrentHashMap<>();
+    protected final Function<TcpSession,ENV> envBuilder;
 
-    public TcpServer(ServerSocket socket){
+    public TcpServer(ServerSocket socket, Function<TcpSession,ENV> envBuilder ){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
+        if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
+        this.envBuilder = envBuilder;
         this.socket = socket;
         sessions = new ConcurrentSkipListSet<>();
     }
@@ -74,7 +74,7 @@ public class TcpServer extends Thread implements AutoCloseable {
     private int sessionSoTimeout(){ return 1000*3; }
 
     protected TcpSession create(Socket sock){
-        TcpSession ses = new TcpSession(sock);
+        TcpSession ses = new TcpSession(sock,envBuilder);
         try{
             sock.setSoTimeout(1000*3);
         } catch( SocketException e ) {

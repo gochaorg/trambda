@@ -10,10 +10,7 @@
     <modules>
         <module>trambda-core</module>
         <module>trambda-tcp</module>
-        <module>tramda-demo-api</module>
-        <module>trambda-api-demo</module>
-        <module>trambda-demo</module>
-        <module>tr-demo-client</module>
+        <!-- <module>trambda-demo</module> -->
     </modules>
     <packaging>pom</packaging>
 

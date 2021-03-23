@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.tcp.demo.IEnv;
 import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 
-public class TcpSession extends Thread implements Comparable<TcpSession> {
+public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV>> {
     private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
 
     private static final AtomicInteger idSeq = new AtomicInteger();
@@ -31,11 +32,14 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
 
     protected final Socket socket;
     protected final TcpProtocol proto;
+    protected final ENV env;
 
-    public TcpSession(Socket socket){
+    public TcpSession(Socket socket, Function<TcpSession,ENV> envBuilder){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
+        if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
+        this.env = envBuilder.apply(this);
     }
 
     //region listeners
@@ -390,8 +394,6 @@ public class TcpSession extends Thread implements Comparable<TcpSession> {
         }
     }
     //endregion
-
-    protected final IEnv env = new LinuxEnv();
 
     protected void process(Execute exec, TcpHeader header){
         var sid = header.getSid();

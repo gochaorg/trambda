@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
 import xyz.cofe.trambda.Query;
 import xyz.cofe.trambda.tcp.demo.IEnv;
+import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 import xyz.cofe.trambda.tcp.demo.OsProc;
 
 import static xyz.cofe.trambda.tcp.LOG.level;
@@ -20,7 +21,7 @@ public class DemoTest {
     private static final Logger log = LoggerFactory.getLogger(DemoTest.class);
     private int port = ThreadLocalRandom.current().nextInt(40000)+10000;
 
-    @Test
+    //@Test
     public void demo01(){
         System.out.println("compileTest01");
         System.out.println("=".repeat(60));
@@ -37,7 +38,7 @@ public class DemoTest {
             ssocket = new ServerSocket(port);
             ssocket.setSoTimeout(1000*5);
 
-            server = new TcpServer(ssocket);
+            server = new TcpServer(ssocket,s -> new LinuxEnv());
             server.setDaemon(true);
             server.start();
             server.setName("server");

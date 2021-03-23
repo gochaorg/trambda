@@ -10,13 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
 import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 import static xyz.cofe.trambda.tcp.LOG.*;
 
 public class CompileTest {
     private static final Logger log = LoggerFactory.getLogger(CompileTest.class);
     private int port = ThreadLocalRandom.current().nextInt(40000)+10000;
 
-    @Test
+    //@Test
     public void compileTest01(){
         System.out.println("compileTest01");
         System.out.println("=".repeat(60));
@@ -33,7 +34,7 @@ public class CompileTest {
             ssocket = new ServerSocket(port);
             ssocket.setSoTimeout(1000*5);
 
-            server = new TcpServer(ssocket);
+            server = new TcpServer(ssocket,s -> new LinuxEnv());
             server.setDaemon(true);
             server.start();
             server.setName("server");

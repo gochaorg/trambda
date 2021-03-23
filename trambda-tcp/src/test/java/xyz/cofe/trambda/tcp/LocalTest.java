@@ -94,7 +94,7 @@ public class LocalTest {
         return m;
     }
 
-    @Test
+    //@Test
     public void linuxEnvTest(){
         var procs = query().apply( env ->
             env.processes().stream()

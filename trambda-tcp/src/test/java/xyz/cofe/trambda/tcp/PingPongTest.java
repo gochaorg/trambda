@@ -9,20 +9,22 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
+import xyz.cofe.trambda.tcp.demo.LinuxEnv;
+
 import static xyz.cofe.trambda.tcp.LOG.*;
 
 public class PingPongTest {
     private static final Logger log = LoggerFactory.getLogger(PingPongTest.class);
     private int port = ThreadLocalRandom.current().nextInt(40000)+10000;
 
-    @Test
+    //@Test
     public void test02(){
         for( int i=0; i<10; i++ ){
             test01();
         }
     }
 
-    @Test
+    //@Test
     public void test01(){
         System.out.println("test01");
 
@@ -36,7 +38,7 @@ public class PingPongTest {
             ssocket.setSoTimeout(1000*5);
             System.out.println("socket created "+ssocket.getLocalSocketAddress());
 
-            server = new TcpServer(ssocket);
+            server = new TcpServer(ssocket,s -> new LinuxEnv());
             server.setDaemon(true);
             server.start();
             server.setName("server");

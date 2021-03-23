@@ -57,7 +57,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
             try{
                 sl0 = getSerializedLambda(fn);
             } catch( Exception e ) {
-                throw new IllegalArgumentException("can't fetch SerializedLambda of fn");
+                throw new IllegalArgumentException("can't fetch SerializedLambda of fn",e);
             }
             serializedLambdas.put(fn, sl0);
             sl = sl0;
