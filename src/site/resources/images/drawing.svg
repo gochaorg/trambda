@@ -262,10 +262,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="299.15991"
-     inkscape:cy="630.23734"
+     inkscape:cx="356.30277"
+     inkscape:cy="773.09448"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -330,8 +330,7 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"
-     sodipodi:insensitive="true">
+     id="layer1">
     <g
        id="g10313"
        transform="translate(18.982132)">
@@ -346,82 +345,44 @@
          id="g912">
         <text
            xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;stroke-width:0.26458332;"
            x="5.4806547"
            y="8.4370937"
            id="text817"><tspan
              sodipodi:role="line"
-             id="tspan815"
-             x="5.4806547"
-             y="8.4370937"
-             style="stroke-width:0.26458332"> 1| var query = TcpQuery</tspan><tspan
+             id="tspan1023"> 1| var query = TcpQuery</tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="12.405844"
-             style="stroke-width:0.26458332"
-             id="tspan819"> 2|     .create(IEnv.class).host(&quot;myserver.com&quot;).port(9988)</tspan><tspan
+             id="tspan1025"> 2|     .create(IEnv.class).host(&quot;myserver.com&quot;).port(9988)</tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="16.374594"
-             style="stroke-width:0.26458332"
-             id="tspan821"> 3|     .build();</tspan><tspan
+             id="tspan1027"> 3|     .build();</tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="20.343344"
-             style="stroke-width:0.26458332"
-             id="tspan823"> 4|  </tspan><tspan
+             id="tspan1029"> 4|  </tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="24.312094"
-             style="stroke-width:0.26458332"
-             id="tspan825"> 5| query.apply( </tspan><tspan
+             id="tspan1031"> 5| query.apply( </tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="28.280844"
-             style="stroke-width:0.26458332"
-             id="tspan833" /><tspan
+             id="tspan1033"></tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="32.249592"
-             style="stroke-width:0.26458332"
-             id="tspan872" /><tspan
+             id="tspan1035"></tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="36.218342"
-             style="stroke-width:0.26458332"
-             id="tspan874" /><tspan
+             id="tspan1037"></tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="40.187092"
-             style="stroke-width:0.26458332"
-             id="tspan876"> 9|     .collect(Collectors.toList())</tspan><tspan
+             id="tspan1039"></tspan><tspan
              sodipodi:role="line"
-             x="5.4806547"
-             y="44.155842"
-             style="stroke-width:0.26458332"
-             id="tspan835">10| ).forEach(System.out::println);</tspan></text>
+             id="tspan1041">10| ).forEach(System.out::println);</tspan></text>
         <text
            id="text857"
            y="28.205248"
            x="5.4806547"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#800000;stroke-width:0.26458332"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;fill:#800000;stroke-width:0.26458332;"
            xml:space="preserve"><tspan
              sodipodi:role="line"
-             id="tspan888"
-             x="5.4806547"
-             y="28.205248"> 6|     env -&gt; env.processes().stream().filter(</tspan><tspan
+             id="tspan1014"> 6|     env -&gt; env.processes().stream().filter(</tspan><tspan
              sodipodi:role="line"
-             id="tspan890"
-             x="5.4806547"
-             y="32.173996"> 7|         p -&gt; p.getName().contains(&quot;java&quot;)</tspan><tspan
+             id="tspan1016"> 7|         p -&gt; p.getName().contains(&quot;java&quot;)</tspan><tspan
              sodipodi:role="line"
-             id="tspan892"
-             x="5.4806547"
-             y="36.142746"> 8|     )</tspan><tspan
+             id="tspan1018"> 8|     )</tspan><tspan
              sodipodi:role="line"
-             id="tspan894"
-             x="5.4806547"
-             y="40.111496" /></text>
+             id="tspan1021"> 9|     .collect(Collectors.toList())</tspan></text>
       </g>
       <text
          id="text918"
@@ -1001,7 +962,8 @@
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="Layer 2">
+     inkscape:label="Layer 2"
+     sodipodi:insensitive="true">
     <g
        id="g1650"
        transform="translate(3.3408691,2.271791)">
@@ -1034,12 +996,14 @@
          r="3.0735996" />
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;stroke-width:0.26458332;"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
          x="103.96784"
          y="16.634264"
          id="text1656"><tspan
            sodipodi:role="line"
-           id="tspan1660">2</tspan></text>
+           id="tspan1660"
+           x="103.96784"
+           y="16.634264">2</tspan></text>
     </g>
     <g
        id="g1668"
@@ -1054,10 +1018,12 @@
          id="text1666"
          y="16.634264"
          x="103.96784"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;stroke-width:0.26458332;"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            sodipodi:role="line"
-           id="tspan1670">3</tspan></text>
+           id="tspan1670"
+           x="103.96784"
+           y="16.634264">3</tspan></text>
     </g>
     <g
        transform="translate(1.1919681,114.79227)"
@@ -1092,10 +1058,12 @@
          id="text1686"
          y="16.634264"
          x="102.38033"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;stroke-width:0.26458332;"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            sodipodi:role="line"
-           id="tspan1690">4.3</tspan></text>
+           id="tspan1690"
+           x="102.38033"
+           y="16.634264">4.3</tspan></text>
     </g>
     <g
        transform="translate(14.689079,130.42754)"
@@ -1108,12 +1076,14 @@
          r="3.0735996" />
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;stroke-width:0.26458332;"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
          x="102.38033"
          y="16.634264"
          id="text1696"><tspan
            sodipodi:role="line"
-           id="tspan1700">4.4</tspan></text>
+           id="tspan1700"
+           x="102.38033"
+           y="16.634264">4.4</tspan></text>
     </g>
     <g
        id="g1708"
@@ -1128,10 +1098,12 @@
          id="text1706"
          y="16.634264"
          x="102.38033"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.175px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;stroke-width:0.26458332;"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:3.17499995px;line-height:1.25;font-family:'Anka/Coder Narrow';-inkscape-font-specification:'Anka/Coder Narrow, Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            sodipodi:role="line"
-           id="tspan1710">4.5</tspan></text>
+           id="tspan1710"
+           x="102.38033"
+           y="16.634264">4.5</tspan></text>
     </g>
     <g
        transform="translate(-29.009488,150.33913)"
