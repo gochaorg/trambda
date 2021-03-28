@@ -21,7 +21,7 @@ public class DemoTest {
     private static final Logger log = LoggerFactory.getLogger(DemoTest.class);
     private int port = ThreadLocalRandom.current().nextInt(40000)+10000;
 
-    //@Test
+    @Test
     public void demo01(){
         System.out.println("compileTest01");
         System.out.println("=".repeat(60));
@@ -52,9 +52,11 @@ public class DemoTest {
         var serv = server;
 
         Query<IEnv> query =  TcpQuery.create(IEnv.class).host("localhost").port(port).build();
+        var qRegex = "chrome|java";
+
         query.apply( env ->
             env.processes().stream()
-                .filter( p -> p.getName().matches("(?is).*(chrome|java).*") )
+                .filter( p -> p.getName().matches("(?is).*("+qRegex+").*") )
                 .collect(Collectors.toList())
         ).stream().map(OsProc::toString).forEach(log::info);
 

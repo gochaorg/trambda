@@ -4,6 +4,7 @@ import java.io.IOError;
 import java.io.IOException;
 import java.lang.invoke.SerializedLambda;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import xyz.cofe.trambda.AsmQuery;
@@ -52,16 +53,26 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> {
     protected <RES> RES call(Fn<ENV, RES> fn, SerializedLambda sl, MethodDef mdef){
         var key = fnKeys.get(fn);
         if( key!=null ){
-            return call(key);
+            return call(key,sl);
         }else{
             var ckey = client.compile(mdef).fetch();
             fnKeys.put(fn,ckey);
-            return call(ckey);
+            return call(ckey,sl);
         }
     }
 
-    protected <RES> RES call(CompileResult key){
-        var execRes = client.execute(key).fetch();
+    protected <RES> RES call(CompileResult key,SerializedLambda sl){
+        var execRes = client.execute(key).configure( exec -> {
+            if( sl.getCapturedArgCount()>0 ){
+                var args = new ArrayList<Object>();
+                exec.setCapturedArgs(args);
+                for( int ai=0;ai<sl.getCapturedArgCount();ai++ ){
+                    args.add(sl.getCapturedArg(ai));
+                }
+            }else{
+                exec.setCapturedArgs(null);
+            }
+        }).fetch();
         return (RES)execRes.getValue();
     }
 }

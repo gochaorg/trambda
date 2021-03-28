@@ -71,7 +71,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitParameter(String name, int access){
-        dump("parameter ",name,access);
+        emit(new Parameter(name,access));
     }
 
     /**

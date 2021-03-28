@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,9 +23,8 @@ import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.MethodRestore;
 import xyz.cofe.trambda.bc.MethodDef;
-import xyz.cofe.trambda.tcp.demo.IEnv;
-import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 
+@SuppressWarnings("unused")
 public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV>> {
     private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
 
@@ -34,7 +35,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected final TcpProtocol proto;
     protected final ENV env;
 
-    public TcpSession(Socket socket, Function<TcpSession,ENV> envBuilder){
+    public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         this.socket = socket;
@@ -180,6 +181,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     public boolean equals(Object o){
         if( this == o ) return true;
         if( o == null || getClass() != o.getClass() ) return false;
+        //noinspection rawtypes
         TcpSession that = (TcpSession) o;
         return id == that.id;
     }
@@ -245,13 +247,14 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     //endregion
 
     //region processing message
+    //region decode message
     protected void received(RawPackReadonly pack){
         if( !pack.isPayloadChecksumMatched() ){
             log.warn("received bad payload");
             return;
         }
 
-        Message msg = null;
+        Message msg;
         try{
             msg = pack.payloadMessage();
         } catch( IOError err ){
@@ -274,6 +277,9 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             process((Execute) msg, header);
         }
     }
+    //endregion
+    //region ping message
+    @SuppressWarnings("unused")
     protected void process(Ping ping, TcpHeader header){
         try{
             var sid = header.getSid();
@@ -286,8 +292,8 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             log.error("fail send response");
         }
     }
-
-    //region compile
+    //endregion
+    //region compile message
     protected final AtomicInteger compileId = new AtomicInteger();
     protected final Map<Integer, Method> compiled = new ConcurrentHashMap<>();
     protected final Map<String, Integer> methodDefHash2compileKey = new ConcurrentHashMap<>();
@@ -314,7 +320,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
 
         log.debug("try load class "+clName);
         //noinspection rawtypes
-        Class c = null;
+        Class c;
         try{
             c = Class.forName(clName,true,cl);
         } catch( ClassNotFoundException e ) {
@@ -351,7 +357,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             log.debug("mdef hash {}",hash);
 
             CompileResult cres = new CompileResult();
-            int cid = -1;
+            int cid;
 
             if( methodDefHash2compileKey.containsKey(hash) ){
                 cid = methodDefHash2compileKey.get(hash);
@@ -395,6 +401,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     }
     //endregion
 
+    //region execute message
     protected void process(Execute exec, TcpHeader header){
         var sid = header.getSid();
         log.info("execute request, sid={}",sid.map(Objects::toString).orElse("?"));
@@ -409,9 +416,21 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 throw new IllegalArgumentException("execute method not found " + exec);
             }
 
+            List<Object> largs = new ArrayList<>();
+            var cargs = exec.getCapturedArgs();
+            if( cargs!=null ){
+                log.debug("execute args {}",cargs);
+                largs.addAll(cargs);
+            }
+            largs.add(env);
+
+            Object[] args = largs.toArray();
+
             long t0 = System.currentTimeMillis();
             long t0n = System.nanoTime();
-            Object value = m.invoke(null,env);
+
+            Object value = m.invoke(null,args);
+
             long t1 = System.nanoTime();
             long t1n = System.currentTimeMillis();
 
@@ -447,15 +466,17 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     }
     //endregion
 
+    //endregion
+
     //region SessionFinished
     public static class SessionFinished implements TrEvent {
-        public SessionFinished(TcpSession session){
+        public SessionFinished(TcpSession<?> session){
             if( session==null )throw new IllegalArgumentException( "session==null" );
             this.session = session;
         }
 
-        private final TcpSession session;
-        public TcpSession getSession(){ return session; }
+        private final TcpSession<?> session;
+        public TcpSession<?> getSession(){ return session; }
     }
     //endregion
 }

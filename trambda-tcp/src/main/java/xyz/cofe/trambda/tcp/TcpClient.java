@@ -295,6 +295,12 @@ public class TcpClient implements AutoCloseable {
             return this;
         }
 
+        public ResultConsumer<Req,Res> configure( Consumer<Req> reqConf ){
+            if( reqConf==null )throw new IllegalArgumentException( "reqConf==null" );
+            reqConf.accept(req);
+            return this;
+        }
+
         public void send(){
             try{
                 proto.send(req, msgId -> {

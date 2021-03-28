@@ -11,7 +11,6 @@ public class ExecuteResult implements Message {
         this.started = started;
     }
     //endregion
-
     //region startedNano : long
     private long startedNano;
 
@@ -23,7 +22,6 @@ public class ExecuteResult implements Message {
         this.startedNano = startedNano;
     }
     //endregion
-
     //region finished : long
     private long finished;
     public long getFinished(){
@@ -34,7 +32,6 @@ public class ExecuteResult implements Message {
         this.finished = finished;
     }
     //endregion
-
     //region finishedNano : long
     private long finishedNano;
 
@@ -46,7 +43,6 @@ public class ExecuteResult implements Message {
         this.finishedNano = finishedNano;
     }
     //endregion
-
     //region value : Object
     private Object value;
 

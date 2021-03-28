@@ -72,4 +72,22 @@ public class AsmQueryTest {
 
         mdef.getByteCodes().stream().map(b->"  "+b.toString()).forEach(System.out::println);
     }
+
+    public static class SomeC01 {
+        public final String name;
+        public SomeC01(String name){
+            this.name = name;
+        }
+    }
+
+    @Test
+    public void testClosure01(){
+        System.out.println("test01"+"=".repeat(50));
+
+        var what1 = "yuui";
+        var what2 = "uuby";
+        new AsmQuery<SomeC01>().apply(
+            env -> env.name.contains(what1+what2)
+        );
+    }
 }
