@@ -103,6 +103,14 @@ public class AsmQuery<ENV> implements Query<ENV> {
             return cached;
         }
 
+        log("capturing class {}",sl.getCapturingClass());
+        if( sl.getCapturedArgCount()>0 ){
+            log("captured arg count {}",sl.getCapturedArgCount());
+            for( var ci=0; ci<sl.getCapturedArgCount(); ci++ ){
+                log("capture arg[{}] = {}",ci,sl.getCapturedArg(ci));
+            }
+        }
+
         synchronized( this ){
             refs.clear();
 

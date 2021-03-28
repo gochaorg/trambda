@@ -321,8 +321,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor){
-        dump("FieldInsn",opcode,owner,name,descriptor);
-        super.visitFieldInsn(opcode, owner, name, descriptor);
+        emit(new FieldInsn(opcode,owner,name,descriptor));
     }
 
 //    /**

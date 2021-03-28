@@ -182,6 +182,7 @@ public class MethodRestore {
             else if( bc instanceof IntInsn )build((IntInsn) bc);
             else if( bc instanceof LdcInsn )build((LdcInsn) bc);
             else if( bc instanceof TypeInsn )build((TypeInsn) bc);
+            else if( bc instanceof FieldInsn )build((FieldInsn) bc);
         }
     }
 
@@ -342,5 +343,8 @@ public class MethodRestore {
             default:
                 throw new UnsupportedOperationException("not impl for ldc type = "+ldc.getLdcType());
         }
+    }
+    protected void build(FieldInsn fld){
+        mv.visitFieldInsn(fld.getOpcode(), fld.getOwner(), fld.getName(), fld.getDescriptor());
     }
 }
