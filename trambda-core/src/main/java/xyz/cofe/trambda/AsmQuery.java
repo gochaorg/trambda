@@ -27,6 +27,10 @@ import xyz.cofe.trambda.bc.HandleArg;
 import xyz.cofe.trambda.bc.InvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;
 
+/**
+ * Сериализация Java лямбды
+ * @param <ENV> Окружение передаваемое в люямбду
+ */
 public class AsmQuery<ENV> implements Query<ENV> {
     private static final Logger log = LoggerFactory.getLogger(AsmQuery.class);
     private static void log(String message,Object ... args){
@@ -38,10 +42,27 @@ public class AsmQuery<ENV> implements Query<ENV> {
         }
     }
 
+    /**
+     * Кэш серилизованных лямбд
+     */
     protected Map<Fn<ENV, ? extends Object>, SerializedLambda> serializedLambdas = new LinkedHashMap<>();
+
+    /**
+     * Кэш серилизованных лямбд - байт-код
+     */
     protected Map<Fn<ENV, ? extends Object>, MethodDef> fn2mdef = new LinkedHashMap<>();
+
+    /**
+     * Кэш сериализованых лямбд - байт-код
+     */
     protected Map<String, MethodDef> methods = new LinkedHashMap<>();
 
+    /**
+     * Сериализация и вызов лямбды
+     * @param fn лямбда
+     * @param <RES> результат вызова
+     * @return результат вызова
+     */
     @Override
     public <RES> RES apply(Fn<ENV, RES> fn){
         if( fn==null )throw new IllegalArgumentException( "fn==null" );
@@ -71,15 +92,36 @@ public class AsmQuery<ENV> implements Query<ENV> {
 
         return call( fn, sl, mdef);
     }
+
+    /**
+     * Реализация вызова лямбды
+     * @param fn лямбда
+     * @param sl лямбда - сериализация
+     * @param mdef байт-код лямбды
+     * @param <RES> результат вызова
+     * @return результат вызова
+     */
     protected <RES> RES call( Fn<ENV, RES> fn, SerializedLambda sl, MethodDef mdef ){
         return null;
     }
 
+    /**
+     * Идентификатор в кеше для лямбды
+     * @param sl лямбда
+     * @return идентификатор
+     */
     protected String idOf( SerializedLambda sl ){
         return sl.getImplClass()+"/"+sl.getImplMethodName()+"/"+sl.getImplMethodSignature();
     }
 
-    private ClassReader classReaderOf(Class baseResource,String className){
+    /**
+     * Чтение байт-кода класса лямбды
+     * @param baseResource ресурс относительно которого производиться чтение байт-кода
+     * @param className имя класса, содержащего байт-код лямбды
+     * @return reader для байт-кода
+     */
+    @SuppressWarnings("rawtypes")
+    private ClassReader classReaderOf(Class baseResource, String className){
         var implClassUrl =
             baseResource.getResource("/"+className.replace(".","/")+".class");
 
@@ -92,10 +134,21 @@ public class AsmQuery<ENV> implements Query<ENV> {
             throw new IOError(e);
         }
 
-        ClassReader cr = new ClassReader(classByteCode);
-        return cr;
+        return new ClassReader(classByteCode);
     }
-    private Map<Handle,MethodDef> refs = new LinkedHashMap<>();
+
+    /**
+     * Ссылка на дочерние/вложенные лямбды
+     */
+    private final Map<Handle,MethodDef> refs = new LinkedHashMap<>();
+
+    /**
+     * Получение байт-кода лямбды
+     * @param sl лямбда
+     * @param fn лямбда
+     * @param <RES> Тип результата вызова лямбды
+     * @return байт-код
+     */
     private <RES> MethodDef getMethodDef( SerializedLambda sl, Fn<ENV, RES> fn ){
         var slId = idOf(sl);
         var cached = methods.get(slId);
@@ -128,7 +181,17 @@ public class AsmQuery<ENV> implements Query<ENV> {
             return mdef;
         }
     }
-    private synchronized <RES> MethodDef getMethodDef( Class baseClass, String implClass, String methName, String methSign ){
+
+    /**
+     * Получение байт-кода лямбды
+     * @param baseClass ресурс относительно которого производиться чтение байт-кода
+     * @param implClass имя класса, содержащего байт-код лямбды
+     * @param methName метод реализующий лямбду
+     * @param methSign сигнатура метода
+     * @return байт-код
+     */
+    @SuppressWarnings("rawtypes")
+    private synchronized MethodDef getMethodDef(Class baseClass, String implClass, String methName, String methSign ){
         ClassReader cr = classReaderOf(baseClass,implClass);
 
         List<ByteCode> byteCodes = new ArrayList<>();
@@ -189,6 +252,12 @@ public class AsmQuery<ENV> implements Query<ENV> {
         return mdef0.get();
     }
 
+    /**
+     * Получение описание вызова лямбды
+     * @param lambda лямбда
+     * @return описание лямбды
+     * @throws Exception если это не лямбда Java
+     */
     private SerializedLambda getSerializedLambda(Serializable lambda) throws Exception {
         final Method method = lambda.getClass().getDeclaredMethod("writeReplace");
         method.setAccessible(true);
@@ -219,6 +288,12 @@ public class AsmQuery<ENV> implements Query<ENV> {
             default: return Optional.empty();
         }
     }
+
+    /**
+     * Создает посетителя для метода
+     * @param consumer получатель байт-кода
+     * @return посетитель
+     */
     private MethodVisitor dump(Consumer<ByteCode> consumer){
         return new MethodDump(Opcodes.ASM9).byteCode(consumer);
     }

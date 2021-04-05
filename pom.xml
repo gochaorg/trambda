@@ -10,6 +10,7 @@
     <modules>
         <module>trambda-core</module>
         <module>trambda-tcp</module>
+        <module>trambda-json</module>
         <!-- <module>trambda-demo</module> -->
     </modules>
     <packaging>pom</packaging>

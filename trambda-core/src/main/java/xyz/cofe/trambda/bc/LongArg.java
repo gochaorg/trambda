@@ -8,6 +8,7 @@ public class LongArg implements BootstrapMethArg {
         value = v;
     }
 
+    //region value : Long
     private Long value;
     public Long getValue(){
         return value;
@@ -15,6 +16,7 @@ public class LongArg implements BootstrapMethArg {
     public void setValue(Long value){
         this.value = value;
     }
+    //endregion
 
     public String toString(){
         return "LongArg{"+value+"}";

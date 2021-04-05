@@ -11,16 +11,17 @@ public class StringArg implements BootstrapMethArg {
         value = v;
     }
 
+    //region value : String
     private String value;
-
     public String getValue(){
         return value;
     }
-
     public void setValue(String value){
         this.value = value;
     }
+    //endregion
 
+    @SuppressWarnings("ConstantConditions")
     public String toString(){
         StringBuilder sb = new StringBuilder();
         var str = value;
@@ -30,8 +31,7 @@ public class StringArg implements BootstrapMethArg {
             sb.append("\"");
             for( int i=0;i<str.length();i++ ){
                 char c = str.charAt(i);
-                int ci = (int)c;
-                boolean toCode = ci<32;
+                boolean toCode = (int)c <32;
                 if( toCode ){
                     sb.append("\\u");
                     String ucode = List.of(0,0,(0xff&c)>>4,(0x0f&c)).stream().map(n->Integer.toString(n,16)).collect(Collectors.joining());

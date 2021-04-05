@@ -16,6 +16,7 @@ public class LocalVariable implements ByteCode {
         this.index = index;
     }
 
+    //region name : String
     private String name;
     public String getName(){
         return name;
@@ -23,7 +24,8 @@ public class LocalVariable implements ByteCode {
     public void setName(String name){
         this.name = name;
     }
-
+    //endregion
+    //region descriptor : String
     private String descriptor;
     public String getDescriptor(){
         return descriptor;
@@ -31,7 +33,8 @@ public class LocalVariable implements ByteCode {
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
-
+    //endregion
+    //region signature : String
     private String signature;
     public String getSignature(){
         return signature;
@@ -39,7 +42,8 @@ public class LocalVariable implements ByteCode {
     public void setSignature(String signature){
         this.signature = signature;
     }
-
+    //endregion
+    //region labelStart : String
     private String labelStart;
     public String getLabelStart(){
         return labelStart;
@@ -47,7 +51,8 @@ public class LocalVariable implements ByteCode {
     public void setLabelStart(String labelStart){
         this.labelStart = labelStart;
     }
-
+    //endregion
+    //region labelEnd : String
     private String labelEnd;
     public String getLabelEnd(){
         return labelEnd;
@@ -55,7 +60,8 @@ public class LocalVariable implements ByteCode {
     public void setLabelEnd(String labelEnd){
         this.labelEnd = labelEnd;
     }
-
+    //endregion
+    //region index : int
     private int index;
     public int getIndex(){
         return index;
@@ -63,6 +69,7 @@ public class LocalVariable implements ByteCode {
     public void setIndex(int index){
         this.index = index;
     }
+    //endregion
 
     public String toString(){
         return "LocalVariable "+name+" "+descriptor+" "+signature+" "+labelStart+" "+labelEnd+" "+index;

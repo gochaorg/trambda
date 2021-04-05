@@ -135,7 +135,6 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         listeners.runEventQueue();
     }
     //endregion
-
     //region socketInfo
     public SocketAddress getLocalAddress(){ return socket.getLocalSocketAddress(); }
     public SocketAddress getRemoteAddress(){ return socket.getRemoteSocketAddress(); }

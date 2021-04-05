@@ -12,18 +12,15 @@ public class LdcInsn implements ByteCode {
     public LdcType getLdcType(){
         return ldcType;
     }
-
     public void setLdcType(LdcType ldcType){
         this.ldcType = ldcType;
     }
     //endregion
     //region value
     private Object value;
-
     public Object getValue(){
         return value;
     }
-
     public void setValue(Object value){
         this.value = value;
     }

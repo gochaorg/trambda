@@ -24,7 +24,6 @@ public class MethodDef implements Serializable {
         if( byteCodes==null )byteCodes = new ArrayList<>();
         return byteCodes;
     }
-
     public void setByteCodes(List<ByteCode> byteCodes){
         this.byteCodes = byteCodes;
     }
@@ -34,7 +33,6 @@ public class MethodDef implements Serializable {
     public int getAccess(){
         return access;
     }
-
     public void setAccess(int access){
         this.access = access;
     }
@@ -53,7 +51,6 @@ public class MethodDef implements Serializable {
     public String getName(){
         return name;
     }
-
     public void setName(String name){
         this.name = name;
     }
@@ -63,7 +60,6 @@ public class MethodDef implements Serializable {
     public String getDescriptor(){
         return descriptor;
     }
-
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
@@ -73,18 +69,15 @@ public class MethodDef implements Serializable {
     public String getSignature(){
         return signature;
     }
-
     public void setSignature(String signature){
         this.signature = signature;
     }
     //endregion
     //region exceptions
     private String[] exceptions;
-
     public String[] getExceptions(){
         return exceptions;
     }
-
     public void setExceptions(String[] exceptions){
         this.exceptions = exceptions;
     }
@@ -100,4 +93,9 @@ public class MethodDef implements Serializable {
     }
     public synchronized void setRefs(List<MethodDef> refs){ this.refs = refs; }
     //endregion
+
+    public String[] getParamTypes(){
+        String desc = getDescriptor();
+        return null;
+    }
 }
