@@ -8,6 +8,11 @@ public class VarInsn implements ByteCode {
         opcode = op;
         variable = vi;
     }
+    public VarInsn(VarInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        opcode = sample.opcode;
+        variable = sample.variable;
+    }
 
     //region opcode
     private int opcode;

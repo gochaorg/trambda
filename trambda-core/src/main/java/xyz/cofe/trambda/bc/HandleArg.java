@@ -1,5 +1,8 @@
 package xyz.cofe.trambda.bc;
 
+/**
+ * Аргумент bootstrap метода
+ */
 public class HandleArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 

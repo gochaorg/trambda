@@ -3,6 +3,9 @@ package xyz.cofe.trambda.bc;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Аргумент bootstrap метода
+ */
 public class StringArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 

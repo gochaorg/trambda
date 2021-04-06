@@ -9,6 +9,9 @@ import java.util.TreeMap;
 
 import static org.objectweb.asm.Opcodes.*;
 
+/**
+ * Флаги методов и инструкций
+ */
 public class AccFlags {
     private final int flags;
     public AccFlags(int flags){
