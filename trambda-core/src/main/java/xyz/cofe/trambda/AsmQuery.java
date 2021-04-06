@@ -28,7 +28,19 @@ import xyz.cofe.trambda.bc.InvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;
 
 /**
- * Сериализация Java лямбды
+ * Сериализация Java лямбды.
+ *
+ * <p>
+ * Это клас по сути является абстрактным,
+ * и для реализации конечной функциональности требуется переопределить метод {@link #call(Fn, SerializedLambda, MethodDef)}
+ *
+ * <p>
+ * Данный класс по сути выполняет следующие функции
+ *
+ * <ol>
+ *     <li>Метода {@link #apply(Fn)} - получает байт код fn</li>
+ *     <li>Полученный байт код передает в {@link #call(Fn, SerializedLambda, MethodDef)}</li>
+ * </ol>
  * @param <ENV> Окружение передаваемое в люямбду
  */
 public class AsmQuery<ENV> implements Query<ENV> {

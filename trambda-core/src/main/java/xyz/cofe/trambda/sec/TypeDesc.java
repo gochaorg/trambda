@@ -1,8 +1,8 @@
-package xyz.cofe.trambda;
-
-import java.text.ParseException;
+package xyz.cofe.trambda.sec;
 
 public class TypeDesc {
+    public static final TypeDesc undefined = new TypeDesc("?", 0);
+
     public final String name;
     public final int dimension;
     public final boolean array;
@@ -38,8 +38,7 @@ public class TypeDesc {
         String type = null;
         int state = 0;
         StringBuilder typeName = new StringBuilder();
-        while( ptr<raw.length() && type==null ){
-            boolean last = ptr==raw.length()-1;
+        while( ptr<(raw.length()-1) && type==null ){
             ptr++;
             char c = raw.charAt(ptr);
             switch( state ){
@@ -97,11 +96,15 @@ public class TypeDesc {
             }
         }
 
-        if( type==null )throw new Error("can't parse");
+        if( type==null )throw new Error("can't parse for \""+raw+"\", from="+from);
 
         return new Parse(
             new TypeDesc(type,arr)
             ,from,ptr+1);
+    }
+    public static TypeDesc parse(String raw){
+        if( raw==null )throw new IllegalArgumentException( "raw==null" );
+        return parse(raw,0).type;
     }
 
     public String toString(){

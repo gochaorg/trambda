@@ -1,10 +1,12 @@
-package xyz.cofe.trambda;
+package xyz.cofe.trambda.sec;
 
 import java.util.ArrayList;
 
 public class MethodDescTypes {
     public final TypeDesc[] params;
     public final TypeDesc returns;
+
+    public static final MethodDescTypes undefined = new MethodDescTypes(new TypeDesc[0], new TypeDesc("?"));
 
     public MethodDescTypes(TypeDesc[] params, TypeDesc returns){
         if( params == null ) throw new IllegalArgumentException("params==null");
@@ -19,17 +21,21 @@ public class MethodDescTypes {
 
         var params = new ArrayList<TypeDesc>();
         var ptr = 1;
-        while( true ){
-            var p = TypeDesc.parse(desc, ptr);
-            if( p.to<=ptr ){
-                throw new IllegalStateException("!!");
+        if( !desc.startsWith("()") ){
+            while( true ){
+                var p = TypeDesc.parse(desc, ptr);
+                if( p.to <= ptr ){
+                    throw new IllegalStateException("!!");
+                }
+                params.add(p.type);
+                ptr = p.to;
+                if( ptr >= desc.length() ) break;
+                if( desc.charAt(ptr) == ')' ){
+                    break;
+                }
             }
-            params.add(p.type);
-            ptr = p.to;
-            if( ptr>=desc.length() )break;
-            if( desc.charAt(ptr)==')' ){
-                break;
-            }
+        }else {
+            ptr = 1;
         }
 
         TypeDesc ret = null;
