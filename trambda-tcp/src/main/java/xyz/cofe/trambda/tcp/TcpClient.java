@@ -70,6 +70,9 @@ public class TcpClient implements AutoCloseable {
         listeners.removeListener(listener);
     }
 
+    /**
+     * Удаление всех подписчиков
+     */
     public void removeAllListeners(){
         listeners.removeAllListeners();
     }

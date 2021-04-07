@@ -14,7 +14,8 @@ public class SecurMessage<MESSAGE,SCOPE> implements Serializable {
         this.message = message;
     }
 
-    public SecurMessage( SecurMessage<MESSAGE,SCOPE> sample ){
+    @SuppressWarnings("unchecked")
+    public SecurMessage(SecurMessage<MESSAGE,SCOPE> sample ){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         this.allow = sample.allow;
         this.access = sample.access!=null ? sample.access.clone() : sample.access;
@@ -36,24 +37,27 @@ public class SecurMessage<MESSAGE,SCOPE> implements Serializable {
     //endregion
     //region access : SecurAccess<?,SCOPE>
     private SecurAccess<?, SCOPE> access;
-
     public SecurAccess<?, SCOPE> getAccess(){
         return access;
     }
-
     public void setAccess(SecurAccess<?, SCOPE> access){
         this.access = access;
     }
     //endregion
     //region allow : boolean
     private boolean allow;
-
     public boolean isAllow(){
         return allow;
     }
-
     public void setAllow(boolean allow){
         this.allow = allow;
     }
     //endregion
+
+    public String toString(){
+        return SecurMessage.class.getSimpleName() +
+            " " + (isAllow() ? "ALLOW" : "DENY") +
+            " \"" + getMessage() + "\"" +
+            " where: " + getAccess();
+    }
 }

@@ -41,7 +41,24 @@ import xyz.cofe.trambda.bc.MethodDef;
  *     <li>Метода {@link #apply(Fn)} - получает байт код fn</li>
  *     <li>Полученный байт код передает в {@link #call(Fn, SerializedLambda, MethodDef)}</li>
  * </ol>
- * @param <ENV> Окружение передаваемое в люямбду
+ *
+ * <pre>
+ * AtomicReference&lt;MethodDef&gt; mdefRef = new AtomicReference&lt;&gt;();
+ * var res =
+ *   new AsmQuery&lt;IEnv&gt;(){
+ *       &#64;Override
+ *       protected <RES> RES call(Fn&lt;IEnv, RES&gt; fn, SerializedLambda sl, MethodDef mdef){
+ *           // Сохраение представления байт кода
+ *           mdefRef.set(mdef);
+ *           return super.call(fn, sl, mdef);
+ *       }
+ *   }.apply(
+ *       env0 -&gt; env0.getUsers().filter(u -&gt; u.getName().contains("Petrov"))
+ *   );
+ * </pre>
+ * @param <ENV> Окружение передаваемое в лямбду
+ * @see MethodDump
+ * @see MethodDef
  */
 public class AsmQuery<ENV> implements Query<ENV> {
     private static final Logger log = LoggerFactory.getLogger(AsmQuery.class);

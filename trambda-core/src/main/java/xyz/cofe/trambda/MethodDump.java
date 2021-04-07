@@ -12,6 +12,9 @@ import org.objectweb.asm.TypePath;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.*;
 
+/**
+ * Создает дамп байт кода метода, используется в {@link AsmQuery}
+ */
 public class MethodDump extends MethodVisitor implements Opcodes {
     private void dump(String message,Object...args){
         if( message==null )return;
@@ -28,6 +31,12 @@ public class MethodDump extends MethodVisitor implements Opcodes {
     }
 
     private Consumer<ByteCode> byteCodeConsumer;
+
+    /**
+     * Указывает функцию принимающую байт код
+     * @param bc функция приема байт кода
+     * @return SELF ссылка
+     */
     public MethodDump byteCode(Consumer<ByteCode> bc){
         byteCodeConsumer = bc;
         return this;

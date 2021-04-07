@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import xyz.cofe.trambda.Tuple2;
 import xyz.cofe.trambda.bc.MethodDef;
 
-public class SecurFilters<MESSAGE,SCOPE> {
+public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
     private final List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators;
     public SecurFilters(List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators){
         List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators00 = new ArrayList<>();
@@ -55,26 +55,29 @@ public class SecurFilters<MESSAGE,SCOPE> {
     public static Builder<String, MethodDef> create(){
         return create(String.class, MethodDef.class);
     }
+    public static SecurFilters<String, MethodDef> create( Consumer<Builder<String, MethodDef>> conf ){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        var bld = create();
+        conf.accept(bld);
+        return bld.build();
+    }
+
     public static class Builder<MESSAGE,SCOPE> {
         private final List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators = new ArrayList<>();
         public SecurFilters<MESSAGE,SCOPE> build(){
             return new SecurFilters<>(validators);
         }
-
         public AllowBuilder<MESSAGE,SCOPE> allow(){
             return new AllowBuilder<>(this);
         }
-
         public Builder<MESSAGE,SCOPE> allow(Consumer<AllowBuilder<MESSAGE,SCOPE>> conf){
             if( conf==null )throw new IllegalArgumentException( "conf==null" );
             conf.accept(new AllowBuilder<>(this));
             return this;
         }
-
         public DenyBuilder<MESSAGE,SCOPE> deny(){
             return new DenyBuilder<>(this);
         }
-
         public Builder<MESSAGE,SCOPE> deny(Consumer<DenyBuilder<MESSAGE,SCOPE>> conf){
             if( conf==null )throw new IllegalArgumentException( "conf==null" );
             conf.accept( new DenyBuilder<>(this) );

@@ -23,21 +23,70 @@ import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.MethodRestore;
 import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.sec.SecurAccess;
+import xyz.cofe.trambda.sec.SecurFilter;
 
+/**
+ * Сессия клиента
+ * @param <ENV> Класс сервиса предоставляемого клиенту
+ */
 @SuppressWarnings("unused")
 public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV>> {
     private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
 
+    /**
+     * Последовательность для генерации id
+     */
     private static final AtomicInteger idSeq = new AtomicInteger();
+
+    /**
+     * Идентификатор сессии
+    */
     public final int id = idSeq.incrementAndGet();
 
+    /**
+     * Сокет сессии
+     */
     protected final Socket socket;
+
+    /**
+     * Общие функции для протокола TCP как клиента, так и сервера
+     */
     protected final TcpProtocol proto;
+
+    /**
+     * Предоставляемый сервис клиенту
+     */
     protected final ENV env;
 
+    /**
+     * Функция фильтра безопасности
+     */
+    protected final SecurFilter<String,MethodDef> securFilter;
+
+    /**
+     * Конструктор
+     * @param socket сокет
+     * @param envBuilder функция получения сервиса
+     */
     public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder){
+        this(socket,envBuilder,null);
+    }
+
+    /**
+     * Конструктор
+     * @param socket сокет
+     * @param envBuilder функция получения сервиса
+     * @param securFilter функция фильтра безопасности
+     */
+    public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurFilter<String,MethodDef> securFilter){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
+        if( securFilter==null ){
+            this.securFilter = x -> List.of();
+        }else{
+            this.securFilter = securFilter;
+        }
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
         this.env = envBuilder.apply(this);
@@ -91,6 +140,9 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         listeners.removeListener(listener);
     }
 
+    /**
+     * Удаление всех подписчиков
+     */
     public void removeAllListeners(){
         listeners.removeAllListeners();
     }
@@ -136,12 +188,50 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     }
     //endregion
     //region socketInfo
+
+    /**
+     * Возвращает локальный адрес сессии
+     * @return локальный адрес сессии
+     */
     public SocketAddress getLocalAddress(){ return socket.getLocalSocketAddress(); }
+
+    /**
+     * Возвращает адрес клиента
+     * @return адрес клиента
+     */
     public SocketAddress getRemoteAddress(){ return socket.getRemoteSocketAddress(); }
+
+    /**
+     * Возвращает состояние привязки сокета.
+     * Примечание. Закрытие сокета не очищает его состояние привязки, что означает, что этот метод вернет истину для закрытого сокета (см. IsClosed ()), если он был успешно привязан до закрытия.
+     * @return состояние привязки сокета
+     */
     public boolean isBound(){ return socket.isBound(); }
+
+    /**
+     * Возвращает закрытое состояние сокета.
+     * @return сокет закрыт ?
+     */
     public boolean isClosed(){ return socket.isClosed(); }
+
+    /**
+     * Возвращает, закрыта ли половина соединения сокета для чтения.
+     * @return чтение закрыто
+     */
     public boolean isInputShutdown(){ return socket.isInputShutdown(); }
+
+    /**
+     * Возвращает, закрыта ли половина записи сокета соединения.
+     * @return закрыта запись
+     */
     public boolean isOutputShutdown(){ return socket.isOutputShutdown(); }
+
+    /**
+     * Проверяет, включен ли SO_KEEPALIVE.
+     *
+     * Если для TCP-сокета задана опция keepalive и в течение 2 часов через сокет не производился обмен данными в любом направлении (ПРИМЕЧАНИЕ: фактическое значение зависит от реализации), TCP автоматически отправляет одноранговому узлу зонд keepalive. Этот зонд представляет собой сегмент TCP, на который одноранговый узел должен ответить. Ожидается один из трех ответов: 1. Узел отвечает ожидаемым ACK. Приложение не уведомляется (так как все в порядке). TCP отправит еще один зонд после еще 2 часов бездействия. 2. Одноранговый узел отвечает RST, который сообщает локальному TCP, что узел однорангового узла вышел из строя и перезагрузился. Розетка закрыта. 3. Нет ответа от однорангового узла. Розетка закрыта. Эта опция предназначена для обнаружения сбоя однорангового хоста. Действительно только для сокета TCP: SocketImpl*
+     * @return включен ли SO_KEEPALIVE.
+     */
     public Optional<Boolean> getKeepAlive(){
         try{
             return Optional.of(socket.getKeepAlive());
@@ -150,6 +240,14 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             return Optional.empty();
         }
     }
+
+    /**
+     * Проверяет, включен ли TCP_NODELAY.
+     *
+     * Отключите алгоритм Нэгла для этого соединения. Записанные в сеть данные не буферизуются до подтверждения ранее записанных данных.
+     *
+     * @return включен ли TCP_NODELAY.
+     */
     public Optional<Boolean> getTcpNoDelay(){
         try{
             return Optional.of(socket.getTcpNoDelay());
@@ -158,6 +256,13 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             return Optional.empty();
         }
     }
+
+    /**
+     * Проверяет, включен ли SO_REUSEADDR.
+     *
+     * Устанавливает SO_REUSEADDR для сокета. Это используется только для MulticastSockets в java и установлено по умолчанию для MulticastSockets.
+     * @return включен ли SO_REUSEADDR.
+     */
     public Optional<Boolean> getReuseAddress(){
         try{
             return Optional.of(socket.getReuseAddress());
@@ -166,6 +271,13 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             return Optional.empty();
         }
     }
+
+    /**
+     * Проверяет, включен ли SO_OOBINLINE.
+     *
+     * Если установлен параметр OOBINLINE, любые срочные данные TCP, полученные через сокет, будут приниматься через входной поток сокета. Когда опция отключена (что по умолчанию), срочные данные автоматически отбрасываются.
+     * @return включен ли SO_OOBINLINE.
+     */
     public Optional<Boolean> getOOBInline(){
         try{
             return Optional.of(socket.getOOBInline());
@@ -300,6 +412,31 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected Method compile(MethodDef mdef, String hash){
         log.info("compile '{}' hash {}",mdef.getName(),hash);
 
+        if( securFilter!=null ){
+            log.debug("inspect byte code for SecurAccess");
+            var secAcc = SecurAccess.inspect(mdef);
+
+            if( log.isTraceEnabled() ){
+                secAcc.forEach(sa -> log.trace("SecurAccess: {}",sa));
+            }
+
+            var secMsgs = securFilter.validate(secAcc);
+            if( secMsgs.stream().anyMatch(m -> !m.isAllow()) ){
+                log.info("Lambda contains denied byte code");
+                secMsgs.forEach(m -> {
+                    if( log.isDebugEnabled() ){
+                        if( m.isAllow() ){
+                            log.info("allow: security message=\"{}\" access=\"{}\"", m.getMessage(), m.getAccess());
+                        }
+                    }
+                    if( !m.isAllow() ){
+                        log.info("deny: security message=\"{}\" access=\"{}\"", m.getMessage(), m.getAccess());
+                    }
+                });
+                throw new SecurError(secMsgs);
+            }
+        }
+
         var clName = TcpSession.class.getName().toLowerCase()+".Build1";
         var methName = "lambda1";
 
@@ -399,7 +536,6 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
     }
     //endregion
-
     //region execute message
     protected void process(Execute exec, TcpHeader header){
         var sid = header.getSid();

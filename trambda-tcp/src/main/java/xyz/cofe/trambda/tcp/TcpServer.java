@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,21 +16,81 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
+import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.sec.SecurFilter;
 
+/**
+ * TCP Сервер для предоставления сервиса
+ * @param <ENV> Класс сервиса
+ */
 public class TcpServer<ENV> extends Thread implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(TcpServer.class);
 
+    /**
+     * Сокет через который осуществляется общение
+     */
     protected final ServerSocket socket;
-    protected final Set<TcpSession> sessions;
-    protected final Map<Integer,Long> fireClosed = new ConcurrentHashMap<>();
-    protected final Function<TcpSession,ENV> envBuilder;
 
-    public TcpServer(ServerSocket socket, Function<TcpSession,ENV> envBuilder ){
+    /**
+     * Сессии клиентов
+     */
+    protected final Set<TcpSession<ENV>> sessions;
+
+    /**
+     * Информация когда было уведомление о закрытии сессии: ses.id / System.currentTimeMillis()
+     *
+     * <p>
+     * Возможно два сценария закрытия сессии
+     *
+     * <ol>
+     *     <li>
+     *         Нормальное закрытие сессии, сессия сама извещает о завершении
+     *         {@link #sesListener}
+     *     </li>
+     *     <li>
+     *         Аварийное закрытие сессии, сессия не извещает о завершении
+     *         {@link #checkTerminatedSessions}
+     *     </li>
+     * </ol>
+     */
+    protected final Map<Integer,Long> fireClosed = new ConcurrentHashMap<>();
+
+    /**
+     * Функция получения сервиса для новой сессии
+     */
+    protected final Function<TcpSession<ENV>,ENV> envBuilder;
+
+    /**
+     * Функция фильтрации байт-кода
+     */
+    protected final SecurFilter<String,MethodDef> securFilter;
+
+    /**
+     * Создание сервера
+     * @param socket сокет
+     * @param envBuilder Функция получения сервиса для новой сессии
+     * @param securFilter Функция фильтрации байт-кода
+     */
+    public TcpServer(ServerSocket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurFilter<String,MethodDef> securFilter ){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         this.envBuilder = envBuilder;
         this.socket = socket;
         sessions = new ConcurrentSkipListSet<>();
+        if( securFilter!=null ){
+            this.securFilter = securFilter;
+        }else{
+            this.securFilter = x -> List.of();
+        }
+    }
+
+    /**
+     * Создание сервера
+     * @param socket сокет
+     * @param envBuilder Функция получения сервиса для новой сессии
+     */
+    public TcpServer(ServerSocket socket, Function<TcpSession<ENV>,ENV> envBuilder ){
+        this(socket,envBuilder,null);
     }
 
     @Override
@@ -71,12 +132,24 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         closeSessions();
     }
 
-    private int sessionSoTimeout(){ return 1000*3; }
+    /**
+     * Возвращает значение SoTimeout {@link Socket#setSoTimeout(int)} для сессии
+     * @return по умолчанию 3000 мс
+     */
+    protected int sessionSoTimeout(){ return 1000*3; }
 
-    protected TcpSession create(Socket sock){
-        TcpSession ses = new TcpSession(sock,envBuilder);
+    /**
+     * Создание сессии
+     * @param sock сокет
+     * @return сессия
+     * @see #sessionSoTimeout()
+     * @see #addSesListener(TcpSession)
+     * @see SessionCreated
+     */
+    protected TcpSession<ENV> create(Socket sock){
+        TcpSession<ENV> ses = new TcpSession<>(sock,envBuilder,securFilter);
         try{
-            sock.setSoTimeout(1000*3);
+            sock.setSoTimeout(sessionSoTimeout());
         } catch( SocketException e ) {
             log.warn("can't set so timeout");
         }
@@ -91,12 +164,20 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         return ses;
     }
 
+    /**
+     * Завершение всех сессий и остановка сервера
+     * @see #closeSocket()
+     * @see #closeSessions()
+     */
     public synchronized void shutdown(){
         log.info("shutdown");
         closeSocket();
         closeSessions();
     }
 
+    /**
+     * Закрытие сокета
+     */
     protected void closeSocket(){
         if( !socket.isClosed() ){
             try{
@@ -107,13 +188,24 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
             }
         }
     }
+
+    /**
+     * Таймаут согласно которому сессия должна быть завершена
+     * @return 5000 мс
+     */
+    protected long sessionCloseTimeout(){ return 1000L * 5L ; }
+
+    /**
+     * Завершение всех сессий
+     * @see #sessionCloseTimeout()
+     */
     protected void closeSessions(){
         log.info("close sessions");
         for( var ses : sessions ){
             if( ses.isAlive() ){
                 ses.close();
                 try{
-                    ses.join(1000L * 5L );
+                    ses.join( sessionCloseTimeout() );
                 } catch( InterruptedException e ) {
                     log.warn("session {} close not responsed", ses.id);
                     ses.stop();
@@ -122,10 +214,20 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         }
     }
 
-    protected void addSesListener(TcpSession ses){
+    /**
+     * Добавление подписчика sesListener на события сессии
+     * @param ses сессия
+     */
+    protected void addSesListener(TcpSession<ENV> ses){
         if( ses==null )throw new IllegalArgumentException( "ses==null" );
         ses.addListener(sesListener);
     }
+
+    /**
+     * Подписчик на событие завершения сессии
+     * @see SessionClosed
+     * @see #fireClosed
+     */
     private final TrListener sesListener = ev -> {
         withQueue(()-> {
             if( ev instanceof TcpSession.SessionFinished ){
@@ -135,6 +237,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized( ses ){
                     if( !fireClosed.containsKey(ses.id) ){
+                        //noinspection unchecked,rawtypes,rawtypes
                         fireEvent(new SessionClosed(this, ses));
                         fireClosed.put(ses.id, System.currentTimeMillis());
                     }
@@ -144,6 +247,10 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         cleanup_fireClosed();
     };
 
+    /**
+     * Периодично вызывается в цикле {@link #run()} для извещения завершенных сессий
+     * @see #cleanup_fireClosed()
+     */
     private void checkTerminatedSessions(){
         withQueue(()->{
             for( var ses : sessions ){
@@ -151,6 +258,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized( ses ){
                     if(!fireClosed.containsKey(ses.id)){
+                        //noinspection unchecked,rawtypes,rawtypes
                         fireEvent(new SessionClosed(this,ses));
                         fireClosed.put(ses.id,System.currentTimeMillis());
                     }
@@ -159,6 +267,10 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         });
         cleanup_fireClosed();
     }
+
+    /**
+     * Удаляет информацию {@link #fireClosed} о уже завершенных сессия
+     */
     private void cleanup_fireClosed(){
         var sesTo = sessionSoTimeout();
         var tmax = sesTo>0 ? sesTo*3 : 1000 * 15;
@@ -168,8 +280,12 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
             .forEach(fireClosed::remove);
     }
 
+    /**
+     * Завершение работы сервера
+     * @throws Exception Ошибки...
+     */
     @Override
-    public void close() throws Exception{
+    public void close() throws Exception {
         shutdown();
     }
 
@@ -198,6 +314,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * @param listener Подписчик.
      * @return Интерфес для отсоединения подписчика
      */
+    @SuppressWarnings("UnusedReturnValue")
     public AutoCloseable addListener(TrListener listener){
         return listeners.addListener(listener);
     }
@@ -220,6 +337,9 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         listeners.removeListener(listener);
     }
 
+    /**
+     * Удаление всех подписчиков
+     */
     public void removeAllListeners(){
         listeners.removeAllListeners();
     }
@@ -266,20 +386,33 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     //endregion
 
     //region SessionClosed
-    public static class SessionClosed implements TrEvent {
-        private final TcpServer server;
-        private final TcpSession session;
-        public SessionClosed(TcpServer server,TcpSession session){
+
+    /**
+     * Событие о завершении сессии
+     */
+    public static class SessionClosed<ENV> implements TrEvent {
+        private final TcpServer<ENV> server;
+        private final TcpSession<ENV> session;
+        public SessionClosed(TcpServer<ENV> server,TcpSession<ENV> session){
             if( server==null )throw new IllegalArgumentException( "server==null" );
             if( session==null )throw new IllegalArgumentException( "session==null" );
             this.server = server;
             this.session = session;
         }
 
-        public TcpServer getServer(){
+        /**
+         * Возвращает сервер
+         * @return сервер
+         */
+        public TcpServer<ENV> getServer(){
             return server;
         }
-        public TcpSession getSession(){
+
+        /**
+         * Возвращает сессию
+         * @return сессия
+         */
+        public TcpSession<ENV> getSession(){
             return session;
         }
 
@@ -289,20 +422,32 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     }
     //endregion
     //region SessionCreated
-    public static class SessionCreated implements TrEvent {
-        private final TcpServer server;
-        private final TcpSession session;
-        public SessionCreated(TcpServer server,TcpSession session){
+    /**
+     * Событие о создании сессии
+     */
+    public static class SessionCreated<ENV> implements TrEvent {
+        private final TcpServer<ENV> server;
+        private final TcpSession<ENV> session;
+        public SessionCreated(TcpServer<ENV> server,TcpSession<ENV> session){
             if( server==null )throw new IllegalArgumentException( "server==null" );
             if( session==null )throw new IllegalArgumentException( "session==null" );
             this.server = server;
             this.session = session;
         }
 
-        public TcpServer getServer(){
+        /**
+         * Возвращает сервер
+         * @return сервер
+         */
+        public TcpServer<ENV> getServer(){
             return server;
         }
-        public TcpSession getSession(){
+
+        /**
+         * Возвращает сессию
+         * @return сессия
+         */
+        public TcpSession<ENV> getSession(){
             return session;
         }
 

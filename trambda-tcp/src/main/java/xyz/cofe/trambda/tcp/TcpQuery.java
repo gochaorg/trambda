@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.tcp;
 
+import java.io.Closeable;
 import java.io.IOError;
 import java.io.IOException;
 import java.lang.invoke.SerializedLambda;
@@ -11,12 +12,18 @@ import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.Fn;
 import xyz.cofe.trambda.bc.MethodDef;
 
-public class TcpQuery<ENV> extends AsmQuery<ENV> {
+public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     protected final TcpClient client;
+    public TcpClient getClient(){ return client; }
 
     public TcpQuery(TcpClient client){
         if( client==null )throw new IllegalArgumentException( "client==null" );
         this.client = client;
+    }
+
+    @Override
+    public void close() throws Exception {
+        client.close();
     }
 
     public static <ENV> Builder<ENV> create(Class<ENV> c){

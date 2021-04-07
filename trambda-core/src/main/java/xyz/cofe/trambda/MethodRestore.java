@@ -5,14 +5,36 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import xyz.cofe.trambda.bc.*;
 
+/**
+ * Генерация байт-кода класса из представления
+ * {@link xyz.cofe.trambda.bc.MethodDef}
+ *
+ * <pre>
+ * var byteCode = new MethodRestore()
+ *      // Имя целевого класса
+ *     .className("xyz.cofe.trambda.buildMethodTest.Build1")
+ *     // Имя целевого метода
+ *     .methodName("lambda1")
+ *     // Сериализованная лямбда
+ *     .methodDef(mdef)
+ *     // Генерация байт кода
+ *     .generate();
+ * </pre>
+ *
+ * @see MethodDump
+ * @see MethodDef
+ * @see AsmQuery
+ */
 public class MethodRestore {
+    /**
+     * Конструктор по умолчанию
+     */
     public MethodRestore(){
     }
 
@@ -21,11 +43,9 @@ public class MethodRestore {
         this.className = sample.className;
         this.methodDef = sample.methodDef;
         this.methodName = sample.methodName;
-        this.cw = sample.cw;
-        this.mv = sample.mv;
-        this.labels = sample.labels;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public synchronized MethodRestore clone(){
         return new MethodRestore(this);
     }
@@ -60,12 +80,12 @@ public class MethodRestore {
     }
     //endregion
 
-    protected ClassWriter cw;
-    protected MethodVisitor mv;
-    protected Map<String, org.objectweb.asm.Label> labels;
-    protected Map<String, String> targetHandles;
-    protected Map<String, MethodDef> targetMethodDef;
-    protected String binClassName;
+    protected transient ClassWriter cw;
+    protected transient MethodVisitor mv;
+    protected transient Map<String, org.objectweb.asm.Label> labels;
+    protected transient Map<String, String> targetHandles;
+    protected transient Map<String, MethodDef> targetMethodDef;
+    protected transient String binClassName;
 
     private static String idOf( MethodDef mf ){
         return mf.getName()+"|"+mf.getDescriptor();
@@ -336,7 +356,7 @@ public class MethodRestore {
             case Handle:
                 var hdl1 = (Handle)ldc.getValue();
                 var hdl0 = new org.objectweb.asm.Handle(
-                    hdl1.getTag(), hdl1.getOwner(), hdl1.getName(), hdl1.getDesc()
+                    hdl1.getTag(), hdl1.getOwner(), hdl1.getName(), hdl1.getDesc(), hdl1.isIface()
                 );
                 mv.visitLdcInsn(hdl0);
                 break;
