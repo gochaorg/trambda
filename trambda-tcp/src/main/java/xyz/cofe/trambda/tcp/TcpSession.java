@@ -42,7 +42,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     /**
      * Идентификатор сессии
     */
-    public final int id = idSeq.incrementAndGet();
+    public final int sid = idSeq.incrementAndGet();
 
     /**
      * Сокет сессии
@@ -294,18 +294,18 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         if( o == null || getClass() != o.getClass() ) return false;
         //noinspection rawtypes
         TcpSession that = (TcpSession) o;
-        return id == that.id;
+        return sid == that.sid;
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(id);
+        return Objects.hash(sid);
     }
 
     @Override
     public int compareTo(TcpSession o){
         if( o==null )return -1;
-        return Integer.compare(id, o.id);
+        return Integer.compare(sid, o.sid);
     }
     //endregion
     //region close()
@@ -329,7 +329,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
 
                 received(rpack.get().toReadonly());
             } catch( SocketTimeoutException e ) {
-                log.debug("io err, session={} {}", id, e);
+                log.debug("io err, session={} {}", sid, e);
                 System.out.println("try repeat read");
             } catch( SocketException e ){
                 if( e.getMessage()!=null && e.getMessage().matches("(?i).*socket\\s+closed.*") ){
@@ -339,7 +339,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 }
                 break;
             } catch( IOException e ) {
-                log.warn("io err, session={} {}",id,e);
+                log.warn("io err, session={} {}", sid,e);
                 break;
             }
         }
@@ -443,16 +443,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         log.debug("generate bytecode "+clName+" method "+methName);
         var byteCode = new MethodRestore().className(clName).methodName(methName).methodDef(mdef).generate();
 
-        log.debug("create classloader");
-        ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader()) {
-            @Override
-            protected Class<?> findClass(String name) throws ClassNotFoundException{
-                if( name!=null && name.equals(clName) ){
-                    return defineClass(name,byteCode,0,byteCode.length);
-                }
-                return super.findClass(name);
-            }
-        };
+        ClassLoader cl = createClassLoader(clName, byteCode);
 
         log.debug("try load class "+clName);
         //noinspection rawtypes
@@ -477,6 +468,27 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
 
         return m;
+    }
+    protected ClassLoader createClassLoader(String clName, byte[] byteCode){
+        log.debug("create classloader");
+        return new ClassLoader(ClassLoader.getSystemClassLoader()) {
+            @Override
+            protected void finalize() throws Throwable{
+                try {
+                    LoggerFactory.getLogger(TcpSession.class).info("ClassLoader finalize()");
+                } finally {
+                    super.finalize();
+                }
+            }
+
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException{
+                if( name!=null && name.equals(clName) ){
+                    return defineClass(name,byteCode,0,byteCode.length);
+                }
+                return super.findClass(name);
+            }
+        };
     }
     protected void process(Compile compile,TcpHeader header){
         var sid = header.getSid();
@@ -505,7 +517,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 var m = compile(mdef,hash);
                 cid = compileId.incrementAndGet();
 
-                log.info("compiled {} hash {} id {}",m,hash,id);
+                log.info("compiled {} hash {} id {}",m,hash, this.sid);
                 compiled.put(cid,m);
             }
 

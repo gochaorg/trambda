@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,7 +155,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
             log.warn("can't set so timeout");
         }
         ses.setDaemon(true);
-        ses.setName("session#"+ses.id+"("+sock.getRemoteSocketAddress()+")");
+        ses.setName("session#"+ses.sid +"("+sock.getRemoteSocketAddress()+")");
 
         addSesListener(ses);
         fireEvent(new SessionCreated(this,ses));
@@ -207,7 +208,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
                 try{
                     ses.join( sessionCloseTimeout() );
                 } catch( InterruptedException e ) {
-                    log.warn("session {} close not responsed", ses.id);
+                    log.warn("session {} close not responsed", ses.sid);
                     ses.stop();
                 }
             }
@@ -236,10 +237,10 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
                 if( ses == null ) return;
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized( ses ){
-                    if( !fireClosed.containsKey(ses.id) ){
+                    if( !fireClosed.containsKey(ses.sid) ){
                         //noinspection unchecked,rawtypes,rawtypes
                         fireEvent(new SessionClosed(this, ses));
-                        fireClosed.put(ses.id, System.currentTimeMillis());
+                        fireClosed.put(ses.sid, System.currentTimeMillis());
                     }
                 }
             }
@@ -252,19 +253,30 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * @see #cleanup_fireClosed()
      */
     private void checkTerminatedSessions(){
+        var deadSessions = new HashSet<TcpSession<ENV>>();
         withQueue(()->{
             for( var ses : sessions ){
                 if( ses==null )return;
+                if( ses.isAlive() )continue;
+                deadSessions.add(ses);
+
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized( ses ){
-                    if(!fireClosed.containsKey(ses.id)){
+                    if(!fireClosed.containsKey(ses.sid)){
                         //noinspection unchecked,rawtypes,rawtypes
                         fireEvent(new SessionClosed(this,ses));
-                        fireClosed.put(ses.id,System.currentTimeMillis());
+                        fireClosed.put(ses.sid,System.currentTimeMillis());
                     }
                 }
             }
         });
+
+        if( !deadSessions.isEmpty() ){
+            log.info("remove closed sessions, count={}",deadSessions.size());
+            deadSessions.forEach( s -> log.debug("remove closed session id={} name={}",s.sid,s.getName()));
+        }
+        sessions.removeAll(deadSessions);
+
         cleanup_fireClosed();
     }
 
@@ -417,7 +429,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         }
 
         public String toString(){
-            return SessionClosed.class.getSimpleName()+" session.id="+session.getId();
+            return SessionClosed.class.getSimpleName()+" session.id="+session.sid;
         }
     }
     //endregion
@@ -452,7 +464,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         }
 
         public String toString(){
-            return SessionCreated.class.getSimpleName()+" session.id="+session.getId();
+            return SessionCreated.class.getSimpleName()+" session.id="+session.sid;
         }
     }
     //endregion
