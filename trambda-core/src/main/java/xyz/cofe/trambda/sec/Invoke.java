@@ -9,18 +9,18 @@ import xyz.cofe.trambda.bc.InvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.bc.MethodInsn;
 
-public abstract class Call<INSTR extends ByteCode> extends SecurAccess<INSTR, MethodDef> {
-    public Call(INSTR instr, MethodDef mdef){
+public abstract class Invoke<INSTR extends ByteCode> extends SecurAccess<INSTR, MethodDef> {
+    public Invoke(INSTR instr, MethodDef mdef){
         super(instr,mdef);
     }
 
-    public static List<Call<?>> inspectCall(MethodDef mdef){
+    public static List<Invoke<?>> inspectCall(MethodDef mdef){
         if( mdef==null )throw new IllegalArgumentException( "mdef==null" );
-        List<Call<?>> result = new ArrayList<>();
+        List<Invoke<?>> result = new ArrayList<>();
         inspectCall(result,mdef,null);
         return result;
     }
-    private static void inspectCall(List<Call<?>> result, MethodDef mdef, Set<MethodDef> visited){
+    private static void inspectCall(List<Invoke<?>> result, MethodDef mdef, Set<MethodDef> visited){
         if( result==null )throw new IllegalArgumentException( "result==null" );
         if( mdef==null )throw new IllegalArgumentException( "mdef==null" );
         if( visited==null )visited = new HashSet<>();
@@ -34,7 +34,7 @@ public abstract class Call<INSTR extends ByteCode> extends SecurAccess<INSTR, Me
                 if( bc instanceof InvokeDynamicInsn ){
                     result.add(new InvokeDynamicCall((InvokeDynamicInsn) bc, mdef));
                 }else if( bc instanceof MethodInsn ){
-                    result.add(new MethodCall((MethodInsn) bc, mdef));
+                    result.add(new InvokeMethod((MethodInsn) bc, mdef));
                 }
             }
         }

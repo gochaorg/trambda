@@ -10,9 +10,9 @@ import java.util.function.Predicate;
 import xyz.cofe.trambda.Tuple2;
 import xyz.cofe.trambda.bc.MethodDef;
 
-public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
+public class SecurityFilters<MESSAGE,SCOPE> implements SecurityFilter<MESSAGE,SCOPE> {
     private final List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators;
-    public SecurFilters(List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators){
+    public SecurityFilters(List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators){
         List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators00 = new ArrayList<>();
         if( validators!=null ){
             validators00.addAll(validators);
@@ -55,7 +55,7 @@ public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
     public static Builder<String, MethodDef> create(){
         return create(String.class, MethodDef.class);
     }
-    public static SecurFilters<String, MethodDef> create( Consumer<Builder<String, MethodDef>> conf ){
+    public static SecurityFilters<String, MethodDef> create(Consumer<Builder<String, MethodDef>> conf ){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         var bld = create();
         conf.accept(bld);
@@ -64,8 +64,8 @@ public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
 
     public static class Builder<MESSAGE,SCOPE> {
         private final List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators = new ArrayList<>();
-        public SecurFilters<MESSAGE,SCOPE> build(){
-            return new SecurFilters<>(validators);
+        public SecurityFilters<MESSAGE,SCOPE> build(){
+            return new SecurityFilters<>(validators);
         }
         public AllowBuilder<MESSAGE,SCOPE> allow(){
             return new AllowBuilder<>(this);
@@ -98,11 +98,11 @@ public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
             return builder;
         }
 
-        public Builder<MESSAGE,SCOPE> methodCall(Predicate<MethodCall> filter, MESSAGE message) {
+        public Builder<MESSAGE,SCOPE> invokeMethod(Predicate<InvokeMethod> filter, MESSAGE message) {
             if( filter==null )throw new IllegalArgumentException( "filter==null" );
             append( ev -> {
-                if( ev instanceof MethodCall ){
-                    if( filter.test((MethodCall) ev) ){
+                if( ev instanceof InvokeMethod ){
+                    if( filter.test((InvokeMethod) ev) ){
                         return Optional.of(message);
                     };
                 }
@@ -110,7 +110,7 @@ public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
             });
             return builder;
         }
-        public Builder<MESSAGE,SCOPE> indyCall(Predicate<InvokeDynamicCall> filter, MESSAGE message) {
+        public Builder<MESSAGE,SCOPE> invokeIndy(Predicate<InvokeDynamicCall> filter, MESSAGE message) {
             if( filter==null )throw new IllegalArgumentException( "filter==null" );
             append( ev -> {
                 if( ev instanceof InvokeDynamicCall ){
@@ -120,11 +120,11 @@ public class SecurFilters<MESSAGE,SCOPE> implements SecurFilter<MESSAGE,SCOPE> {
             });
             return builder;
         }
-        public Builder<MESSAGE,SCOPE> call(Predicate<Call<?>> filter, MESSAGE message) {
+        public Builder<MESSAGE,SCOPE> invoke(Predicate<Invoke<?>> filter, MESSAGE message) {
             if( filter==null )throw new IllegalArgumentException( "filter==null" );
             append( ev -> {
-                if( ev instanceof Call ){
-                    return filter.test((Call<?>) ev) ? Optional.of(message) : Optional.empty();
+                if( ev instanceof Invoke ){
+                    return filter.test((Invoke<?>) ev) ? Optional.of(message) : Optional.empty();
                 }
                 return Optional.empty();
             });

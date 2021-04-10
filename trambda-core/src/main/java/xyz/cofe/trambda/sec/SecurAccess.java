@@ -24,7 +24,7 @@ public abstract class SecurAccess<INSTR, SCOPE> {
         if( mdef==null )throw new IllegalArgumentException( "mdef==null" );
         ArrayList<SecurAccess<?, MethodDef>> res = new ArrayList<>();
         res.addAll( FieldAccess.inspectField(mdef) );
-        res.addAll( Call.inspectCall(mdef) );
+        res.addAll( Invoke.inspectCall(mdef) );
         return res;
     }
 }

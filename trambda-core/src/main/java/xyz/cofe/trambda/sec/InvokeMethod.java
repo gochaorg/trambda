@@ -3,18 +3,18 @@ package xyz.cofe.trambda.sec;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.bc.MethodInsn;
 
-public class MethodCall extends Call<MethodInsn> {
-    public MethodCall(MethodInsn methodInsn, MethodDef mdef){
+public class InvokeMethod extends Invoke<MethodInsn> {
+    public InvokeMethod(MethodInsn methodInsn, MethodDef mdef){
         super(methodInsn, mdef);
     }
 
-    public MethodCall(MethodCall sample){
+    public InvokeMethod(InvokeMethod sample){
         super(sample.instruction, sample.scope);
     }
 
     @Override
-    public MethodCall clone(){
-        return new MethodCall(this);
+    public InvokeMethod clone(){
+        return new InvokeMethod(this);
     }
 
     public String toString(){
