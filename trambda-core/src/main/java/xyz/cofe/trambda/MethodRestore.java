@@ -203,6 +203,10 @@ public class MethodRestore {
             else if( bc instanceof LdcInsn )build((LdcInsn) bc);
             else if( bc instanceof TypeInsn )build((TypeInsn) bc);
             else if( bc instanceof FieldInsn )build((FieldInsn) bc);
+            else if( bc instanceof IincInsn )build((IincInsn) bc);
+            else if( bc instanceof TryCatchBlock )build((TryCatchBlock) bc);
+            else if( bc instanceof MultiANewArrayInsn )build((MultiANewArrayInsn) bc);
+            else if( bc instanceof LookupSwitchInsn )build((LookupSwitchInsn) bc);
         }
     }
 
@@ -366,5 +370,74 @@ public class MethodRestore {
     }
     protected void build(FieldInsn fld){
         mv.visitFieldInsn(fld.getOpcode(), fld.getOwner(), fld.getName(), fld.getDescriptor());
+    }
+    protected void build(IincInsn ii){
+        mv.visitIincInsn(ii.getVariable(), ii.getIncrement());
+    }
+    protected void build(TryCatchBlock tcb){
+        var start = tcb.getLabelStart()!=null ? labels.computeIfAbsent(
+            tcb.getLabelStart(),
+            l -> {
+                throw new IllegalArgumentException("label "+l+" not found");
+            }
+        ) : null;
+        var handler = tcb.getLabelHandler()!=null ? labels.computeIfAbsent(
+            tcb.getLabelHandler(),
+            l -> {
+                throw new IllegalArgumentException("label "+l+" not found");
+            }
+        ) : null;
+        var end = tcb.getLabelEnd()!=null ? labels.computeIfAbsent(
+            tcb.getLabelEnd(),
+            l -> {
+                throw new IllegalArgumentException("label "+l+" not found");
+            }
+        ) : null;
+        mv.visitTryCatchBlock(start,end,handler,tcb.getType());
+    }
+    protected void build(MultiANewArrayInsn ii){
+        mv.visitMultiANewArrayInsn(ii.getDescriptor(), ii.getNumDimensions());
+    }
+    protected void build(LookupSwitchInsn lsw){
+        var defLbl = lsw.getDefaultHandlerLabel()!=null
+            ? labels.computeIfAbsent(
+                lsw.getDefaultHandlerLabel(),
+                l -> {
+                    throw new IllegalArgumentException("label "+l+" not found");
+                })
+            : null;
+        var lbls = lsw.getLabels()!=null
+            ? List.of(lsw.getLabels()).stream().map( lbl ->
+                lbl!=null
+                ? labels.computeIfAbsent(
+                    lbl,
+                    l -> {
+                        throw new IllegalArgumentException("label "+l+" not found");
+                    })
+                : null
+            ).toArray(org.objectweb.asm.Label[]::new)
+            : null;
+        mv.visitLookupSwitchInsn(defLbl,lsw.getKeys(),lbls);
+    }
+    protected void build(TableSwitchInsn tsw){
+        var defLbl = tsw.getDefaultLabel()!=null
+            ? labels.computeIfAbsent(
+            tsw.getDefaultLabel(),
+            l -> {
+                throw new IllegalArgumentException("label "+l+" not found");
+            })
+            : null;
+        var lbls = tsw.getLabels()!=null
+            ? List.of(tsw.getLabels()).stream().map( lbl ->
+            lbl!=null
+                ? labels.computeIfAbsent(
+                lbl,
+                l -> {
+                    throw new IllegalArgumentException("label "+l+" not found");
+                })
+                : null
+        ).toArray(org.objectweb.asm.Label[]::new)
+            : null;
+        mv.visitTableSwitchInsn(tsw.getMin(), tsw.getMax(), defLbl, lbls);
     }
 }

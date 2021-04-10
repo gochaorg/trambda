@@ -1,5 +1,28 @@
 package xyz.cofe.trambda.bc;
 
+/**
+ * the opcode of the type instruction to be visited. This opcode is either
+ * IFEQ,
+ * IFNE,
+ * IFLT,
+ * IFGE,
+ * IFGT,
+ * IFLE,
+ * IF_ICMPEQ,
+ * IF_ICMPNE,
+ * IF_ICMPLT,
+ * IF_ICMPGE,
+ * IF_ICMPGT,
+ * IF_ICMPLE,
+ * IF_ACMPEQ,
+ * IF_ACMPNE,
+ *
+ * GOTO,
+ *
+ * JSR,
+ *
+ * IFNULL or IFNONNULL.
+ */
 public class JumpInsn implements ByteCode {
     private static final long serialVersionUID = 1;
 

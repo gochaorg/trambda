@@ -1,5 +1,9 @@
 package xyz.cofe.trambda.bc;
 
+/**
+ * the opcode of the type instruction to be visited. This opcode is either
+ * GETSTATIC, PUTSTATIC, GETFIELD or PUTFIELD.
+ */
 public class FieldInsn implements ByteCode {
     private static final long serialVersionUID = 1;
 

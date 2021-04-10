@@ -1,6 +1,8 @@
 package xyz.cofe.trambda;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ConstantDynamic;
@@ -449,24 +451,18 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitLdcInsn(Object value){
-        var cst = value;
-        if (cst instanceof Integer) {
-            emit(new LdcInsn(cst,LdcType.Integer));
-            return;
-        } else if (cst instanceof Float) {
-            emit(new LdcInsn(cst,LdcType.Float));
-            return;
-        } else if (cst instanceof Long) {
-            emit(new LdcInsn(cst,LdcType.Long));
-            return;
-        } else if (cst instanceof Double) {
-            emit(new LdcInsn(cst,LdcType.Double));
-            return;
-        } else if (cst instanceof String) {
-            emit(new LdcInsn(cst,LdcType.String));
-            return;
-        } else if (cst instanceof org.objectweb.asm.Type) {
-            int sort = ((org.objectweb.asm.Type) cst).getSort();
+        if ( value instanceof Integer) {
+            emit(new LdcInsn(value,LdcType.Integer));
+        } else if ( value instanceof Float) {
+            emit(new LdcInsn(value,LdcType.Float));
+        } else if ( value instanceof Long) {
+            emit(new LdcInsn(value,LdcType.Long));
+        } else if ( value instanceof Double) {
+            emit(new LdcInsn(value,LdcType.Double));
+        } else if ( value instanceof String) {
+            emit(new LdcInsn(value,LdcType.String));
+        } else if ( value instanceof org.objectweb.asm.Type) {
+            int sort = ((org.objectweb.asm.Type) value).getSort();
             if (sort == org.objectweb.asm.Type.OBJECT) {
                 //emit(new LdcInsn(cst,LdcType.Object));
                 throw new IllegalArgumentException("not impl ldc object");
@@ -481,17 +477,16 @@ public class MethodDump extends MethodVisitor implements Opcodes {
             } else {
                 throw new UnsupportedOperationException("unsupported ldc sort="+sort);
             }
-        } else if (cst instanceof Handle) {
+        } else if ( value instanceof Handle) {
             // ...
-            var hdl = (Handle)cst;
+            var hdl = (Handle) value;
             var hdl0 = new xyz.cofe.trambda.bc.Handle(hdl);
             emit(new LdcInsn(hdl0,LdcType.Handle));
-            return;
-        } else if (cst instanceof ConstantDynamic ) {
+        } else if ( value instanceof ConstantDynamic ) {
             // ...
             throw new UnsupportedOperationException("not impl ldc ConstantDynamic");
         } else {
-            throw new UnsupportedOperationException("unsupported ldc of "+cst);
+            throw new UnsupportedOperationException("unsupported ldc of "+ value);
         }
         //super.visitLdcInsn(value);
     }
@@ -504,8 +499,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitIincInsn(int var, int increment){
-        dump("IincInsn",var,increment);
-        super.visitIincInsn(var, increment);
+        emit(new IincInsn(var,increment));
     }
 
     /**
@@ -519,8 +513,10 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels){
-        dump("TableSwitchInsn",min,max,dflt,labels);
-        super.visitTableSwitchInsn(min, max, dflt, labels);
+        String defLbl = dflt!=null ? dflt.toString() : null;
+        String[] lbls = labels!=null ?
+            List.of(labels).stream().map(l -> l != null ? l.toString() : null).toArray(String[]::new) : null;
+        emit(new TableSwitchInsn(min,max,defLbl,lbls));
     }
 
     /**
@@ -533,8 +529,10 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels){
-        dump("LookupSwitchInsn",dflt,keys,labels);
-        super.visitLookupSwitchInsn(dflt, keys, labels);
+        String defLbl = dflt!=null ? dflt.toString() : null;
+        String[] lbls = labels!=null ?
+            List.of(labels).stream().map(l -> l != null ? l.toString() : null).toArray(String[]::new) : null;
+        emit(new LookupSwitchInsn(defLbl, keys, lbls));
     }
 
     /**
@@ -545,8 +543,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitMultiANewArrayInsn(String descriptor, int numDimensions){
-        dump("MultiANewArrayInsn",descriptor,numDimensions);
-        super.visitMultiANewArrayInsn(descriptor, numDimensions);
+        emit(new MultiANewArrayInsn(descriptor,numDimensions));
     }
 
     /**
@@ -587,8 +584,12 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type){
-        dump("TryCatchBlock",start,end,handler,type);
-        super.visitTryCatchBlock(start, end, handler, type);
+        emit(new TryCatchBlock(
+            start!=null ? start.toString() : null,
+            end!=null ? end.toString() : null,
+            handler!=null ? handler.toString() : null,
+            type
+        ));
     }
 
     /**
