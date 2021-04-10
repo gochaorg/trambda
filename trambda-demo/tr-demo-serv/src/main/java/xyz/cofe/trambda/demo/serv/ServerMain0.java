@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import xyz.cofe.trambda.demo.api.IEnv;
 import xyz.cofe.trambda.demo.api.LinuxEnv;
 import xyz.cofe.trambda.tcp.TcpServer;
-import xyz.cofe.trambda.tcp.TcpServerCLI;
 
 public class ServerMain0 {
     private static final Logger log = LoggerFactory.getLogger(ServerMain0.class);

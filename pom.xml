@@ -11,6 +11,7 @@
         <module>trambda-core</module>
         <module>trambda-tcp</module>
         <module>trambda-json</module>
+        <module>trambda-tcp-serv-cli</module>
         <!-- <module>trambda-demo</module> -->
     </modules>
     <packaging>pom</packaging>

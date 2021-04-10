@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.trambda.bc.MethodDef;
-import xyz.cofe.trambda.sec.SecurFilter;
+import xyz.cofe.trambda.sec.SecurityFilter;
 
 /**
  * TCP Сервер для предоставления сервиса
@@ -64,24 +64,24 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     /**
      * Функция фильтрации байт-кода
      */
-    protected final SecurFilter<String,MethodDef> securFilter;
+    protected final SecurityFilter<String,MethodDef> securityFilter;
 
     /**
      * Создание сервера
      * @param socket сокет
      * @param envBuilder Функция получения сервиса для новой сессии
-     * @param securFilter Функция фильтрации байт-кода
+     * @param securityFilter Функция фильтрации байт-кода
      */
-    public TcpServer(ServerSocket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurFilter<String,MethodDef> securFilter ){
+    public TcpServer(ServerSocket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurityFilter<String,MethodDef> securityFilter){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         this.envBuilder = envBuilder;
         this.socket = socket;
         sessions = new ConcurrentSkipListSet<>();
-        if( securFilter!=null ){
-            this.securFilter = securFilter;
+        if( securityFilter !=null ){
+            this.securityFilter = securityFilter;
         }else{
-            this.securFilter = x -> List.of();
+            this.securityFilter = x -> List.of();
         }
     }
 
@@ -148,7 +148,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * @see SessionCreated
      */
     protected TcpSession<ENV> create(Socket sock){
-        TcpSession<ENV> ses = new TcpSession<>(sock,envBuilder,securFilter);
+        TcpSession<ENV> ses = new TcpSession<>(sock,envBuilder, securityFilter);
         try{
             sock.setSoTimeout(sessionSoTimeout());
         } catch( SocketException e ) {

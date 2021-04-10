@@ -16,7 +16,7 @@ import xyz.cofe.trambda.Fn;
 import xyz.cofe.trambda.Query;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.SecurAccess;
-import xyz.cofe.trambda.sec.SecurFilters;
+import xyz.cofe.trambda.sec.SecurityFilters;
 import xyz.cofe.trambda.tcp.demo.IEnv;
 import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 import xyz.cofe.trambda.tcp.demo.OsProc;
@@ -61,13 +61,13 @@ public class DemoSecurTest {
         System.out.println("inspect");
         System.out.println("-".repeat(80));
 
-        SecurFilters.create( s -> {
+        SecurityFilters.create(s -> {
             s.allow( a -> {
-                a.call( c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"), "demo api" );
-                a.call( c->c.getOwner().matches(
+                a.invoke(c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"), "demo api" );
+                a.invoke(c->c.getOwner().matches(
                     "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"), "java collections api" );
-                a.call( c->c.getOwner().matches("java\\.lang\\.(String)"), "java lang api" );
-                a.call( c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"), "java compiler" );
+                a.invoke(c->c.getOwner().matches("java\\.lang\\.(String)"), "java lang api" );
+                a.invoke(c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"), "java compiler" );
             });
             s.deny().any("by default");
         })
@@ -95,13 +95,13 @@ public class DemoSecurTest {
             server = new TcpServer<IEnv>(
                 ssocket,
                 s -> new LinuxEnv(),
-                SecurFilters.create( s -> {
+                SecurityFilters.create(s -> {
                     s.allow( a -> {
-                        a.call( c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"), "demo api" );
-                        a.call( c->c.getOwner().matches(
+                        a.invoke(c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"), "demo api" );
+                        a.invoke(c->c.getOwner().matches(
                             "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"), "java collections api" );
-                        a.call( c->c.getOwner().matches("java\\.lang\\.(String)"), "java lang api" );
-                        a.call( c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"), "java compiler" );
+                        a.invoke(c->c.getOwner().matches("java\\.lang\\.(String)"), "java lang api" );
+                        a.invoke(c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"), "java compiler" );
                     });
                     s.deny().any("by default");
                 })

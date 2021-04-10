@@ -1,0 +1,36 @@
+CLI справка ${project.artifactId}
+GAV ${project.groupId}:${project.artifactId}:${project.version}
+
+синтаксис командной строки (eBNF):
+
+    ${program.name} { help | declare_service | interactive }
+
+help
+    ::= help
+      | -help
+      | --help
+      | /help
+      | /?
+      | ?
+
+            покажет эту же саму справку
+
+declare_service
+    ::= { service <class_name> | host <ip_dns> | port <port_no> } add
+
+       <class_name>      - имя Java класса сервиса
+       <ip_dns>          - IP или DNS имя (localhost) на котором будет запущен сервис
+       <port>            - Сетевой порт на котором будет запущен сервис
+
+interactive
+    ::= { -i | -s <script_file> | -cs <script_charset> }
+
+    -i
+        Запуск интерактивной оболочки
+
+    <script_file>
+        Выполнение скрипта в интерактивной оболочке
+
+    <script_charset>
+        Указание кодировки файла со скриптом
+

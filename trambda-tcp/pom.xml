@@ -54,7 +54,7 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>xyz.cofe.trambda.tcp.TcpServerCLI</mainClass>
+                            <mainClass>xyz.cofe.trambda.tcp.serv.cli.TcpServerCLI</mainClass>
                             <id>trambda-tcp-serv</id>
                         </program>
                     </programs>

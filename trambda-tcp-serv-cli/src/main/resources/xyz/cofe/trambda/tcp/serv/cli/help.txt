@@ -1,0 +1,19 @@
+CLI help ${project.artifactId}
+GAV ${project.groupId}:${project.artifactId}:${project.version}
+
+command line syntax (eBNF):
+
+    ${program.name} { help | declare_service }
+
+help ::= help
+       | -help
+       | --help
+       | /help
+       | /?
+       | ?
+
+            show this screen
+
+declare_service ::= service <class_name> host <ip_dns> port <port_no> add
+
+

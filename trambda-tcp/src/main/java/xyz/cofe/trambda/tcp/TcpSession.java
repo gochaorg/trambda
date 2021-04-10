@@ -24,7 +24,7 @@ import xyz.cofe.text.Text;
 import xyz.cofe.trambda.MethodRestore;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.SecurAccess;
-import xyz.cofe.trambda.sec.SecurFilter;
+import xyz.cofe.trambda.sec.SecurityFilter;
 
 /**
  * Сессия клиента
@@ -62,7 +62,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     /**
      * Функция фильтра безопасности
      */
-    protected final SecurFilter<String,MethodDef> securFilter;
+    protected final SecurityFilter<String,MethodDef> securityFilter;
 
     /**
      * Конструктор
@@ -77,15 +77,15 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
      * Конструктор
      * @param socket сокет
      * @param envBuilder функция получения сервиса
-     * @param securFilter функция фильтра безопасности
+     * @param securityFilter функция фильтра безопасности
      */
-    public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurFilter<String,MethodDef> securFilter){
+    public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurityFilter<String,MethodDef> securityFilter){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
-        if( securFilter==null ){
-            this.securFilter = x -> List.of();
+        if( securityFilter ==null ){
+            this.securityFilter = x -> List.of();
         }else{
-            this.securFilter = securFilter;
+            this.securityFilter = securityFilter;
         }
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
@@ -412,7 +412,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected Method compile(MethodDef mdef, String hash){
         log.info("compile '{}' hash {}",mdef.getName(),hash);
 
-        if( securFilter!=null ){
+        if( securityFilter !=null ){
             log.debug("inspect byte code for SecurAccess");
             var secAcc = SecurAccess.inspect(mdef);
 
@@ -420,7 +420,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 secAcc.forEach(sa -> log.trace("SecurAccess: {}",sa));
             }
 
-            var secMsgs = securFilter.validate(secAcc);
+            var secMsgs = securityFilter.validate(secAcc);
             if( secMsgs.stream().anyMatch(m -> !m.isAllow()) ){
                 log.info("Lambda contains denied byte code");
                 secMsgs.forEach(m -> {
