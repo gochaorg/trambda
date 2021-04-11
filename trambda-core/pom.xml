@@ -11,6 +11,9 @@
 
     <artifactId>trambda-core</artifactId>
 
+    <name>trambda-core</name>
+    <description>transportable lambda - core lib</description>
+
     <properties>
     </properties>
 

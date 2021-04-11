@@ -11,6 +11,8 @@
 
     <artifactId>trambda-tcp-serv-cli</artifactId>
 
+    <name>${project.artifactId}</name>
+
     <description>Сервер trambda - пакет для запуска из command line interface (CLI)</description>
 
     <properties>

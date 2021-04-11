@@ -11,6 +11,9 @@
 
     <artifactId>trambda-tcp</artifactId>
 
+    <name>trambda-tcp</name>
+    <description>transportable lambda - tcp client / server</description>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>

@@ -11,6 +11,10 @@
 
     <artifactId>trambda-json</artifactId>
 
+    <name>trambda-json</name>
+    <description>transportable lambda - json seriliaze</description>
+
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
