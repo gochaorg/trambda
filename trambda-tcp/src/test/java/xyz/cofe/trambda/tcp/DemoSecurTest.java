@@ -63,11 +63,11 @@ public class DemoSecurTest {
 
         SecurityFilters.create(s -> {
             s.allow( a -> {
-                a.invoke(c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"), "demo api" );
-                a.invoke(c->c.getOwner().matches(
-                    "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"), "java collections api" );
-                a.invoke(c->c.getOwner().matches("java\\.lang\\.(String)"), "java lang api" );
-                a.invoke(c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"), "java compiler" );
+                a.invoke("demo api", c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"));
+                a.invoke("java collections api", c->c.getOwner().matches(
+                    "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"));
+                a.invoke("java lang api", c->c.getOwner().matches("java\\.lang\\.(String)"));
+                a.invoke("java compiler", c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"));
             });
             s.deny().any("by default");
         })
@@ -97,11 +97,11 @@ public class DemoSecurTest {
                 s -> new LinuxEnv(),
                 SecurityFilters.create(s -> {
                     s.allow( a -> {
-                        a.invoke(c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"), "demo api" );
-                        a.invoke(c->c.getOwner().matches(
-                            "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"), "java collections api" );
-                        a.invoke(c->c.getOwner().matches("java\\.lang\\.(String)"), "java lang api" );
-                        a.invoke(c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"), "java compiler" );
+                        a.invoke("demo api", c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"));
+                        a.invoke("java collections api", c->c.getOwner().matches(
+                            "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"));
+                        a.invoke("java lang api", c->c.getOwner().matches("java\\.lang\\.(String)"));
+                        a.invoke("java compiler", c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"));
                     });
                     s.deny().any("by default");
                 })

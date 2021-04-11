@@ -21,7 +21,7 @@ public class SecurityPredicateBuilder<SELF extends SecurityFilters.PredicateBuil
         if( message==null )throw new IllegalArgumentException( "message==null" );
         if( f==null )throw new IllegalArgumentException( "f==null" );
 
-        sfpb.invoke(c -> {
+        sfpb.invoke(message, c -> {
             CallProxy cp = new CallProxy(c);
             f.setDelegate(cp);
             f.setResolveStrategy(Closure.DELEGATE_FIRST);
@@ -30,14 +30,14 @@ public class SecurityPredicateBuilder<SELF extends SecurityFilters.PredicateBuil
                 return (Boolean)o;
             }
             throw new Error("method predicate ("+message+") execution error - return not boolean: "+(o!=null ? o.getClass() : "null"));
-        }, message);
+        });
     }
 
     public void field(String message, @DelegatesTo(FieldProxy.class) Closure<?> f){
         if( message==null )throw new IllegalArgumentException( "message==null" );
         if( f==null )throw new IllegalArgumentException( "f==null" );
 
-        sfpb.field( c -> {
+        sfpb.field(message, c -> {
             FieldProxy fp = new FieldProxy(c);
             f.setDelegate(fp);
             f.setResolveStrategy(Closure.DELEGATE_FIRST);
@@ -46,6 +46,6 @@ public class SecurityPredicateBuilder<SELF extends SecurityFilters.PredicateBuil
                 return (Boolean)o;
             }
             throw new Error("field predicate ("+message+") execution error - return not boolean: "+(o!=null ? o.getClass() : "null"));
-        }, message);
+        });
     }
 }

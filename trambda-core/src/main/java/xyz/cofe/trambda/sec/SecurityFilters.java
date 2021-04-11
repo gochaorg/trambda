@@ -120,7 +120,7 @@ public class SecurityFilters<MESSAGE,SCOPE> implements SecurityFilter<MESSAGE,SC
             });
             return builder;
         }
-        public Builder<MESSAGE,SCOPE> invoke(Predicate<Invoke<?>> filter, MESSAGE message) {
+        public Builder<MESSAGE,SCOPE> invoke(MESSAGE message, Predicate<Invoke<?>> filter) {
             if( filter==null )throw new IllegalArgumentException( "filter==null" );
             append( ev -> {
                 if( ev instanceof Invoke ){
@@ -130,7 +130,7 @@ public class SecurityFilters<MESSAGE,SCOPE> implements SecurityFilter<MESSAGE,SC
             });
             return builder;
         }
-        public Builder<MESSAGE,SCOPE> field(Predicate<FieldAccess> filter, MESSAGE message){
+        public Builder<MESSAGE,SCOPE> field(MESSAGE message, Predicate<FieldAccess> filter){
             if( filter==null )throw new IllegalArgumentException( "filter==null" );
             append( ev -> {
                 if( ev instanceof FieldAccess ){

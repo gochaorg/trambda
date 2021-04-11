@@ -48,7 +48,7 @@ import xyz.cofe.trambda.bc.MethodDef;
  *   new AsmQuery&lt;IEnv&gt;(){
  *       &#64;Override
  *       protected <RES> RES call(Fn&lt;IEnv, RES&gt; fn, SerializedLambda sl, MethodDef mdef){
- *           // Сохраение представления байт кода
+ *           // Сохранение представления байт кода
  *           mdefRef.set(mdef);
  *           return super.call(fn, sl, mdef);
  *       }

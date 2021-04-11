@@ -55,23 +55,23 @@ public class SecurTest {
 
         var sfilters = SecurityFilters.create()
             .allow(a -> {
-                a.invoke(call -> call.getOwner().equals("java.lang.invoke.StringConcatFactory"), "Java compiler" );
-                a.invoke(call -> call.getOwner().equals("java.lang.invoke.LambdaMetafactory"), "Java compiler" );
+                a.invoke("Java compiler", call -> call.getOwner().equals("java.lang.invoke.StringConcatFactory"));
+                a.invoke("Java compiler", call -> call.getOwner().equals("java.lang.invoke.LambdaMetafactory"));
             })
             .allow(a -> {
-                a.field( f -> f.getOwner().equals("java.lang.System") && f.isReadAccess(), "System stdio" );
-                a.invoke(f -> f.getOwner().matches("java\\.io\\.[\\w\\d]*(Stream|Writer)[\\w\\d]*"), "Java Streams" );
-                a.invoke(c -> c.getOwner().matches("java.lang.String"), "api Java lang" );
+                a.field("System stdio", f -> f.getOwner().equals("java.lang.System") && f.isReadAccess());
+                a.invoke("Java Streams", f -> f.getOwner().matches("java\\.io\\.[\\w\\d]*(Stream|Writer)[\\w\\d]*"));
+                a.invoke("api Java lang", c -> c.getOwner().matches("java.lang.String"));
             })
             .deny(b -> {
-                b.field(f -> f.getOwner().equals("java.lang.System") && f.isWriteAccess(), "deny System field write");
-                b.invoke(f -> f.getOwner().equals("java.lang.System") && f.getMethodName().matches(
-                    "(?i)gc|exit|console|clear.*|getSecurity.*|inherited.*|load.*|map.*|run.*|set.*|wait.*"), "deny call System method");
+                b.field("deny System field write", f -> f.getOwner().equals("java.lang.System") && f.isWriteAccess());
+                b.invoke("deny call System method", f -> f.getOwner().equals("java.lang.System") && f.getMethodName().matches(
+                    "(?i)gc|exit|console|clear.*|getSecurity.*|inherited.*|load.*|map.*|run.*|set.*|wait.*"));
             })
             .allow( a -> {
-                a.invoke(c -> c.getOwner().matches("xyz.cofe.iter.[\\w\\d]+"), "api by xyz.cofe" );
-                a.invoke(c -> c.getOwner().matches("xyz.cofe.[\\w\\d]+"), "api by xyz.cofe" );
-                a.invoke(c -> c.getOwner().matches("xyz.cofe.trambda.[\\w\\d]+"), "api by trambda" );
+                a.invoke("api by xyz.cofe", c -> c.getOwner().matches("xyz.cofe.iter.[\\w\\d]+"));
+                a.invoke("api by xyz.cofe", c -> c.getOwner().matches("xyz.cofe.[\\w\\d]+"));
+                a.invoke("api by trambda", c -> c.getOwner().matches("xyz.cofe.trambda.[\\w\\d]+"));
             })
             .deny().any("Deny by default")
             .build();
