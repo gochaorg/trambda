@@ -9,7 +9,7 @@
             <item name="intro" href="intro.html" />
             <item name="road map" href="plan.html" />
             <item name="core" href="core.html" />
-            <!-- <item name="FAQ" href="faq.html" /> -->
+            <item name="tcp" href="tcp.html" />
         </menu>
         <menu ref="reports"/>
         <footer><![CDATA[All rights reserved.]]></footer>

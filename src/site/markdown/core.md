@@ -3,6 +3,18 @@
 
 Основное ядро, модуль - `trambda-core`.
 
+```xml
+<dependency>
+    <groupId>xyz.cofe</groupId>
+    <artifactId>trambda-core</artifactId>
+    <!-- Актуальную версию лучше поискать 
+           на https://oss.sonatype.org/
+           на https://search.maven.org/ 
+    -->
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
 Задачи модуля
 
 - Получить байт-код лямбды переданной в качестве параметра

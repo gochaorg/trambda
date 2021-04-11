@@ -8,16 +8,16 @@ app.service( "0.0.0.0:9988", new xyz.cofe.trambda.demo.api.LinuxEnv() ) {
             // field( "System.out" ) {
             //     fieldOwner ==~ /java.lang.System/ && fieldName in ['out','in','err'] && readAccess
             // }
-            method( 'Java compiler' ){
+            invoke( 'Java compiler' ){
                 methodOwner ==~ /java\.lang\.invoke\.(LambdaMetafactory|StringConcatFactory)/
             }
-            method( 'Java collections' ){
+            invoke( 'Java collections' ){
                 methodOwner ==~ /java\.util\.(stream\.(Stream|Collectors)|(List))/
             }
-            method( 'Java lang' ){
+            invoke( 'Java lang' ){
                 methodOwner ==~ /java\.lang\.String/
             }
-            method( 'Api '){
+            invoke( 'Api '){
                 methodOwner ==~ /xyz\.cofe\.trambda\.demo\.api\.(IEnv|OsProc)/
             }
         }
