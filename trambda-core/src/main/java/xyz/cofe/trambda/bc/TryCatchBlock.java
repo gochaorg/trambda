@@ -1,5 +1,8 @@
 package xyz.cofe.trambda.bc;
 
+/**
+ * try catch block
+ */
 public class TryCatchBlock implements ByteCode {
     private static final long serialVersionUID = 1;
 
@@ -14,6 +17,11 @@ public class TryCatchBlock implements ByteCode {
 
     //region start
     private String labelStart;
+
+    /**
+     * the beginning of the exception handler's scope (inclusive).
+     * @return begin label
+     */
     public String getLabelStart(){
         return labelStart;
     }
@@ -24,6 +32,11 @@ public class TryCatchBlock implements ByteCode {
     //endregion
     //region end
     private String labelEnd;
+
+    /**
+     * the end of the exception handler's scope (exclusive).
+     * @return end label
+     */
     public String getLabelEnd(){
         return labelEnd;
     }
@@ -34,6 +47,10 @@ public class TryCatchBlock implements ByteCode {
     //region handler
     private String labelHandler;
 
+    /**
+     * the beginning of the exception handler's code.
+     * @return handler
+     */
     public String getLabelHandler(){
         return labelHandler;
     }
@@ -45,6 +62,11 @@ public class TryCatchBlock implements ByteCode {
     //region type
     private String type;
 
+    /**
+     * the internal name of the type of exceptions handled by the handler, or {@literal null}
+     * to catch any exceptions (for "finally" blocks).
+     * @return type
+     */
     public String getType(){
         return type;
     }
