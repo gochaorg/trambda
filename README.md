@@ -5,6 +5,40 @@
 - [Core / Ядро](https://gochaorg.github.io/trambda/core.html)
 - [TCP клиент / сервер](https://gochaorg.github.io/trambda/tcp.html)
 
+Maven координаты
+====================================
+
+```xml
+<dependencies>
+
+<dependency>
+  <groupId>xyz.cofe</groupId>
+  <artifactId>trambda</artifactId>
+  <version>1.0</version>
+  <type>pom</type>
+</dependency>
+
+<dependency>
+  <groupId>xyz.cofe</groupId>
+  <artifactId>trambda-core</artifactId>
+  <version>1.0</version>
+</dependency>
+
+<dependency>
+  <groupId>xyz.cofe</groupId>
+  <artifactId>trambda-tcp</artifactId>
+  <version>1.0</version>
+</dependency>
+
+<dependency>
+  <groupId>xyz.cofe</groupId>
+  <artifactId>trambda-tcp-serv-cli</artifactId>
+  <version>1.0</version>
+</dependency>
+
+</dependencies>
+```
+
 Передача лямбда выражений на сервер
 ====================================
 
