@@ -6,7 +6,7 @@ import xyz.cofe.trambda.demo.api.IEnv;
 import xyz.cofe.trambda.tcp.TcpQuery;
 
 public class ClientTest {
-    @Test
+    //@Test
     public void test01(){
         var query = TcpQuery
             .create(IEnv.class).host("localhost").port(9988)
