@@ -1,11 +1,20 @@
 package xyz.cofe.trambda;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnEnum;
+import xyz.cofe.trambda.bc.ann.AnnPair;
+import xyz.cofe.trambda.bc.ann.EmAnnArray;
+import xyz.cofe.trambda.bc.ann.EmAnnNameDesc;
 
 public class AnnotationDump extends AnnotationVisitor {
+    public static final AtomicInteger idSeq = new AtomicInteger(0);
+
     /**
      * Constructs a new {@link AnnotationVisitor}.
      *
@@ -28,6 +37,43 @@ public class AnnotationDump extends AnnotationVisitor {
         super(api, annotationVisitor);
     }
 
+    private Consumer<? super AnnVisIdProperty> byteCodeConsumer;
+
+    /**
+     * Указывает функцию принимающую байт код
+     * @param bc функция приема байт кода
+     * @return SELF ссылка
+     */
+    public AnnotationDump byteCode(Consumer<? super AnnVisIdProperty> bc){
+        byteCodeConsumer = bc;
+        return this;
+    }
+
+    protected Integer annotationVisitorId;
+    public Integer getAnnotationVisitorId(){ return annotationVisitorId; }
+    public void setAnnotationVisitorId(Integer id){
+        annotationVisitorId = id;
+    }
+    public AnnotationDump annotationVisitorId(Integer id){
+        annotationVisitorId = id;
+        return this;
+    }
+
+    {
+        annotationVisitorId = idSeq.incrementAndGet();
+    }
+
+    private void emit(AnnVisIdProperty bc){
+        if( bc==null )throw new IllegalArgumentException( "bc==null" );
+        var c = byteCodeConsumer;
+        if( c!=null ){
+            if( annotationVisitorId!=null && bc.getAnnotationVisitorId()==-1 ){
+                bc.setAnnotationVisitorId(annotationVisitorId);
+            }
+            c.accept(bc);
+        }
+    }
+
     /**
      * Visits a primitive value of the annotation.
      *
@@ -40,7 +86,7 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public void visit(String name, Object value){
-        super.visit(name, value);
+        emit(AnnPair.create(name,value));
     }
 
     /**
@@ -52,7 +98,7 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public void visitEnum(String name, String descriptor, String value){
-        super.visitEnum(name, descriptor, value);
+        emit(new AnnEnum(name,descriptor,value));
     }
 
     /**
@@ -66,7 +112,18 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public AnnotationVisitor visitAnnotation(String name, String descriptor){
-        return super.visitAnnotation(name, descriptor);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump = dump.byteCode(byteCodeConsumer);
+
+        EmAnnNameDesc emOb = new EmAnnNameDesc();
+        emOb.setAnnotationVisitorId(getAnnotationVisitorId());
+        emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
+        emOb.setName(name);
+        emOb.setDescriptor(descriptor);
+
+        emit(emOb);
+
+        return dump;
     }
 
     /**
@@ -82,7 +139,15 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public AnnotationVisitor visitArray(String name){
-        return super.visitArray(name);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump = dump.byteCode(byteCodeConsumer);
+
+        EmAnnArray emOb = new EmAnnArray();
+        emOb.setAnnotationVisitorId(getAnnotationVisitorId());
+        emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
+        emOb.setName(name);
+
+        return dump;
     }
 
     /**

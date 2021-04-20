@@ -68,6 +68,12 @@
             <version>1.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>xyz.cofe</groupId>
+            <artifactId>text-out</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

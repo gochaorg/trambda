@@ -1,4 +1,4 @@
-package xyz.cofe.trambda;
+package xyz.cofe.trambda.sample;
 
 import java.util.ArrayList;
 import java.util.List;

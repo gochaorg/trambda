@@ -3,18 +3,16 @@ package xyz.cofe.trambda;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import xyz.cofe.io.fs.File;
 import xyz.cofe.text.Align;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.sample.EnvLocal;
+import xyz.cofe.trambda.sample.IEnv;
+import xyz.cofe.trambda.sample.User;
 
 public class SampleCallTest {
     @Test

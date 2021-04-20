@@ -4,6 +4,8 @@ import java.lang.invoke.SerializedLambda;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.sample.EnvLocal;
+import xyz.cofe.trambda.sample.IEnv;
 import xyz.cofe.trambda.sec.MethodDescTypes;
 import xyz.cofe.trambda.sec.SecurAccess;
 import xyz.cofe.trambda.sec.SecurityFilters;

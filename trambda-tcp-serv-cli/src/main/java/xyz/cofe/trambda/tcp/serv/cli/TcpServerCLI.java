@@ -163,6 +163,34 @@ public class TcpServerCLI {
                 return null;
             }
         });
+        binding.setProperty("service", new Object() {
+            public Object call(String addr, Class service ) {
+                if( addr==null )throw new IllegalArgumentException( "addr==null" );
+                if( service==null )throw new IllegalArgumentException( "service==null" );
+                service(addr,service);
+                return null;
+            }
+            public Object call(String addr, Object service ) {
+                if( addr==null )throw new IllegalArgumentException( "addr==null" );
+                if( service==null )throw new IllegalArgumentException( "service==null" );
+                service(addr,service);
+                return null;
+            }
+            public Object call(String addr, Class service, Closure<?> conf ) {
+                if( addr==null )throw new IllegalArgumentException( "addr==null" );
+                if( service==null )throw new IllegalArgumentException( "service==null" );
+                if( conf==null )throw new IllegalArgumentException( "conf==null" );
+                service(addr,service,conf);
+                return null;
+            }
+            public Object call(String addr, Object service, Closure<?> conf ) {
+                if( addr==null )throw new IllegalArgumentException( "addr==null" );
+                if( service==null )throw new IllegalArgumentException( "service==null" );
+                if( conf==null )throw new IllegalArgumentException( "conf==null" );
+                service(addr,service,conf);
+                return null;
+            }
+        });
         return binding;
     }
     private void interactive(){

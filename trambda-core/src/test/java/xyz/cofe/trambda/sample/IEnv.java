@@ -1,6 +1,5 @@
-package xyz.cofe.trambda;
+package xyz.cofe.trambda.sample;
 
-import java.util.List;
 import xyz.cofe.iter.Eterable;
 
 public interface IEnv {

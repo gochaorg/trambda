@@ -1,4 +1,4 @@
-package xyz.cofe.trambda;
+package xyz.cofe.trambda.sample;
 
 public class User {
     public User(){}

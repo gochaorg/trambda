@@ -1,6 +1,9 @@
 CLI справка ${project.artifactId}
 GAV ${project.groupId}:${project.artifactId}:${project.version}
 
+Синтаксис командной строки
+============================
+
 синтаксис командной строки (eBNF):
 
     ${program.name} { help | declare_service | interactive }
@@ -26,11 +29,67 @@ interactive
     ::= { -i | -s <script_file> | -cs <script_charset> }
 
     -i
-        Запуск интерактивной оболочки
+        Запуск интерактивной оболочки (groovysh)
 
     <script_file>
         Выполнение скрипта в интерактивной оболочке
 
     <script_charset>
         Указание кодировки файла со скриптом
+
+Интерактивный режим/скрипты
+============================
+
+В интерактивном режиме и в скриптах доступны следующие функции:
+
+Регистрация сервиса
+--------------------
+
+service( String bindAddress, Class serviceClass )
+service( String bindAddress, Object serviceInstance )
+service( String bindAddress, Class serviceClass, Closure conf )
+service( String bindAddress, Object serviceInstance, Closure conf )
+
+    bindAddress     - Адрес публикации сервиса
+    serviceClass    - Класс сервиса
+    serviceInstance - Экземпляр сервиса
+    conf            - Конфигурация сервиса
+
+Пример
+
+    service( "0.0.0.0:9988", new xyz.cofe.trambda.demo.api.LinuxEnv() ) {
+        daemon false
+        security {
+            allow {
+                // method("System") {
+                //     methodOwner ==~ /java.lang.System/ && methodName in ['gc']
+                // }
+                // field( "System.out" ) {
+                //     fieldOwner ==~ /java.lang.System/ && fieldName in ['out','in','err'] && readAccess
+                // }
+                invoke( 'Java compiler' ){
+                    methodOwner ==~ /java\.lang\.invoke\.(LambdaMetafactory|StringConcatFactory)/
+                }
+                invoke( 'Java collections' ){
+                    methodOwner ==~ /java\.util\.(stream\.(Stream|Collectors)|(List))/
+                }
+                invoke( 'Java lang' ){
+                    methodOwner ==~ /java\.lang\.String/
+                }
+                invoke( 'Api '){
+                    methodOwner ==~ /xyz\.cofe\.trambda\.demo\.api\.(IEnv|OsProc)/
+                }
+            }
+            deny {
+                any("ban all")
+            }
+        }
+    }
+
+Запуск/остановка/выход
+===============================
+
+start() - запуск сервисов
+stop()  - остановка сервисов
+exit()  - остановка сервисов и завершение работы
 

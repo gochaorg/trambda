@@ -1,5 +1,6 @@
 package xyz.cofe.trambda;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -32,14 +33,14 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         }
     }
 
-    private Consumer<ByteCode> byteCodeConsumer;
+    private Consumer<? super ByteCode> byteCodeConsumer;
 
     /**
      * Указывает функцию принимающую байт код
      * @param bc функция приема байт кода
      * @return SELF ссылка
      */
-    public MethodDump byteCode(Consumer<ByteCode> bc){
+    public MethodDump byteCode(Consumer<? super ByteCode> bc){
         byteCodeConsumer = bc;
         return this;
     }
@@ -95,8 +96,14 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitAnnotationDefault(){
-        dump("AnnotationDefault");
-        return super.visitAnnotationDefault();
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        AnnotationDefault bc = new AnnotationDefault();
+        bc.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        emit(bc);
+        return dump;
     }
 
     /**
@@ -109,8 +116,14 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible){
-        dump("Annotation",descriptor,visible);
-        return super.visitAnnotation(descriptor, visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        Annotation ann = new Annotation(descriptor,visible);
+        ann.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        emit(ann);
+        return dump;
     }
 
     /**
@@ -131,8 +144,18 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
-        dump("TypeAnnotation",typeRef,typePath,descriptor,visible);
-        return super.visitTypeAnnotation(typeRef, typePath, descriptor, visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        TypeAnnotation ta = new TypeAnnotation();
+        ta.setTypeRef(typeRef);
+        ta.setTypePath(typePath!=null ? typePath.toString() : null);
+        ta.setDescriptor(descriptor);
+        ta.setVisible(visible);
+        ta.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        emit(ta);
+        return dump;
     }
 
     /**
@@ -170,8 +193,17 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitParameterAnnotation(int parameter, String descriptor, boolean visible){
-        dump("ParameterAnnotation",parameter,descriptor,visible);
-        return super.visitParameterAnnotation(parameter, descriptor, visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        ParameterAnnotation pa = new ParameterAnnotation();
+        pa.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+        pa.setParameter(parameter);
+        pa.setDescriptor(descriptor);
+        pa.setVisible(visible);
+
+        emit(pa);
+        return dump;
     }
 
     /**
@@ -567,8 +599,19 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitInsnAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
-        dump("InsnAnnotation",typeRef,typePath,descriptor,visible);
-        return super.visitInsnAnnotation(typeRef, typePath, descriptor, visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        InsnAnnotation ia = new InsnAnnotation();
+        ia.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+        ia.setTypeRef(typeRef);
+        ia.setTypePath(typePath!=null ? typePath.toString() : null);
+        ia.setDescriptor(descriptor);
+        ia.setVisible(visible);
+
+        emit(ia);
+
+        return dump;
     }
 
     /**
@@ -609,8 +652,14 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitTryCatchAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
-        dump("TryCatchAnnotation",typeRef,typePath,descriptor,visible);
-        return super.visitTryCatchAnnotation(typeRef, typePath, descriptor, visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        TryCatchAnnotation a = new TryCatchAnnotation(typeRef,typePath!=null ? typePath.toString() : null,descriptor,visible);
+        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        emit(a);
+        return dump;
     }
 
     /**
@@ -654,8 +703,26 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitLocalVariableAnnotation(int typeRef, TypePath typePath, Label[] start, Label[] end, int[] index, String descriptor, boolean visible){
-        dump("LocalVariableAnnotation",typeRef,typePath,start,end,index,descriptor,visible);
-        return super.visitLocalVariableAnnotation(typeRef, typePath, start, end, index, descriptor, visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer );
+
+        LocalVariableAnnotation a = new LocalVariableAnnotation();
+        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        a.setTypeRef(typeRef);
+        a.setTypePath(typePath!=null ? typePath.toString() : null);
+        if( start!=null ){
+            a.setStartLabels(Arrays.stream(start).map(s -> s!=null ? s.toString() : null).toArray(String[]::new));
+        }
+        if( end!=null ){
+            a.setEndLabels(Arrays.stream(end).map(s -> s!=null ? s.toString() : null).toArray(String[]::new));
+        }
+        a.setIndex(index);
+        a.setDescriptor(descriptor);
+        a.setVisible(visible);
+
+        emit(a);
+        return dump;
     }
 
     /**

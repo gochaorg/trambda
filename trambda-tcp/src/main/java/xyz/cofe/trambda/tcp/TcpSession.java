@@ -55,11 +55,6 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected final TcpProtocol proto;
 
     /**
-     * Предоставляемый сервис клиенту
-     */
-    protected final ENV env;
-
-    /**
      * Функция фильтра безопасности
      */
     protected final SecurityFilter<String,MethodDef> securityFilter;
@@ -91,6 +86,19 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         this.proto = new TcpProtocol(socket);
         this.env = envBuilder.apply(this);
     }
+
+    //region env : ENV - Предоставляемый сервис клиенту
+    /**
+     * Предоставляемый сервис клиенту
+     */
+    protected final ENV env;
+
+    /**
+     * Возвращает предоставляемый сервис клиенту
+     * @return Предоставляемый сервис клиенту
+     */
+    public ENV getEnv(){ return env; }
+    //endregion
 
     //region listeners
     protected final ListenersHelper<TrListener,TrEvent> listeners = new ListenersHelper<>(TrListener::trEvent);
