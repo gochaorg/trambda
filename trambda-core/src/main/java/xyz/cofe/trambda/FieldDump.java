@@ -13,7 +13,7 @@ import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.fld.FAnnotation;
 import xyz.cofe.trambda.bc.fld.FieldEnd;
-import xyz.cofe.trambda.bc.fld.FldByteCode;
+import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FTypeAnnotation;
 import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 
@@ -83,7 +83,7 @@ public class FieldDump extends FieldVisitor {
         fieldVisitorId = idSeq.incrementAndGet();
     }
 
-    protected void emit(FldByteCode bc){
+    protected void emit(FieldByteCode bc){
         if( bc==null )throw new IllegalArgumentException( "bc==null" );
         if( bc instanceof FldVisIdProperty ){
             ((FldVisIdProperty)bc).setFieldVisitorId(getFieldVisitorId());

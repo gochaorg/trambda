@@ -2,7 +2,7 @@ package xyz.cofe.trambda.bc.fld;
 
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 
-public class FTypeAnnotation implements FldByteCode, AnnVisIdProperty {
+public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty {
     private static final long serialVersionUID = 1;
 
     public FTypeAnnotation(){

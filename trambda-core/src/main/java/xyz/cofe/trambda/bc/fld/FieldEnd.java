@@ -1,11 +1,9 @@
 package xyz.cofe.trambda.bc.fld;
 
-import xyz.cofe.trambda.bc.ByteCode;
-
 /**
  * end of the method
  */
-public class FieldEnd implements FldByteCode {
+public class FieldEnd implements FieldByteCode {
     private static final long serialVersionUID = 1;
 
     protected int fieldVisitorId = 0;

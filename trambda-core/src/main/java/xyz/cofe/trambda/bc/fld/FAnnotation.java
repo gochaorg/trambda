@@ -1,9 +1,8 @@
 package xyz.cofe.trambda.bc.fld;
 
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
-import xyz.cofe.trambda.bc.cls.ClsByteCode;
 
-public class FAnnotation implements FldByteCode, AnnVisIdProperty {
+public class FAnnotation implements FieldByteCode, AnnVisIdProperty {
     private static final long serialVersionUID = 1;
 
     public FAnnotation(){}
