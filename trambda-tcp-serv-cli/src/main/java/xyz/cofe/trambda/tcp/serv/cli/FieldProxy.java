@@ -1,7 +1,7 @@
 package xyz.cofe.trambda.tcp.serv.cli;
 
 import java.util.List;
-import xyz.cofe.trambda.bc.FieldInsn;
+import xyz.cofe.trambda.bc.mth.MFieldInsn;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.FieldAccess;
 import xyz.cofe.trambda.sec.SecurAccess;
@@ -50,7 +50,7 @@ public class FieldProxy {
         return fieldAccess.getScope();
     }
 
-    public FieldInsn getInstruction(){
+    public MFieldInsn getInstruction(){
         return fieldAccess.getInstruction();
     }
 

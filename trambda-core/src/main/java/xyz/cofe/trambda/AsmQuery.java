@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.Handle;
-import xyz.cofe.trambda.bc.HandleArg;
-import xyz.cofe.trambda.bc.InvokeDynamicInsn;
+import xyz.cofe.trambda.bc.mth.MHandle;
+import xyz.cofe.trambda.bc.bm.HandleArg;
+import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;
 
 /**
@@ -169,7 +169,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
     /**
      * Ссылка на дочерние/вложенные лямбды
      */
-    private final Map<Handle,MethodDef> refs = new LinkedHashMap<>();
+    private final Map<MHandle,MethodDef> refs = new LinkedHashMap<>();
 
     /**
      * Получение байт-кода лямбды
@@ -247,7 +247,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
 
             var mdef = mdef0.get();
             byteCodes.stream()
-                .map( bc -> bc instanceof InvokeDynamicInsn ? (InvokeDynamicInsn)bc : null )
+                .map( bc -> bc instanceof MInvokeDynamicInsn ? (MInvokeDynamicInsn)bc : null )
                 .filter(Objects::nonNull)
                 .flatMap(idi ->
                     idi.getBootstrapMethodArguments().stream().map( arg -> {

@@ -18,11 +18,16 @@ import org.objectweb.asm.RecordComponentVisitor;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.text.out.Output;
+import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
+import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 
 public class ClassSerTest {
     private final Output out = new Output();
 
+    //region test01
     @Test
     public void test01(){
         var classSrc = User2.class;
@@ -155,7 +160,6 @@ public class ClassSerTest {
             }
         };
     }
-
     private FieldVisitor fieldVisitor(int access, String name, String descriptor, String signature, Object value){
         return new FieldVisitor(Opcodes.ASM9) {
             /**
@@ -216,7 +220,6 @@ public class ClassSerTest {
             }
         };
     }
-
     private AnnotationVisitor annotationVisitor(){
         return new AnnotationVisitor(Opcodes.ASM9) {
             /**
@@ -307,7 +310,6 @@ public class ClassSerTest {
             }
         };
     }
-
     private MethodVisitor methodVisitor(){
         return new MethodVisitor(Opcodes.ASM9) {
             /**
@@ -516,5 +518,44 @@ public class ClassSerTest {
                 out.setLinePrefix("");
             }
         };
+    }
+    //endregion
+
+    @Test
+    public void test02(){
+        var classSrc = User2.class;
+        var classUrl = classSrc.getResource(
+            "/"+
+                classSrc.getName().replace(".","/")+".class"
+        );
+        out.println("url "+classUrl);
+        out.println("-".repeat(80));
+
+        try{
+            var classBytes = IOFun.readBytes(classUrl);
+            ClassReader classReader = new ClassReader(classBytes);
+
+            ClassDump dump = new ClassDump();
+            dump.byteCode( bc -> {
+                System.out.print("$ ");
+                if( bc instanceof MthVisIdProperty ){
+                    System.out.print("m.v.id="+((MthVisIdProperty) bc).getMethodVisitorId());
+                    System.out.print(" ");
+                }
+                if( bc instanceof AnnVisIdProperty ){
+                    System.out.print("a.v.id="+((AnnVisIdProperty) bc).getAnnotationVisitorId());
+                    System.out.print(" ");
+                }
+                if( bc instanceof FldVisIdProperty ){
+                    System.out.print("f.v.id="+((FldVisIdProperty) bc).getFieldVisitorId());
+                    System.out.print(" ");
+                }
+                System.out.println(bc);
+            });
+
+            classReader.accept(dump,0);
+        } catch( IOException e ) {
+            e.printStackTrace();
+        }
     }
 }

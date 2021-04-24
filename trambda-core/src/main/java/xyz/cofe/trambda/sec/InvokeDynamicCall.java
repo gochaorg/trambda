@@ -1,10 +1,10 @@
 package xyz.cofe.trambda.sec;
 
-import xyz.cofe.trambda.bc.InvokeDynamicInsn;
+import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;
 
-public class InvokeDynamicCall extends Invoke<InvokeDynamicInsn> {
-    public InvokeDynamicCall(InvokeDynamicInsn invokeDynamicInsn, MethodDef mdef){
+public class InvokeDynamicCall extends Invoke<MInvokeDynamicInsn> {
+    public InvokeDynamicCall(MInvokeDynamicInsn invokeDynamicInsn, MethodDef mdef){
         super(invokeDynamicInsn, mdef);
     }
 

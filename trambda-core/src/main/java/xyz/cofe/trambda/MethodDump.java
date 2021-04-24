@@ -2,8 +2,8 @@ package xyz.cofe.trambda;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ConstantDynamic;
@@ -13,12 +13,15 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.*;
+import xyz.cofe.trambda.bc.bm.LdcType;
+import xyz.cofe.trambda.bc.mth.*;
 
 /**
  * Создает дамп байт кода метода, используется в {@link AsmQuery}
  */
 public class MethodDump extends MethodVisitor implements Opcodes {
+    public static final AtomicInteger idSeq = new AtomicInteger(0);
+
     private void dump(String message,Object...args){
         if( message==null )return;
         if( args==null || args.length==0 ){
@@ -45,8 +48,25 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         return this;
     }
 
-    private void emit(ByteCode bc){
+    protected Integer methodVisitorId;
+    public Integer getMethodVisitorId(){ return methodVisitorId; }
+    public void setMethodVisitorId(Integer id){
+        methodVisitorId = id;
+    }
+    public MethodDump methodVisitorId(Integer id){
+        methodVisitorId = id;
+        return this;
+    }
+
+    {
+        methodVisitorId = idSeq.incrementAndGet();
+    }
+
+    protected void emit(ByteCode bc){
         if( bc==null )throw new IllegalArgumentException( "bc==null" );
+        if( bc instanceof MthVisIdProperty ){
+            ((MthVisIdProperty) bc).setMethodVisitorId(getMethodVisitorId());
+        }
         var c = byteCodeConsumer;
         if( c!=null ){
             c.accept(bc);
@@ -83,7 +103,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitParameter(String name, int access){
-        emit(new Parameter(name,access));
+        emit(new MParameter(name,access));
     }
 
     /**
@@ -99,7 +119,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        AnnotationDefault bc = new AnnotationDefault();
+        MAnnotationDefault bc = new MAnnotationDefault();
         bc.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(bc);
@@ -119,7 +139,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        Annotation ann = new Annotation(descriptor,visible);
+        MAnnotation ann = new MAnnotation(descriptor,visible);
         ann.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(ann);
@@ -147,7 +167,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        TypeAnnotation ta = new TypeAnnotation();
+        MTypeAnnotation ta = new MTypeAnnotation();
         ta.setTypeRef(typeRef);
         ta.setTypePath(typePath!=null ? typePath.toString() : null);
         ta.setDescriptor(descriptor);
@@ -173,8 +193,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitAnnotableParameterCount(int parameterCount, boolean visible){
-        dump("AnnotableParameterCount",parameterCount,visible);
-        super.visitAnnotableParameterCount(parameterCount, visible);
+        emit( new MAnnotableParameterCount(parameterCount,visible));
     }
 
     /**
@@ -196,7 +215,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        ParameterAnnotation pa = new ParameterAnnotation();
+        MParameterAnnotation pa = new MParameterAnnotation();
         pa.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         pa.setParameter(parameter);
         pa.setDescriptor(descriptor);
@@ -222,7 +241,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitCode(){
-        emit(new Code());
+        emit(new MCode());
     }
 
     /**
@@ -284,7 +303,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitFrame(int type, int numLocal, Object[] local, int numStack, Object[] stack){
-        emit(new Frame(type,numLocal,local,numStack,stack));
+        emit(new MFrame(type,numLocal,local,numStack,stack));
     }
 
     /**
@@ -303,7 +322,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitInsn(int opcode){
-        emit(new Insn(opcode));
+        emit(new MInsn(opcode));
     }
 
     /**
@@ -322,7 +341,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitIntInsn(int opcode, int operand){
-        emit(new IntInsn(opcode,operand));
+        emit(new MIntInsn(opcode,operand));
     }
 
     /**
@@ -335,7 +354,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitVarInsn(int opcode, int var){
-        emit(new VarInsn(opcode,var));
+        emit(new MVarInsn(opcode,var));
     }
 
     /**
@@ -349,7 +368,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitTypeInsn(int opcode, String type){
-        emit(new TypeInsn(opcode,type));
+        emit(new MTypeInsn(opcode,type));
     }
 
     /**
@@ -364,7 +383,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor){
-        emit(new FieldInsn(opcode,owner,name,descriptor));
+        emit(new MFieldInsn(opcode,owner,name,descriptor));
     }
 
 //    /**
@@ -396,7 +415,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface){
-        emit(new MethodInsn(opcode,owner,name,descriptor,isInterface));
+        emit(new MMethodInsn(opcode,owner,name,descriptor,isInterface));
     }
 
     /**
@@ -411,7 +430,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments){
-        emit(new InvokeDynamicInsn(name,descriptor,bootstrapMethodHandle,bootstrapMethodArguments));
+        emit(new MInvokeDynamicInsn(name,descriptor,bootstrapMethodHandle,bootstrapMethodArguments));
     }
 
     /**
@@ -425,7 +444,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitJumpInsn(int opcode, Label label){
-        emit(new JumpInsn(opcode, label!=null ? label.toString():null));
+        emit(new MJumpInsn(opcode, label!=null ? label.toString():null));
     }
 
     /**
@@ -435,7 +454,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitLabel(Label label){
-        emit(new xyz.cofe.trambda.bc.Label(label.toString()));
+        emit(new MLabel(label.toString()));
     }
 
     /**
@@ -484,15 +503,15 @@ public class MethodDump extends MethodVisitor implements Opcodes {
     @Override
     public void visitLdcInsn(Object value){
         if ( value instanceof Integer) {
-            emit(new LdcInsn(value,LdcType.Integer));
+            emit(new MLdcInsn(value, LdcType.Integer));
         } else if ( value instanceof Float) {
-            emit(new LdcInsn(value,LdcType.Float));
+            emit(new MLdcInsn(value,LdcType.Float));
         } else if ( value instanceof Long) {
-            emit(new LdcInsn(value,LdcType.Long));
+            emit(new MLdcInsn(value,LdcType.Long));
         } else if ( value instanceof Double) {
-            emit(new LdcInsn(value,LdcType.Double));
+            emit(new MLdcInsn(value,LdcType.Double));
         } else if ( value instanceof String) {
-            emit(new LdcInsn(value,LdcType.String));
+            emit(new MLdcInsn(value,LdcType.String));
         } else if ( value instanceof org.objectweb.asm.Type) {
             int sort = ((org.objectweb.asm.Type) value).getSort();
             if (sort == org.objectweb.asm.Type.OBJECT) {
@@ -512,8 +531,8 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         } else if ( value instanceof Handle) {
             // ...
             var hdl = (Handle) value;
-            var hdl0 = new xyz.cofe.trambda.bc.Handle(hdl);
-            emit(new LdcInsn(hdl0,LdcType.Handle));
+            var hdl0 = new MHandle(hdl);
+            emit(new MLdcInsn(hdl0,LdcType.Handle));
         } else if ( value instanceof ConstantDynamic ) {
             // ...
             throw new UnsupportedOperationException("not impl ldc ConstantDynamic");
@@ -531,7 +550,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitIincInsn(int var, int increment){
-        emit(new IincInsn(var,increment));
+        emit(new MIincInsn(var,increment));
     }
 
     /**
@@ -548,7 +567,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         String defLbl = dflt!=null ? dflt.toString() : null;
         String[] lbls = labels!=null ?
             List.of(labels).stream().map(l -> l != null ? l.toString() : null).toArray(String[]::new) : null;
-        emit(new TableSwitchInsn(min,max,defLbl,lbls));
+        emit(new MTableSwitchInsn(min,max,defLbl,lbls));
     }
 
     /**
@@ -564,7 +583,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         String defLbl = dflt!=null ? dflt.toString() : null;
         String[] lbls = labels!=null ?
             List.of(labels).stream().map(l -> l != null ? l.toString() : null).toArray(String[]::new) : null;
-        emit(new LookupSwitchInsn(defLbl, keys, lbls));
+        emit(new MLookupSwitchInsn(defLbl, keys, lbls));
     }
 
     /**
@@ -575,7 +594,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitMultiANewArrayInsn(String descriptor, int numDimensions){
-        emit(new MultiANewArrayInsn(descriptor,numDimensions));
+        emit(new MMultiANewArrayInsn(descriptor,numDimensions));
     }
 
     /**
@@ -602,7 +621,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        InsnAnnotation ia = new InsnAnnotation();
+        MInsnAnnotation ia = new MInsnAnnotation();
         ia.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         ia.setTypeRef(typeRef);
         ia.setTypePath(typePath!=null ? typePath.toString() : null);
@@ -627,7 +646,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type){
-        emit(new TryCatchBlock(
+        emit(new MTryCatchBlock(
             start!=null ? start.toString() : null,
             end!=null ? end.toString() : null,
             handler!=null ? handler.toString() : null,
@@ -655,7 +674,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        TryCatchAnnotation a = new TryCatchAnnotation(typeRef,typePath!=null ? typePath.toString() : null,descriptor,visible);
+        MTryCatchAnnotation a = new MTryCatchAnnotation(typeRef,typePath!=null ? typePath.toString() : null,descriptor,visible);
         a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(a);
@@ -678,7 +697,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index){
-        emit(new LocalVariable(name,descriptor,signature,start!=null ? start.toString() : null, end!=null ? end.toString() : null, index));
+        emit(new MLocalVariable(name,descriptor,signature,start!=null ? start.toString() : null, end!=null ? end.toString() : null, index));
     }
 
     /**
@@ -706,7 +725,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer );
 
-        LocalVariableAnnotation a = new LocalVariableAnnotation();
+        MLocalVariableAnnotation a = new MLocalVariableAnnotation();
         a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         a.setTypeRef(typeRef);
@@ -736,7 +755,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitLineNumber(int line, Label start){
-        emit(new LineNumber(line,start.toString()));
+        emit(new MLineNumber(line,start.toString()));
     }
 
     /**
@@ -747,7 +766,7 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitMaxs(int maxStack, int maxLocals){
-        emit(new Maxs(maxStack,maxLocals));
+        emit(new MMaxs(maxStack,maxLocals));
     }
 
     /**
@@ -756,6 +775,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public void visitEnd(){
-        emit(new End());
+        emit(new MEnd());
     }
 }

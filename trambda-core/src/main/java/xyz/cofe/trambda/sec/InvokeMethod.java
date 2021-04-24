@@ -1,10 +1,10 @@
 package xyz.cofe.trambda.sec;
 
 import xyz.cofe.trambda.bc.MethodDef;
-import xyz.cofe.trambda.bc.MethodInsn;
+import xyz.cofe.trambda.bc.mth.MMethodInsn;
 
-public class InvokeMethod extends Invoke<MethodInsn> {
-    public InvokeMethod(MethodInsn methodInsn, MethodDef mdef){
+public class InvokeMethod extends Invoke<MMethodInsn> {
+    public InvokeMethod(MMethodInsn methodInsn, MethodDef mdef){
         super(methodInsn, mdef);
     }
 

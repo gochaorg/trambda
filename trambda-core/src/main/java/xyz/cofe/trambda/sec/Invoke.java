@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.InvokeDynamicInsn;
+import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;
-import xyz.cofe.trambda.bc.MethodInsn;
+import xyz.cofe.trambda.bc.mth.MMethodInsn;
 
 public abstract class Invoke<INSTR extends ByteCode> extends SecurAccess<INSTR, MethodDef> {
     public Invoke(INSTR instr, MethodDef mdef){
@@ -31,10 +31,10 @@ public abstract class Invoke<INSTR extends ByteCode> extends SecurAccess<INSTR, 
         if( byteCodes!=null ){
             for( var bc : mdef.getByteCodes() ){
                 if( bc==null )continue;
-                if( bc instanceof InvokeDynamicInsn ){
-                    result.add(new InvokeDynamicCall((InvokeDynamicInsn) bc, mdef));
-                }else if( bc instanceof MethodInsn ){
-                    result.add(new InvokeMethod((MethodInsn) bc, mdef));
+                if( bc instanceof MInvokeDynamicInsn ){
+                    result.add(new InvokeDynamicCall((MInvokeDynamicInsn) bc, mdef));
+                }else if( bc instanceof MMethodInsn ){
+                    result.add(new InvokeMethod((MMethodInsn) bc, mdef));
                 }
             }
         }

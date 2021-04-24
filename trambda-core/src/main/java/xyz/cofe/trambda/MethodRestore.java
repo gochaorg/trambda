@@ -10,6 +10,14 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import xyz.cofe.trambda.bc.*;
+import xyz.cofe.trambda.bc.bm.DoubleArg;
+import xyz.cofe.trambda.bc.bm.FloatArg;
+import xyz.cofe.trambda.bc.bm.HandleArg;
+import xyz.cofe.trambda.bc.bm.IntArg;
+import xyz.cofe.trambda.bc.bm.LongArg;
+import xyz.cofe.trambda.bc.bm.StringArg;
+import xyz.cofe.trambda.bc.bm.TypeArg;
+import xyz.cofe.trambda.bc.mth.*;
 
 /**
  * Генерация байт-кода класса из представления
@@ -91,7 +99,7 @@ public class MethodRestore {
         return mf.getName()+"|"+mf.getDescriptor();
     }
 
-    private static String idOf( Handle h ){
+    private static String idOf( MHandle h ){
         return h.getName()+"|"+h.getDesc();
     }
 
@@ -187,41 +195,41 @@ public class MethodRestore {
         labels = new LinkedHashMap<>();
 
         for( var bc : byteCodes ){
-            if( bc instanceof Code )build((Code) bc);
-            else if( bc instanceof End )build((End) bc);
-            else if( bc instanceof Label )build((Label) bc);
-            else if( bc instanceof LineNumber )build((LineNumber) bc);
-            else if( bc instanceof VarInsn )build((VarInsn) bc);
-            else if( bc instanceof InvokeDynamicInsn )build((InvokeDynamicInsn) bc);
-            else if( bc instanceof Insn )build((Insn) bc);
-            else if( bc instanceof LocalVariable )build((LocalVariable) bc);
-            else if( bc instanceof Maxs )build((Maxs) bc);
-            else if( bc instanceof Frame )build((Frame) bc);
-            else if( bc instanceof JumpInsn )build((JumpInsn) bc);
-            else if( bc instanceof MethodInsn )build((MethodInsn) bc);
-            else if( bc instanceof IntInsn )build((IntInsn) bc);
-            else if( bc instanceof LdcInsn )build((LdcInsn) bc);
-            else if( bc instanceof TypeInsn )build((TypeInsn) bc);
-            else if( bc instanceof FieldInsn )build((FieldInsn) bc);
-            else if( bc instanceof IincInsn )build((IincInsn) bc);
-            else if( bc instanceof TryCatchBlock )build((TryCatchBlock) bc);
-            else if( bc instanceof MultiANewArrayInsn )build((MultiANewArrayInsn) bc);
-            else if( bc instanceof LookupSwitchInsn )build((LookupSwitchInsn) bc);
+            if( bc instanceof MCode )build((MCode) bc);
+            else if( bc instanceof MEnd )build((MEnd) bc);
+            else if( bc instanceof MLabel )build((MLabel) bc);
+            else if( bc instanceof MLineNumber )build((MLineNumber) bc);
+            else if( bc instanceof MVarInsn )build((MVarInsn) bc);
+            else if( bc instanceof MInvokeDynamicInsn )build((MInvokeDynamicInsn) bc);
+            else if( bc instanceof MInsn )build((MInsn) bc);
+            else if( bc instanceof MLocalVariable )build((MLocalVariable) bc);
+            else if( bc instanceof MMaxs )build((MMaxs) bc);
+            else if( bc instanceof MFrame )build((MFrame) bc);
+            else if( bc instanceof MJumpInsn )build((MJumpInsn) bc);
+            else if( bc instanceof MMethodInsn )build((MMethodInsn) bc);
+            else if( bc instanceof MIntInsn )build((MIntInsn) bc);
+            else if( bc instanceof MLdcInsn )build((MLdcInsn) bc);
+            else if( bc instanceof MTypeInsn )build((MTypeInsn) bc);
+            else if( bc instanceof MFieldInsn )build((MFieldInsn) bc);
+            else if( bc instanceof MIincInsn )build((MIincInsn) bc);
+            else if( bc instanceof MTryCatchBlock )build((MTryCatchBlock) bc);
+            else if( bc instanceof MMultiANewArrayInsn )build((MMultiANewArrayInsn) bc);
+            else if( bc instanceof MLookupSwitchInsn )build((MLookupSwitchInsn) bc);
         }
     }
 
-    protected void build(Code code){ mv.visitCode(); }
-    protected void build(End end){ mv.visitEnd(); }
-    protected void build(TypeInsn tinst){
+    protected void build(MCode code){ mv.visitCode(); }
+    protected void build(MEnd end){ mv.visitEnd(); }
+    protected void build(MTypeInsn tinst){
         mv.visitTypeInsn(tinst.getOpcode(), tinst.getOperand());
     }
-    protected void build(Label lbl){ mv.visitLabel( labels.computeIfAbsent(lbl.getName(), n -> new org.objectweb.asm.Label()) ); }
-    protected void build(LineNumber ln){
+    protected void build(MLabel lbl){ mv.visitLabel( labels.computeIfAbsent(lbl.getName(), n -> new org.objectweb.asm.Label()) ); }
+    protected void build(MLineNumber ln){
         var lbl = labels.computeIfAbsent(ln.getLabel(), n -> new org.objectweb.asm.Label());
         mv.visitLineNumber(ln.getLine(),lbl);
     }
-    protected void build(VarInsn insn){ mv.visitVarInsn(insn.getOpcode(),insn.getVariable()); }
-    protected void build(InvokeDynamicInsn idi){
+    protected void build(MVarInsn insn){ mv.visitVarInsn(insn.getOpcode(),insn.getVariable()); }
+    protected void build(MInvokeDynamicInsn idi){
         var hdl = new org.objectweb.asm.Handle(
             idi.getBootstrapMethodHandle().getTag(),
             idi.getBootstrapMethodHandle().getOwner(),
@@ -278,8 +286,8 @@ public class MethodRestore {
 
         return h;
     }
-    protected void build(Insn insn){ mv.visitInsn(insn.getOpcode()); }
-    protected void build(LocalVariable lv){
+    protected void build(MInsn insn){ mv.visitInsn(insn.getOpcode()); }
+    protected void build(MLocalVariable lv){
         org.objectweb.asm.Label l1 = null;
         if( lv.getLabelStart()!=null )
             if( !labels.containsKey(lv.getLabelStart()) )
@@ -294,8 +302,8 @@ public class MethodRestore {
                 l2 = labels.get(lv.getLabelEnd());
         mv.visitLocalVariable(lv.getName(),lv.getDescriptor(),lv.getSignature(),l1,l2,lv.getIndex());
     }
-    protected void build(Maxs m){ mv.visitMaxs(m.getMaxStack(), m.getMaxLocals()); }
-    protected void build(Frame f){
+    protected void build(MMaxs m){ mv.visitMaxs(m.getMaxStack(), m.getMaxLocals()); }
+    protected void build(MFrame f){
         Object[] local = f.getLocal()==null ? null : new Object[f.getLocal().size()];
         if( local!=null ){
             for( int i=0;i<local.length;i++ ){
@@ -338,19 +346,19 @@ public class MethodRestore {
         }
         mv.visitFrame(f.getType(),f.getNumLocal(),local,f.getNumStack(),stack);
     }
-    protected void build(JumpInsn j){
+    protected void build(MJumpInsn j){
         if( j.getLabel()==null )throw new IllegalArgumentException("jump label not defined");
 
         var lbl = labels.computeIfAbsent(j.getLabel(), l -> new org.objectweb.asm.Label());
         mv.visitJumpInsn(j.getOpcode(),lbl);
     }
-    protected void build(MethodInsn mi){
+    protected void build(MMethodInsn mi){
         mv.visitMethodInsn(mi.getOpcode(),mi.getOwner(),mi.getName(),mi.getDescriptor(),mi.isIface());
     }
-    protected void build(IntInsn ii){
+    protected void build(MIntInsn ii){
         mv.visitIntInsn(ii.getOpcode(), ii.getOperand());
     }
-    protected void build(LdcInsn ldc){
+    protected void build(MLdcInsn ldc){
         switch( ldc.getLdcType() ){
             case Long: mv.visitLdcInsn((Long)ldc.getValue()); break;
             case Integer: mv.visitLdcInsn((Integer)ldc.getValue()); break;
@@ -358,7 +366,7 @@ public class MethodRestore {
             case String: mv.visitLdcInsn((String)ldc.getValue()); break;
             case Float: mv.visitLdcInsn((Float)ldc.getValue()); break;
             case Handle:
-                var hdl1 = (Handle)ldc.getValue();
+                var hdl1 = (MHandle)ldc.getValue();
                 var hdl0 = new org.objectweb.asm.Handle(
                     hdl1.getTag(), hdl1.getOwner(), hdl1.getName(), hdl1.getDesc(), hdl1.isIface()
                 );
@@ -368,13 +376,13 @@ public class MethodRestore {
                 throw new UnsupportedOperationException("not impl for ldc type = "+ldc.getLdcType());
         }
     }
-    protected void build(FieldInsn fld){
+    protected void build(MFieldInsn fld){
         mv.visitFieldInsn(fld.getOpcode(), fld.getOwner(), fld.getName(), fld.getDescriptor());
     }
-    protected void build(IincInsn ii){
+    protected void build(MIincInsn ii){
         mv.visitIincInsn(ii.getVariable(), ii.getIncrement());
     }
-    protected void build(TryCatchBlock tcb){
+    protected void build(MTryCatchBlock tcb){
         var start = tcb.getLabelStart()!=null ? labels.computeIfAbsent(
             tcb.getLabelStart(),
             l -> {
@@ -395,10 +403,10 @@ public class MethodRestore {
         ) : null;
         mv.visitTryCatchBlock(start,end,handler,tcb.getType());
     }
-    protected void build(MultiANewArrayInsn ii){
+    protected void build(MMultiANewArrayInsn ii){
         mv.visitMultiANewArrayInsn(ii.getDescriptor(), ii.getNumDimensions());
     }
-    protected void build(LookupSwitchInsn lsw){
+    protected void build(MLookupSwitchInsn lsw){
         var defLbl = lsw.getDefaultHandlerLabel()!=null
             ? labels.computeIfAbsent(
                 lsw.getDefaultHandlerLabel(),
@@ -419,7 +427,7 @@ public class MethodRestore {
             : null;
         mv.visitLookupSwitchInsn(defLbl,lsw.getKeys(),lbls);
     }
-    protected void build(TableSwitchInsn tsw){
+    protected void build(MTableSwitchInsn tsw){
         var defLbl = tsw.getDefaultLabel()!=null
             ? labels.computeIfAbsent(
             tsw.getDefaultLabel(),

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import xyz.cofe.trambda.bc.FieldInsn;
+import xyz.cofe.trambda.bc.mth.MFieldInsn;
 import xyz.cofe.trambda.bc.MethodDef;
-import xyz.cofe.trambda.bc.OpCode;
+import xyz.cofe.trambda.bc.mth.OpCode;
 
-public class FieldAccess extends SecurAccess<FieldInsn,MethodDef> {
-    public FieldAccess(MethodDef methodDef, FieldInsn fieldInsn){
+public class FieldAccess extends SecurAccess<MFieldInsn,MethodDef> {
+    public FieldAccess(MethodDef methodDef, MFieldInsn fieldInsn){
         super(fieldInsn, methodDef);
     }
 
@@ -37,8 +37,8 @@ public class FieldAccess extends SecurAccess<FieldInsn,MethodDef> {
 
         if( mdef.getByteCodes()!=null ){
             for( var bc : mdef.getByteCodes() ){
-                if( bc instanceof FieldInsn ){
-                    result.add(new FieldAccess(mdef,(FieldInsn)bc) );
+                if( bc instanceof MFieldInsn ){
+                    result.add(new FieldAccess(mdef,(MFieldInsn)bc) );
                 }
             }
         }

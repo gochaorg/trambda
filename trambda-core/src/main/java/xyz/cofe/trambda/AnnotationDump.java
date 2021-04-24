@@ -6,11 +6,12 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import xyz.cofe.trambda.bc.ann.AEnd;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
-import xyz.cofe.trambda.bc.ann.AnnEnum;
-import xyz.cofe.trambda.bc.ann.AnnPair;
-import xyz.cofe.trambda.bc.ann.EmAnnArray;
-import xyz.cofe.trambda.bc.ann.EmAnnNameDesc;
+import xyz.cofe.trambda.bc.ann.AEnum;
+import xyz.cofe.trambda.bc.ann.APair;
+import xyz.cofe.trambda.bc.ann.EmAArray;
+import xyz.cofe.trambda.bc.ann.EmANameDesc;
 
 public class AnnotationDump extends AnnotationVisitor {
     public static final AtomicInteger idSeq = new AtomicInteger(0);
@@ -63,7 +64,7 @@ public class AnnotationDump extends AnnotationVisitor {
         annotationVisitorId = idSeq.incrementAndGet();
     }
 
-    private void emit(AnnVisIdProperty bc){
+    protected void emit(AnnVisIdProperty bc){
         if( bc==null )throw new IllegalArgumentException( "bc==null" );
         var c = byteCodeConsumer;
         if( c!=null ){
@@ -86,7 +87,7 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public void visit(String name, Object value){
-        emit(AnnPair.create(name,value));
+        emit(APair.create(name,value));
     }
 
     /**
@@ -98,7 +99,7 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public void visitEnum(String name, String descriptor, String value){
-        emit(new AnnEnum(name,descriptor,value));
+        emit(new AEnum(name,descriptor,value));
     }
 
     /**
@@ -115,7 +116,7 @@ public class AnnotationDump extends AnnotationVisitor {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump = dump.byteCode(byteCodeConsumer);
 
-        EmAnnNameDesc emOb = new EmAnnNameDesc();
+        EmANameDesc emOb = new EmANameDesc();
         emOb.setAnnotationVisitorId(getAnnotationVisitorId());
         emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
         emOb.setName(name);
@@ -142,7 +143,7 @@ public class AnnotationDump extends AnnotationVisitor {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump = dump.byteCode(byteCodeConsumer);
 
-        EmAnnArray emOb = new EmAnnArray();
+        EmAArray emOb = new EmAArray();
         emOb.setAnnotationVisitorId(getAnnotationVisitorId());
         emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
         emOb.setName(name);
@@ -155,6 +156,6 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public void visitEnd(){
-        super.visitEnd();
+        emit(new AEnd());
     }
 }
