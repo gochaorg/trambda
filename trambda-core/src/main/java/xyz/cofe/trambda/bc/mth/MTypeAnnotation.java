@@ -3,8 +3,9 @@ package xyz.cofe.trambda.bc.mth;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
-public class MTypeAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty {
+public class MTypeAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef<MTypeAnnotation> {
     private static final long serialVersionUID = 1;
 
     public MTypeAnnotation(){}

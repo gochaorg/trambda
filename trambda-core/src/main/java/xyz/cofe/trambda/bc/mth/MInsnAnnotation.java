@@ -2,8 +2,9 @@ package xyz.cofe.trambda.bc.mth;
 
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
-public class MInsnAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty {
+public class MInsnAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef<MInsnAnnotation> {
     private static final long serialVersionUID = 1;
 
     public MInsnAnnotation(){}

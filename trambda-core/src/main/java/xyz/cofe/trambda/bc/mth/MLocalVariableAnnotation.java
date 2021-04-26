@@ -3,8 +3,9 @@ package xyz.cofe.trambda.bc.mth;
 import java.util.Arrays;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
-public class MLocalVariableAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty {
+public class MLocalVariableAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef<MLocalVariableAnnotation> {
     private static final long serialVersionUID = 1;
 
     public MLocalVariableAnnotation(){}

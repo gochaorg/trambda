@@ -1,13 +1,17 @@
 package xyz.cofe.trambda.bc.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
+import java.util.stream.Collectors;
 import xyz.cofe.trambda.Tuple2;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.EmAArray;
 import xyz.cofe.trambda.bc.ann.EmANameDesc;
 import xyz.cofe.trambda.bc.ann.EmbededAnnotation;
@@ -21,66 +25,66 @@ import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 
 public class Clazz {
-    public static Clazz create(List<? extends ByteCode> byteCode){
+    protected final List<? extends ByteCode> byteCode;
+
+    public Clazz( List<? extends ByteCode> byteCode,  boolean copy ){
         if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
-
-        List<ClsByteCode> classByteCode = new ArrayList<>();
-
-        Map<Integer,List<MethodByteCode>> methodByteCode = new LinkedHashMap<>();
-        Map<Integer,CMethod> methodDef = new LinkedHashMap<>();
-
-        Map<Integer,List<FieldByteCode>> fieldByteCode = new LinkedHashMap<>();
-        Map<Integer,CField> fieldDef = new LinkedHashMap<>();
-
-        Map<Integer,List<AnnotationByteCode>> annByteCode = new LinkedHashMap<>();
-        Map<Integer,Annotation> annotationDef = new LinkedHashMap<>();
-        Map<Integer,List<Integer>> parentChildAnn = new LinkedHashMap<>();
-
-        Map<Annotation,Integer> rootAnn = new LinkedHashMap<>();
-
-        for( var bc : byteCode ){
-            if( bc instanceof ClsByteCode ){
-                classByteCode.add((ClsByteCode) bc);
-                if( bc instanceof CMethod ){
-                    CMethod cm = (CMethod) bc;
-                    methodDef.put(cm.getMethodVisitorId(), cm);
-                }else if( bc instanceof CField ){
-                    CField cf = (CField) bc;
-                    fieldDef.put(cf.getFieldVisitorId(), cf);
-                }else if( bc instanceof CAnnotation ){
-                    CAnnotation ca = (CAnnotation) bc;
-                    var a = Annotation.create(ca);
-                    annotationDef.put(ca.getAnnotationVisitorId(), a);
-                    rootAnn.put(a, ca.getAnnotationVisitorId());
-                }else if( bc instanceof CTypeAnnotation ){
-                    CTypeAnnotation cta = (CTypeAnnotation)bc;
-                    var a = Annotation.create(cta);
-                    annotationDef.put(cta.getAnnotationVisitorId(), a);
-                    rootAnn.put(a,cta.getAnnotationVisitorId());
-                }
-            }else if( bc instanceof MethodByteCode ){
-                MethodByteCode mbc = (MethodByteCode) bc;
-                methodByteCode.computeIfAbsent(
-                    mbc.getMethodVisitorId(),
-                    x -> new ArrayList<>()
-                ).add(mbc);
-            }else if( bc instanceof FieldByteCode ){
-                FieldByteCode fbc = (FieldByteCode)bc;
-                fieldByteCode.computeIfAbsent( fbc.getFieldVisitorId(), x -> new ArrayList<>())
-                    .add(fbc);
-            }else if( bc instanceof AnnotationByteCode ){
-                AnnotationByteCode abc = (AnnotationByteCode) bc;
-                annByteCode.computeIfAbsent( abc.getAnnotationVisitorId(), x -> new ArrayList<>())
-                    .add(abc);
-
-                if( bc instanceof EmbededAnnotation ){
-                    parentChildAnn.computeIfAbsent( abc.getAnnotationVisitorId(), x -> new ArrayList<>() )
-                        .add( ((EmbededAnnotation) bc).getEmbededAnnotationVisitorId() );
-                }
-            }
-        }
-
-        Clazz clazz = new Clazz();
-        return clazz;
+        this.byteCode = Collections.unmodifiableList(
+            copy ?  new ArrayList<>(byteCode) : byteCode
+        );
     }
+
+    //region definition : CBegin
+    private CBegin definition;
+    public CBegin getDefinition(){
+        if( definition!=null )return definition;
+        definition = byteCode.stream().filter( f -> f instanceof CBegin ).map( x -> (CBegin)x ).findFirst().orElse(null);
+        return definition;
+    }
+    //endregion
+    //region methods : List<Method>
+    protected List<Method> methods;
+    public List<Method> getMethods(){
+        if( methods!=null )
+            return methods;
+
+        methods = byteCode.stream().map(
+            bc -> bc instanceof CMethod ? (CMethod)bc : null
+        ).filter( Objects::nonNull )
+        .map( cm -> new Method(cm, byteCode, false) )
+        .collect(Collectors.toUnmodifiableList());
+
+        return methods;
+    }
+    //endregion
+    //region annotations : List<Annotation>
+    protected List<Annotation> annotations;
+    public List<Annotation> getAnnotations(){
+        if( annotations!=null )
+            return annotations;
+
+        annotations = byteCode.stream().map(
+            bc -> bc instanceof ClsByteCode && bc instanceof AnnotationDef ? (AnnotationDef<?>)bc : null
+        ).filter( Objects::nonNull )
+            .map( cm -> new Annotation(cm, byteCode, false) )
+            .collect(Collectors.toUnmodifiableList());
+
+        return annotations;
+    }
+    //endregion
+    //region fields : List<Field>
+    protected List<Field> fields;
+    public List<Field> getFields(){
+        if( fields!=null )
+            return fields;
+
+        fields = byteCode.stream().map(
+            bc -> bc instanceof CField ? (CField)bc : null
+        ).filter( Objects::nonNull )
+        .map( cm -> new Field(cm, byteCode, false) )
+        .collect(Collectors.toUnmodifiableList());
+
+        return fields;
+    }
+    //endregion
 }

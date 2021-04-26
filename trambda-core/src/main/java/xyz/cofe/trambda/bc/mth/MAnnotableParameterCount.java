@@ -1,6 +1,7 @@
 package xyz.cofe.trambda.bc.mth;
 
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
 public class MAnnotableParameterCount extends MAbstractBC implements ByteCode {
     private static final long serialVersionUID = 1;

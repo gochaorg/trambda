@@ -3,8 +3,9 @@ package xyz.cofe.trambda.bc.cls;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
-public class CTypeAnnotation implements ClsByteCode, AnnVisIdProperty {
+public class CTypeAnnotation implements ClsByteCode, AnnVisIdProperty, AnnotationDef<CTypeAnnotation> {
     private static final long serialVersionUID = 1;
 
     public CTypeAnnotation(){

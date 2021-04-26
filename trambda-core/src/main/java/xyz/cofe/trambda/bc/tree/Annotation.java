@@ -1,60 +1,79 @@
 package xyz.cofe.trambda.bc.tree;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.EmAArray;
-import xyz.cofe.trambda.bc.ann.EmANameDesc;
-import xyz.cofe.trambda.bc.cls.CAnnotation;
-import xyz.cofe.trambda.bc.cls.CTypeAnnotation;
-import xyz.cofe.trambda.bc.fld.FAnnotation;
-import xyz.cofe.trambda.bc.fld.FTypeAnnotation;
-import xyz.cofe.trambda.bc.mth.MAnnotation;
-import xyz.cofe.trambda.bc.mth.MAnnotationDefault;
-import xyz.cofe.trambda.bc.mth.MInsnAnnotation;
-import xyz.cofe.trambda.bc.mth.MLocalVariableAnnotation;
-import xyz.cofe.trambda.bc.mth.MParameterAnnotation;
-import xyz.cofe.trambda.bc.mth.MTryCatchAnnotation;
-import xyz.cofe.trambda.bc.mth.MTypeAnnotation;
+import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
+import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
-public interface Annotation<DEF extends ByteCode> {
-    public DEF getDefinition();
+public class Annotation {
+    protected final List<? extends ByteCode> byteCode;
+    public Annotation(AnnotationDef<? extends ByteCode> definition, List<? extends ByteCode> byteCode, boolean copy ){
+        if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
+        if( definition==null )throw new IllegalArgumentException( "definition==null" );
+        this.byteCode = Collections.unmodifiableList(copy ? new ArrayList<>(byteCode) : byteCode);
+        this.definition = definition;
+        body = byteCode.stream()
+            .map( a -> a instanceof AnnotationByteCode ? (AnnotationByteCode)a : null )
+            .filter( Objects::nonNull )
+            .filter( a -> a.getAnnotationVisitorId() == definition.getAnnotationDefVisitorId() )
+            .collect(Collectors.toUnmodifiableList());
+    }
 
-    public static Annotation<CAnnotation> create(CAnnotation ann){
-        return new AnnotationDef<>(ann);
+    //region definition : AnnotationDef<? extends ByteCode>
+    protected final AnnotationDef<? extends ByteCode> definition;
+    public AnnotationDef<? extends ByteCode> getDefinition(){
+        return definition;
     }
-    public static Annotation<CTypeAnnotation> create(CTypeAnnotation ann){
-        return new AnnotationDef<>(ann);
+    //endregion
+    //region body : List<AnnotationByteCode>
+    protected final List<AnnotationByteCode> body;
+    public List<AnnotationByteCode> getBody(){ return body; }
+    //endregion
+    //region nestedAnnotation : List<Annotation>
+    protected List<Annotation> nestedAnnotations;
+    public List<Annotation> getNestedAnnotations(){
+        if( nestedAnnotations!=null )return nestedAnnotations;
+        nestedAnnotations = body.stream().map( a -> a instanceof AnnotationDef ? (AnnotationDef<?>)a : null )
+            .filter(Objects::nonNull)
+            .map( a -> new Annotation(a,byteCode,false) )
+            .collect(Collectors.toUnmodifiableList());
+        return nestedAnnotations;
     }
-    public static Annotation<FAnnotation> create(FAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<FTypeAnnotation> create(FTypeAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MAnnotationDefault> create(MAnnotationDefault ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MAnnotation> create(MAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MTypeAnnotation> create(MTypeAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MParameterAnnotation> create(MParameterAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MInsnAnnotation> create(MInsnAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MTryCatchAnnotation> create(MTryCatchAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<MLocalVariableAnnotation> create(MLocalVariableAnnotation ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<EmANameDesc> create(EmANameDesc ann){
-        return new AnnotationDef<>(ann);
-    }
-    public static Annotation<EmAArray> create(EmAArray ann){
-        return new AnnotationDef<>(ann);
+    //endregion
+
+    public void visit(BiConsumer<Annotation,List<Annotation>> path){
+        if( path==null )throw new IllegalArgumentException( "path==null" );
+        List<List<Annotation>> workSet = new LinkedList<>();
+
+        List<Annotation> start = new LinkedList<>();
+
+        start.add(this);
+        workSet.add(start);
+
+        while( !workSet.isEmpty() ){
+            var curPath = workSet.remove(0);
+            var curNode = curPath.get(curPath.size()-1);
+            var nextNodes = curNode.getNestedAnnotations();
+            if( nextNodes!=null && !nextNodes.isEmpty() ){
+                int idx = 0;
+                for( var nextNode : nextNodes ){
+                    if( nextNode==null )continue;
+
+                    var nextPath = new ArrayList<>(curPath);
+                    nextPath.add(nextNode);
+
+                    workSet.add(idx,nextPath);
+                    idx++;
+                }
+            }
+            path.accept(curNode,curPath);
+        }
     }
 }

@@ -17,7 +17,7 @@ public abstract class APair<V> extends AAbstractBC {
     public void setValue(V v){ value=v; }
 
     public String toString(){
-        return this.getClass().getSimpleName()+" name="+name+" value="+value;
+        return this.getClass().getSimpleName()+" name="+name+" value=\""+value+"\"";
     }
 
     public static APair<?> create(String name, Object value){

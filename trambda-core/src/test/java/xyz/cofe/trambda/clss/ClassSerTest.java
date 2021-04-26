@@ -1,7 +1,9 @@
 package xyz.cofe.trambda.clss;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -20,9 +22,11 @@ import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.text.out.Output;
 import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
+import xyz.cofe.trambda.bc.tree.Clazz;
 
 public class ClassSerTest {
     private final Output out = new Output();
@@ -535,25 +539,32 @@ public class ClassSerTest {
             var classBytes = IOFun.readBytes(classUrl);
             ClassReader classReader = new ClassReader(classBytes);
 
+            List<ByteCode> byteCodes = new ArrayList<>();
+
             ClassDump dump = new ClassDump();
-            dump.byteCode( bc -> {
-                System.out.print("$ ");
-                if( bc instanceof MthVisIdProperty ){
-                    System.out.print("m.v.id="+((MthVisIdProperty) bc).getMethodVisitorId());
-                    System.out.print(" ");
+            dump.byteCode( byteCodes::add );
+            classReader.accept(dump,0);
+
+            Clazz clz = new Clazz(byteCodes,true);
+            System.out.println("class "+clz.getDefinition());
+
+            System.out.println("fields");
+            clz.getFields().forEach(f -> {
+                if( !f.getAnnotations().isEmpty() ){
+                    f.getAnnotations().forEach( ann -> {
+                        ann.visit( (a,ap) -> {
+                            System.out.println(" ".repeat(ap.size())+"@"+a.getDefinition());
+                            a.getBody().forEach( ab -> {
+                                System.out.println(" ".repeat(ap.size())+" "+ab);
+                            });
+                        });
+                    });
                 }
-                if( bc instanceof AnnVisIdProperty ){
-                    System.out.print("a.v.id="+((AnnVisIdProperty) bc).getAnnotationVisitorId());
-                    System.out.print(" ");
-                }
-                if( bc instanceof FldVisIdProperty ){
-                    System.out.print("f.v.id="+((FldVisIdProperty) bc).getFieldVisitorId());
-                    System.out.print(" ");
-                }
-                System.out.println(bc);
+                System.out.println(f.getDefinition());
             });
 
-            classReader.accept(dump,0);
+            System.out.println("methods");
+            clz.getMethods().forEach(m -> System.out.println(m.getDefinition()));
         } catch( IOException e ) {
             e.printStackTrace();
         }
