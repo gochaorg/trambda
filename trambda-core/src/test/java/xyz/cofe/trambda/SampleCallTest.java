@@ -4,6 +4,7 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import xyz.cofe.io.fs.File;
@@ -128,5 +129,14 @@ public class SampleCallTest {
                     env0 -> env0.getUsers().filter(u -> u.getName().contains("Petrov"))
                 );
         }
+    }
+
+    @Test
+    public void test03(){
+        Function<Function<String,String>,String> test = (f) -> {
+            System.out.println("f="+f.getClass());
+            return null;
+        };
+        test.apply( x -> x.repeat(4) );
     }
 }
