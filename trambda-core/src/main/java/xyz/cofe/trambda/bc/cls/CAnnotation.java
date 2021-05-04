@@ -5,7 +5,7 @@ import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.mth.MAbstractBC;
 
-public class CAnnotation implements ClsByteCode, AnnVisIdProperty, AnnotationDef<CAnnotation> {
+public class CAnnotation implements ClsByteCode, AnnVisIdProperty, AnnotationDef {
     private static final long serialVersionUID = 1;
 
     public CAnnotation(){}

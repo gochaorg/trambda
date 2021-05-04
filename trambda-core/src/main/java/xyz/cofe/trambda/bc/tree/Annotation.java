@@ -13,38 +13,46 @@ import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
 public class Annotation {
-    protected final List<? extends ByteCode> byteCode;
-    public Annotation(AnnotationDef<? extends ByteCode> definition, List<? extends ByteCode> byteCode, boolean copy ){
+    public Annotation(AnnotationDef definition, List<? extends ByteCode> byteCode ){
         if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
         if( definition==null )throw new IllegalArgumentException( "definition==null" );
-        this.byteCode = Collections.unmodifiableList(copy ? new ArrayList<>(byteCode) : byteCode);
+
         this.definition = definition;
+
         body = byteCode.stream()
             .map( a -> a instanceof AnnotationByteCode ? (AnnotationByteCode)a : null )
             .filter( Objects::nonNull )
             .filter( a -> a.getAnnotationVisitorId() == definition.getAnnotationDefVisitorId() )
             .collect(Collectors.toUnmodifiableList());
+
+        nestedAnnotations = body.stream().map( a -> a instanceof AnnotationDef ? (AnnotationDef)a : null )
+            .filter(Objects::nonNull)
+            .map( a -> new Annotation(a,byteCode) )
+            .collect(Collectors.toUnmodifiableList());
     }
 
     //region definition : AnnotationDef<? extends ByteCode>
-    protected final AnnotationDef<? extends ByteCode> definition;
-    public AnnotationDef<? extends ByteCode> getDefinition(){
+    protected final AnnotationDef definition;
+    public AnnotationDef getDefinition(){
         return definition;
     }
     //endregion
     //region body : List<AnnotationByteCode>
-    protected final List<AnnotationByteCode> body;
-    public List<AnnotationByteCode> getBody(){ return body; }
+    protected List<AnnotationByteCode> body;
+    public List<AnnotationByteCode> getBody(){
+        return body;
+    }
+    public void setBody(List<AnnotationByteCode> body){
+        this.body = body;
+    }
     //endregion
     //region nestedAnnotation : List<Annotation>
     protected List<Annotation> nestedAnnotations;
     public List<Annotation> getNestedAnnotations(){
-        if( nestedAnnotations!=null )return nestedAnnotations;
-        nestedAnnotations = body.stream().map( a -> a instanceof AnnotationDef ? (AnnotationDef<?>)a : null )
-            .filter(Objects::nonNull)
-            .map( a -> new Annotation(a,byteCode,false) )
-            .collect(Collectors.toUnmodifiableList());
         return nestedAnnotations;
+    }
+    public void setNestedAnnotations(List<Annotation> nestedAnnotations){
+        this.nestedAnnotations = nestedAnnotations;
     }
     //endregion
 

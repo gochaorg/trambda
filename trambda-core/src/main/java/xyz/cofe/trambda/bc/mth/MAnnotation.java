@@ -4,7 +4,7 @@ import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 
-public class MAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef<MAnnotation> {
+public class MAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef {
     private static final long serialVersionUID = 1;
 
     public MAnnotation(){}
