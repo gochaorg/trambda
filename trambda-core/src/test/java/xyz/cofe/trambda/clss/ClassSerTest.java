@@ -23,13 +23,27 @@ import xyz.cofe.text.out.Output;
 import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
-import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
-import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 import xyz.cofe.trambda.bc.tree.Clazz;
+import xyz.cofe.trambda.bc.tree.GetAnnotations;
+import xyz.cofe.trambda.bc.tree.GetDefinition;
+import xyz.cofe.trambda.bc.tree.Method;
 
 public class ClassSerTest {
     private final Output out = new Output();
+
+    private static <X extends GetAnnotations & GetDefinition> void dumpAnn(X f){
+        if( !f.getAnnotations().isEmpty() ){
+            String indent = "  ";
+            f.getAnnotations().forEach(ann -> {
+                ann.visit((a, ap) -> {
+                    System.out.println(indent+" ".repeat(ap.size()) + "@" + a.getDefinition());
+                    a.getBody().forEach(ab -> {
+                        System.out.println(indent+" ".repeat(ap.size()) + " " + ab);
+                    });
+                });
+            });
+        }
+    }
 
     //region test01
     @Test
@@ -545,26 +559,28 @@ public class ClassSerTest {
             dump.byteCode( byteCodes::add );
             classReader.accept(dump,0);
 
+            byteCodes.forEach(System.out::println);
+            System.out.println("-".repeat(80));
+
             Clazz clz = new Clazz(byteCodes,true);
             System.out.println("class "+clz.getDefinition());
+            dumpAnn(clz);
 
             System.out.println("fields");
             clz.getFields().forEach(f -> {
-                if( !f.getAnnotations().isEmpty() ){
-                    f.getAnnotations().forEach( ann -> {
-                        ann.visit( (a,ap) -> {
-                            System.out.println(" ".repeat(ap.size())+"@"+a.getDefinition());
-                            a.getBody().forEach( ab -> {
-                                System.out.println(" ".repeat(ap.size())+" "+ab);
-                            });
-                        });
-                    });
-                }
                 System.out.println(f.getDefinition());
+                dumpAnn(f);
             });
 
             System.out.println("methods");
-            clz.getMethods().forEach(m -> System.out.println(m.getDefinition()));
+            clz.getMethods().forEach(m -> {
+                System.out.println(m.getDefinition());
+                dumpAnn(m);
+                System.out.println("  body {");
+                m.getBody().forEach(b -> System.out.println("    "+b));
+                System.out.println("  }");
+            }
+            );
         } catch( IOException e ) {
             e.printStackTrace();
         }
