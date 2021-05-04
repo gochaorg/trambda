@@ -134,7 +134,7 @@ var res = new AsmQuery<IEnv>(){
 ----------------------------------------------------------
 
 Для восстановления байт-кода из сериализованного представления используется
-класс `xyz.cofe.trambda.MethodRestore`
+класс `xyz.cofe.trambda.MethodDefRestore`
 
 ```java
 var byteCode = new MethodRestore()
