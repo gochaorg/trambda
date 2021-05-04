@@ -109,6 +109,7 @@ public class ClassDump extends ClassVisitor {
         CAnnotation a = new CAnnotation(descriptor,visible);
         a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
+        emit(a);
         return dump;
     }
 
@@ -119,6 +120,8 @@ public class ClassDump extends ClassVisitor {
 
         CTypeAnnotation c = new CTypeAnnotation(typeRef,typePath!=null ? typePath.toString():null,descriptor,visible);
         c.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        emit(c);
         return dump;
     }
 
