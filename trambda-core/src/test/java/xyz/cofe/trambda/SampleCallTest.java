@@ -43,7 +43,7 @@ public class SampleCallTest {
 
         String genClsName = SampleCallTest.class.getName().toLowerCase()+".Test01";
         String genMethName = "test01call";
-        byte[] byteCode = new MethodRestore()
+        byte[] byteCode = new MethodDefRestore()
             .className(genClsName)
             .methodName(genMethName)
             .methodDef(mdef)

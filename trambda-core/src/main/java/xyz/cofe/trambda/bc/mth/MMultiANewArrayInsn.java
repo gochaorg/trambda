@@ -86,6 +86,6 @@ public class MMultiANewArrayInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "MultiANewArrayInsn descriptor="+descriptor+" numDimensions="+numDimensions;
+        return MMultiANewArrayInsn.class.getSimpleName()+" descriptor="+descriptor+" numDimensions="+numDimensions;
     }
 }

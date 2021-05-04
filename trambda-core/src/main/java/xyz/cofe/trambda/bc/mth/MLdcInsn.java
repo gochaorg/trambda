@@ -29,6 +29,6 @@ public class MLdcInsn extends MAbstractBC implements ByteCode {
     }
     //endregion
     public String toString(){
-        return "LdcInsn "+ldcType+" "+value;
+        return MLdcInsn.class.getSimpleName()+" "+ldcType+" "+value;
     }
 }

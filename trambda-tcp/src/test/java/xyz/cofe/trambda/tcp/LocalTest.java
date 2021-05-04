@@ -4,13 +4,11 @@ import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Test;
 import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.Fn;
-import xyz.cofe.trambda.MethodRestore;
+import xyz.cofe.trambda.MethodDefRestore;
 import xyz.cofe.trambda.Query;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.tcp.demo.IEnv;
@@ -58,7 +56,7 @@ public class LocalTest {
         var methName = "lambda1";
 
         System.out.println("generate bytecode "+clName+" method "+methName);
-        var byteCode = new MethodRestore().className(clName).methodName(methName).methodDef(mdef).generate();
+        var byteCode = new MethodDefRestore().className(clName).methodName(methName).methodDef(mdef).generate();
 
         System.out.println("create classloader");
         ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader()) {

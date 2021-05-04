@@ -109,7 +109,7 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "TableSwitchInsn"+
+        return MTableSwitchInsn.class.getSimpleName()+
             " min="+min+
             " max="+max+
             (defaultLabel!=null ? " defLabel="+defaultLabel : "")+

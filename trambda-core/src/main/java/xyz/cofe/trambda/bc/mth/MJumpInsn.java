@@ -34,7 +34,7 @@ public class MJumpInsn extends MAbstractBC implements ByteCode {
         this.label = label;
     }
 
-    //region opcode
+    //region opcode : int
     private int opcode;
     public int getOpcode(){
         return opcode;
@@ -55,7 +55,7 @@ public class MJumpInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "JumpInsn "+
+        return MJumpInsn.class.getSimpleName()+" "+
             OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+
             " "+label;
     }

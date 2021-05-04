@@ -3,6 +3,7 @@ package xyz.cofe.trambda.bc.ann;
 public class EmANameDesc extends EmbededAnnotation {
     private static final long serialVersionUID = 1;
 
+    //region name : String
     protected String name;
 
     public String getName(){
@@ -12,7 +13,8 @@ public class EmANameDesc extends EmbededAnnotation {
     public void setName(String name){
         this.name = name;
     }
-
+    //endregion
+    //region descriptor : String
     protected String descriptor;
 
     public String getDescriptor(){
@@ -22,6 +24,7 @@ public class EmANameDesc extends EmbededAnnotation {
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
+    //endregion
 
     public String toString(){
         return EmANameDesc.class.getSimpleName()+" name="+name+" descriptor="+descriptor;

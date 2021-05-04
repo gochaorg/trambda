@@ -8,6 +8,6 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MEnd extends MAbstractBC implements ByteCode {
     private static final long serialVersionUID = 1;
     public String toString(){
-        return "End";
+        return MEnd.class.getSimpleName();
     }
 }

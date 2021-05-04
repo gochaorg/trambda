@@ -33,6 +33,6 @@ public class MMaxs extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "Maxs { stack="+maxStack+", locals="+maxLocals+" }";
+        return MMaxs.class.getSimpleName()+" { stack="+maxStack+", locals="+maxLocals+" }";
     }
 }

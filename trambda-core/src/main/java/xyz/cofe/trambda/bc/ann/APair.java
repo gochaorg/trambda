@@ -8,13 +8,16 @@ public abstract class APair<V> extends AAbstractBC {
         this.value = value;
     }
 
+    //region name : String
     protected String name;
     public String getName(){ return name; }
     protected void setName(String s){ this.name = s; }
-
+    //endregion
+    //region value : V
     protected V value;
     public V getValue(){ return value; }
     public void setValue(V v){ value=v; }
+    //endregion
 
     public String toString(){
         return this.getClass().getSimpleName()+" name="+name+" value=\""+value+"\"";

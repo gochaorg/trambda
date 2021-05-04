@@ -41,7 +41,7 @@ public class MIincInsn extends MAbstractBC implements ByteCode {
         this.increment = increment;
     }
 
-    //region variable
+    //region variable : int
     private int variable;
     public int getVariable(){
         return variable;
@@ -50,13 +50,13 @@ public class MIincInsn extends MAbstractBC implements ByteCode {
         this.variable = variable;
     }
     //endregion
-    //region increment
+    //region increment : int
     private int increment;
     public int getIncrement(){ return increment; }
     public void setIncrement(int increment){ this.increment = increment; }
     //endregion
 
     public String toString(){
-        return "IincInsn variable="+variable+" increment="+increment;
+        return MIincInsn.class.getSimpleName()+" variable="+variable+" increment="+increment;
     }
 }

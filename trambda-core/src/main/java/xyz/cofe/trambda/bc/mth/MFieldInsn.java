@@ -248,7 +248,7 @@ public class MFieldInsn extends MAbstractBC implements ByteCode {
 
     @Override
     public String toString(){
-        return "FieldInsn{" +
+        return MFieldInsn.class.getSimpleName()+" {" +
             "opcode=" + OpCode.code(opcode).map(OpCode::name).orElse("?") + " #" + opcode +
             ", owner='" + owner + '\'' +
             ", name='" + name + '\'' +

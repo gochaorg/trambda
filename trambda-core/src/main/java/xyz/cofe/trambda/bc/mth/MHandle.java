@@ -18,7 +18,7 @@ public class MHandle extends MAbstractBC implements Serializable {
         iface = sample.isInterface();
     }
 
-    //region tag
+    //region tag : int
     private int tag;
 
     public int getTag(){
@@ -28,8 +28,7 @@ public class MHandle extends MAbstractBC implements Serializable {
         this.tag = tag;
     }
     //endregion
-
-    //region desc
+    //region desc : String
     private String desc;
 
     public String getDesc(){
@@ -40,8 +39,7 @@ public class MHandle extends MAbstractBC implements Serializable {
         this.desc = desc;
     }
     //endregion
-
-    //region name
+    //region name : String
     private String name;
 
     public String getName(){
@@ -52,8 +50,7 @@ public class MHandle extends MAbstractBC implements Serializable {
         this.name = name;
     }
     //endregion
-
-    //region owner
+    //region owner : String
     private String owner;
 
     public String getOwner(){
@@ -64,8 +61,7 @@ public class MHandle extends MAbstractBC implements Serializable {
         this.owner = owner;
     }
     //endregion
-
-    //region iface
+    //region iface : boolean
     private boolean iface;
 
     public boolean isIface(){
@@ -79,7 +75,7 @@ public class MHandle extends MAbstractBC implements Serializable {
 
     @Override
     public String toString(){
-        return "Handle{ " +
+        return MHandle.class.getSimpleName()+" { " +
             "tag=" + tag +
             ", desc='" + desc + '\'' +
             ", name='" + name + '\'' +

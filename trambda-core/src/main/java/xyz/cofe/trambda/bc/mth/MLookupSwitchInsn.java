@@ -92,7 +92,7 @@ public class MLookupSwitchInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "LookupSwitchInsn defHandlerLabel="+defaultHandlerLabel+(
+        return MLookupSwitchInsn.class.getSimpleName()+" defHandlerLabel="+defaultHandlerLabel+(
             keys!=null ? " keys="+Arrays.asList(keys) : ""
             )+(
                 labels!=null ? " label="+Arrays.asList(labels) : ""

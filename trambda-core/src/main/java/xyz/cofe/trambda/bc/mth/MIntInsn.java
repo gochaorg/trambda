@@ -11,7 +11,7 @@ public class MIntInsn extends MAbstractBC implements ByteCode {
         this.operand = operand;
     }
 
-    //region opcode
+    //region opcode : int
     private int opcode;
 
     public int getOpcode(){
@@ -22,7 +22,7 @@ public class MIntInsn extends MAbstractBC implements ByteCode {
         this.opcode = opcode;
     }
     //endregion
-    //region operand
+    //region operand : int
     private int operand;
 
     public int getOperand(){
@@ -35,7 +35,7 @@ public class MIntInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "IntInsn "+ OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+
+        return MIntInsn.class.getSimpleName()+" "+ OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+
             " "+operand
             ;
     }

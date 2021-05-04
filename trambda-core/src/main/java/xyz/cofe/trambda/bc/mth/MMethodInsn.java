@@ -18,7 +18,7 @@ public class MMethodInsn extends MAbstractBC implements ByteCode {
         this.iface = iface;
     }
 
-    //region opcode
+    //region opcode : int
     private int opcode;
     public int getOpcode(){
         return opcode;
@@ -27,25 +27,25 @@ public class MMethodInsn extends MAbstractBC implements ByteCode {
         this.opcode = opcode;
     }
     //endregion
-
+    //region owner : String
     private String owner;
     public String getOwner(){
         return owner;
     }
-
     public void setOwner(String owner){
         this.owner = owner;
     }
-
+    //endregion
+    //region name : String
     private String name;
     public String getName(){
         return name;
     }
-
     public void setName(String name){
         this.name = name;
     }
-
+    //endregion
+    //region descriptor : String
     private String descriptor;
     public String getDescriptor(){
         return descriptor;
@@ -54,7 +54,8 @@ public class MMethodInsn extends MAbstractBC implements ByteCode {
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
-
+    //endregion
+    //region iface : boolean
     private boolean iface;
 
     public boolean isIface(){
@@ -64,9 +65,10 @@ public class MMethodInsn extends MAbstractBC implements ByteCode {
     public void setIface(boolean iface){
         this.iface = iface;
     }
+    //endregion
 
     public String toString(){
-        return "MethodInsn "+
+        return MMethodInsn.class.getSimpleName()+" "+
             OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+"" +
             " owner="+owner+" name="+name+" desc="+descriptor+" iface="+iface
             ;

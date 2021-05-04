@@ -55,6 +55,7 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
         }
     }
 
+    //region name : String
     private String name;
     public String getName(){
         return name;
@@ -62,7 +63,8 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
     public void setName(String name){
         this.name = name;
     }
-
+    //endregion
+    //region descriptor : String
     private String descriptor;
     public String getDescriptor(){
         return descriptor;
@@ -70,7 +72,8 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
-
+    //endregion
+    //region bootstrapMethodHandle : MHandle
     private MHandle bootstrapMethodHandle;
     public MHandle getBootstrapMethodHandle(){
         return bootstrapMethodHandle;
@@ -78,7 +81,8 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
     public void setBootstrapMethodHandle(MHandle bootstrapMethodHandle){
         this.bootstrapMethodHandle = bootstrapMethodHandle;
     }
-
+    //endregion
+    //region bootstrapMethodArguments : List<BootstrapMethArg>
     private List<BootstrapMethArg> bootstrapMethodArguments;
     public List<BootstrapMethArg> getBootstrapMethodArguments(){
         if( bootstrapMethodArguments==null ){
@@ -89,8 +93,9 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
     public void setBootstrapMethodArguments(List<BootstrapMethArg> bootstrapMethodArguments){
         this.bootstrapMethodArguments = bootstrapMethodArguments;
     }
+    //endregion
 
     public String toString(){
-        return "InvokeDynamicInsn {name="+name+" descriptor="+descriptor+" "+bootstrapMethodHandle+" arg="+bootstrapMethodArguments+"}";
+        return MInvokeDynamicInsn.class.getSimpleName()+" {name="+name+" descriptor="+descriptor+" "+bootstrapMethodHandle+" arg="+bootstrapMethodArguments+"}";
     }
 }

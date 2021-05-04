@@ -13,32 +13,33 @@ public class MAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProper
         this.visible = visible;
     }
 
+    //region descriptor : String
     protected String descriptor;
     public String getDescriptor(){
         return descriptor;
     }
-
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
-
+    //endregion
+    //region visible : boolean
     protected boolean visible;
-
     public boolean isVisible(){
         return visible;
     }
-
     public void setVisible(boolean visible){
         this.visible = visible;
     }
-
-    private int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
+    //endregion
+    //region annotationVisitorId : int
+    protected int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
     public int getAnnotationVisitorId(){
         return annotationVisitorId;
     }
     public void setAnnotationVisitorId(int annotationVisitorId){
         this.annotationVisitorId = annotationVisitorId;
     }
+    //endregion
 
     public String toString(){
         return MAnnotation.class.getSimpleName()+" descriptor="+descriptor+" visible="+visible+" ann.v.id="+annotationVisitorId;

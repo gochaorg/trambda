@@ -14,7 +14,7 @@ public class MLabel extends MAbstractBC implements ByteCode {
 
     @Override
     public String toString(){
-        return "Label "+name;
+        return MLabel.class.getSimpleName()+" "+name;
     }
 
     @Override

@@ -12,6 +12,7 @@ public class FAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationD
         this.visible = visible;
     }
 
+    //region descriptor : String
     protected String descriptor;
     public String getDescriptor(){
         return descriptor;
@@ -19,7 +20,8 @@ public class FAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationD
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
-
+    //endregion
+    //region visible : boolean
     protected boolean visible;
     public boolean isVisible(){
         return visible;
@@ -27,7 +29,8 @@ public class FAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationD
     public void setVisible(boolean visible){
         this.visible = visible;
     }
-
+    //endregion
+    //region annotationVisitorId : int
     private int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
     public int getAnnotationVisitorId(){
         return annotationVisitorId;
@@ -35,17 +38,16 @@ public class FAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationD
     public void setAnnotationVisitorId(int annotationVisitorId){
         this.annotationVisitorId = annotationVisitorId;
     }
-
+    //endregion
+    //region fieldVisitorId : int
     private int fieldVisitorId;
-    @Override
-    public int getFieldVisitorId(){
+    @Override public int getFieldVisitorId(){
         return fieldVisitorId;
     }
-
-    @Override
-    public void setFieldVisitorId(int id){
+    @Override public void setFieldVisitorId(int id){
         fieldVisitorId = id;
     }
+    //endregion
 
     public String toString(){
         return FAnnotation.class.getSimpleName()+" descriptor="+descriptor+" visible="+visible;

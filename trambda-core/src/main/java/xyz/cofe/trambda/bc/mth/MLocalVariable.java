@@ -73,6 +73,6 @@ public class MLocalVariable extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return "LocalVariable "+name+" "+descriptor+" "+signature+" "+labelStart+" "+labelEnd+" "+index;
+        return MLocalVariable.class.getSimpleName()+" "+name+" "+descriptor+" "+signature+" "+labelStart+" "+labelEnd+" "+index;
     }
 }

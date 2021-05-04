@@ -12,6 +12,7 @@ public class MAnnotationDefault extends MAbstractBC implements ByteCode, AnnVisI
         this.annotationVisitorId = annotationVisitorId;
     }
 
+    //region annotationVisitorId : int
     private int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
     public int getAnnotationVisitorId(){
         return annotationVisitorId;
@@ -19,8 +20,9 @@ public class MAnnotationDefault extends MAbstractBC implements ByteCode, AnnVisI
     public void setAnnotationVisitorId(int annotationVisitorId){
         this.annotationVisitorId = annotationVisitorId;
     }
+    //endregion
 
     public String toString(){
-        return "AnnotationDefault visitorId="+annotationVisitorId;
+        return MAnnotationDefault.class.getSimpleName()+" visitorId="+annotationVisitorId;
     }
 }
