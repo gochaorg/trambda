@@ -39,14 +39,14 @@ import xyz.cofe.trambda.bc.mth.*;
  * @see MethodDef
  * @see AsmQuery
  */
-public class MethodRestore {
+public class MethodDefRestore {
     /**
      * Конструктор по умолчанию
      */
-    public MethodRestore(){
+    public MethodDefRestore(){
     }
 
-    public MethodRestore(MethodRestore sample){
+    public MethodDefRestore(MethodDefRestore sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         this.className = sample.className;
         this.methodDef = sample.methodDef;
@@ -54,15 +54,15 @@ public class MethodRestore {
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
-    public synchronized MethodRestore clone(){
-        return new MethodRestore(this);
+    public synchronized MethodDefRestore clone(){
+        return new MethodDefRestore(this);
     }
 
     //region className : String
     private String className;
     public synchronized String getClassName(){ return className; }
     public synchronized void setClassName(String className){ this.className = className; }
-    public MethodRestore className(String name){
+    public MethodDefRestore className(String name){
         setClassName(name);
         return this;
     }
@@ -73,7 +73,7 @@ public class MethodRestore {
     public synchronized void setMethodDef(MethodDef mdef){
         this.methodDef = mdef;
     }
-    public MethodRestore methodDef(MethodDef mdef){
+    public MethodDefRestore methodDef(MethodDef mdef){
         setMethodDef(mdef);
         return this;
     }
@@ -82,7 +82,7 @@ public class MethodRestore {
     private String methodName;
     public synchronized String getMethodName(){return methodName;}
     public synchronized void setMethodName(String mname){ methodName = mname; }
-    public MethodRestore methodName(String mname){
+    public MethodDefRestore methodName(String mname){
         setMethodName(mname);
         return this;
     }
@@ -98,11 +98,9 @@ public class MethodRestore {
     private static String idOf( MethodDef mf ){
         return mf.getName()+"|"+mf.getDescriptor();
     }
-
     private static String idOf( MHandle h ){
         return h.getName()+"|"+h.getDesc();
     }
-
     private String targetNameOf( MethodDef mdef, int idx ){
         return "ref"+idx;
     }

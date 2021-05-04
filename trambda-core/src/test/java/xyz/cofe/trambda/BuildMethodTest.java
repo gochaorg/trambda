@@ -35,7 +35,7 @@ public class BuildMethodTest {
         System.out.println("sign "+mdef.getSignature());
         System.out.println("accs "+mdef.getAccess());
 
-        var mrest = new MethodRestore().className("xyz.cofe.trambda.buildMethodTest.Build1");
+        var mrest = new MethodDefRestore().className("xyz.cofe.trambda.buildMethodTest.Build1");
         var byteCode = mrest.methodName("lambda1").methodDef(mdef).generate();
 
         File target = new File(
@@ -73,7 +73,7 @@ public class BuildMethodTest {
         var clName = "xyz.cofe.trambda.buildMethodTest.Build1";
         var methName = "lambda1";
 
-        var byteCode = new MethodRestore()
+        var byteCode = new MethodDefRestore()
             .className(clName)
             .methodName("lambda1")
             .methodDef(mdef)

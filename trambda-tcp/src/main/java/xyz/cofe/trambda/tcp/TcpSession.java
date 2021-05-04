@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.text.Text;
-import xyz.cofe.trambda.MethodRestore;
+import xyz.cofe.trambda.MethodDefRestore;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.SecurAccess;
 import xyz.cofe.trambda.sec.SecurityFilter;
@@ -449,7 +449,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         var methName = "lambda1";
 
         log.debug("generate bytecode "+clName+" method "+methName);
-        var byteCode = new MethodRestore().className(clName).methodName(methName).methodDef(mdef).generate();
+        var byteCode = new MethodDefRestore().className(clName).methodName(methName).methodDef(mdef).generate();
 
         ClassLoader cl = createClassLoader(clName, byteCode);
 
