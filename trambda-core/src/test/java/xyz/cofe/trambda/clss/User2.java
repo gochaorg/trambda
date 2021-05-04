@@ -2,10 +2,11 @@ package xyz.cofe.trambda.clss;
 
 import java.util.List;
 
+@Desc("sample User2")
 public class User2 {
     public User2(){}
-    public User2(String name){
-        this.name = name;
+    public User2(String name1){
+        this.name = name1;
     }
 
     @Desc("name of user")
