@@ -23,6 +23,10 @@ import xyz.cofe.text.out.Output;
 import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.EmbededAnnotation;
+import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
+import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 import xyz.cofe.trambda.bc.tree.Clazz;
 import xyz.cofe.trambda.bc.tree.GetAnnotations;
 import xyz.cofe.trambda.bc.tree.GetDefinition;
@@ -559,28 +563,51 @@ public class ClassSerTest {
             dump.byteCode( byteCodes::add );
             classReader.accept(dump,0);
 
-            byteCodes.forEach(System.out::println);
+            byteCodes.forEach(c -> {
+                if( c instanceof AnnVisIdProperty ){
+                    System.out.print("a.v.id="+((AnnVisIdProperty)c).getAnnotationVisitorId()+" ");
+                    if( c instanceof EmbededAnnotation ){
+                        var e= (EmbededAnnotation)c;
+                        System.out.print("e.v.id="+e.getEmbededAnnotationVisitorId()+" ");
+                    }
+                }
+
+                if( c instanceof MthVisIdProperty ){
+                    System.out.print("m.v.id="+((MthVisIdProperty)c).getMethodVisitorId()+" ");
+                }
+
+                if( c instanceof FldVisIdProperty ){
+                    System.out.print("f.v.id="+((FldVisIdProperty)c).getFieldVisitorId()+" ");
+                }
+
+                System.out.println(c);
+            });
             System.out.println("-".repeat(80));
 
-            Clazz clz = new Clazz(byteCodes,true);
-            System.out.println("class "+clz.getDefinition());
-            dumpAnn(clz);
+            Clazz clz = new Clazz(byteCodes);
+//            System.out.println("class "+clz.getDefinition());
+//            dumpAnn(clz);
+//
+//            System.out.println("fields");
+//            clz.getFields().forEach(f -> {
+//                System.out.println(f.getDefinition());
+//                dumpAnn(f);
+//            });
+//
+//            System.out.println("methods");
+//            clz.getMethods().forEach(m -> {
+//                System.out.println(m.getDefinition());
+//                dumpAnn(m);
+//                System.out.println("  body {");
+//                m.getBody().forEach(b -> System.out.println("    "+b));
+//                System.out.println("  }");
+//            });
 
-            System.out.println("fields");
-            clz.getFields().forEach(f -> {
-                System.out.println(f.getDefinition());
-                dumpAnn(f);
-            });
+            System.out.println("= ".repeat(40));
 
-            System.out.println("methods");
-            clz.getMethods().forEach(m -> {
-                System.out.println(m.getDefinition());
-                dumpAnn(m);
-                System.out.println("  body {");
-                m.getBody().forEach(b -> System.out.println("    "+b));
-                System.out.println("  }");
-            }
-            );
+            dump.byteCode(System.out::println);
+            classReader = new ClassReader(clz.toByteCode());
+            classReader.accept(dump,0);
         } catch( IOException e ) {
             e.printStackTrace();
         }

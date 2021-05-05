@@ -20,16 +20,18 @@ import xyz.cofe.trambda.bc.cls.CAnnotation;
 import xyz.cofe.trambda.bc.cls.CBegin;
 import xyz.cofe.trambda.bc.cls.CField;
 import xyz.cofe.trambda.bc.cls.CMethod;
+import xyz.cofe.trambda.bc.cls.CSource;
 import xyz.cofe.trambda.bc.cls.CTypeAnnotation;
 import xyz.cofe.trambda.bc.cls.ClsByteCode;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 
 public class Clazz implements GetAnnotations, GetDefinition {
-    public Clazz( List<? extends ByteCode> byteCode,  boolean copy ){
+    public Clazz( List<? extends ByteCode> byteCode ){
         if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
 
         definition = byteCode.stream().filter(f -> f instanceof CBegin).map(x -> (CBegin) x).findFirst().orElse(null);
+        source = byteCode.stream().filter(f -> f instanceof CSource).map(x -> (CSource) x).findFirst().orElse(null);
 
         methods = byteCode.stream().map(
             bc -> bc instanceof CMethod ? (CMethod)bc : null
@@ -40,7 +42,7 @@ public class Clazz implements GetAnnotations, GetDefinition {
         annotations = byteCode.stream().map(
             bc -> bc instanceof ClsByteCode && bc instanceof AnnotationDef ? (AnnotationDef)bc : null
         ).filter( Objects::nonNull )
-            .map( cm -> new Annotation(cm, byteCode) )
+            .map( a -> new Annotation(a, byteCode).annotationDefVisitorId(a.getAnnotationDefVisitorId()) )
             .collect(Collectors.toList());
 
         fields = byteCode.stream().map(
@@ -51,7 +53,7 @@ public class Clazz implements GetAnnotations, GetDefinition {
     }
 
     //region definition : CBegin
-    private CBegin definition;
+    protected CBegin definition;
     public synchronized CBegin getDefinition(){
         return definition;
     }
@@ -59,6 +61,17 @@ public class Clazz implements GetAnnotations, GetDefinition {
         this.definition = begin;
     }
     //endregion
+
+    //region source : CSource
+    protected CSource source;
+    public synchronized CSource getSource(){
+        return source;
+    }
+    public synchronized void setSource(CSource source){
+        this.source = source;
+    }
+    //endregion
+
     //region methods : List<Method>
     protected List<Method> methods;
     public synchronized List<Method> getMethods(){
@@ -98,5 +111,158 @@ public class Clazz implements GetAnnotations, GetDefinition {
 
     public synchronized void write(ClassWriter cw){
         if( cw==null )throw new IllegalArgumentException( "cw==null" );
+
+        /*
+        ClassBegin version=55, access=33, name='xyz/cofe/trambda/clss/User2', signature='null', superName='java/lang/Object', interfaces=[]
+            ClassSource source='User2.java', debug='null'
+
+            CAnnotation descriptor=Lxyz/cofe/trambda/clss/Desc; visible=true ann.v.id=1
+                APairString name=value value="sample User2"
+                AEnd
+
+            CField access=2, name='name', descriptor='Ljava/lang/String;', signature='null', value=null
+                FAnnotation descriptor=Lxyz/cofe/trambda/clss/Desc; visible=true
+                    APairString name=value value="name of user"
+                    AEnd
+                FieldEnd
+
+            CField access=2, name='emails', descriptor='Ljava/util/List;', signature='Ljava/util/List<Ljava/lang/String;>;', value=null
+                FieldEnd
+
+            CMethod access=1, name='<init>', descriptor='()V', signature='null', exceptions=null
+                MCode
+                MLabel L1448061896
+                MLineNumber 7 L1448061896
+                MVarInsn ALOAD #25 0
+                MMethodInsn INVOKESPECIAL #183 owner=java/lang/Object name=<init> desc=()V iface=false
+                MInsn RETURN #177
+                MLabel L574434418
+                MLocalVariable this Lxyz/cofe/trambda/clss/User2; null L1448061896 L574434418 0
+                MMaxs { stack=1, locals=1 }
+                MEnd
+
+            CMethod access=1, name='<init>', descriptor='(Ljava/lang/String;)V', signature='null', exceptions=null
+                MCode
+                MLabel L1072410641
+                MLineNumber 8 L1072410641
+                MVarInsn ALOAD #25 0
+                MMethodInsn INVOKESPECIAL #183 owner=java/lang/Object name=<init> desc=()V iface=false
+                MLabel L283318938
+                MLineNumber 9 L283318938
+                MVarInsn ALOAD #25 0
+                MVarInsn ALOAD #25 1
+                MFieldInsn {opcode=PUTFIELD #181, owner='xyz/cofe/trambda/clss/User2', name='name', descriptor='Ljava/lang/String;'}
+                MLabel L361571968
+                MLineNumber 10 L361571968
+                MInsn RETURN #177
+                MLabel L2005169944
+                MLocalVariable this Lxyz/cofe/trambda/clss/User2; null L1072410641 L2005169944 0
+                MLocalVariable name1 Ljava/lang/String; null L1072410641 L2005169944 1
+                MMaxs { stack=2, locals=2 }
+                MEnd
+
+            CMethod access=1, name='getName', descriptor='()Ljava/lang/String;', signature='null', exceptions=null
+                MAnnotation descriptor=Lxyz/cofe/trambda/clss/Desc; visible=true ann.v.id=3
+                    APairString name=value value="name of user"
+                    AEnd
+                MCode
+                MLabel L1470344997
+                MLineNumber 16 L1470344997
+                MVarInsn ALOAD #25 0
+                MFieldInsn {opcode=GETFIELD #180, owner='xyz/cofe/trambda/clss/User2', name='name', descriptor='Ljava/lang/String;'}
+                MInsn ARETURN #176
+                MLabel L728115831
+                MLocalVariable this Lxyz/cofe/trambda/clss/User2; null L1470344997 L728115831 0
+                MMaxs { stack=1, locals=1 }
+                MEnd
+
+            CMethod access=1, name='setName', descriptor='(Ljava/lang/String;)V', signature='null', exceptions=null
+                MAnnotableParameterCount parameterCount=1 visible=true
+                    MParameterAnnotation parameter=0 descriptor=Lxyz/cofe/trambda/clss/Required; visible=true
+                        AEnd
+                    MParameterAnnotation parameter=0 descriptor=Lxyz/cofe/trambda/clss/MaxLength; visible=true
+                        APairInteger name=value value="100"
+                        AEnd
+                    MParameterAnnotation parameter=0 descriptor=Lxyz/cofe/trambda/clss/MinLength; visible=true
+                        APairInteger name=value value="1"
+                        AEnd
+                MCode
+                MLabel L210506412
+                MLineNumber 17 L210506412
+                MVarInsn ALOAD #25 0
+                MVarInsn ALOAD #25 1
+                MFieldInsn {opcode=PUTFIELD #181, owner='xyz/cofe/trambda/clss/User2', name='name', descriptor='Ljava/lang/String;'}
+                MInsn RETURN #177
+                MLabel L112049309
+                MLocalVariable this Lxyz/cofe/trambda/clss/User2; null L210506412 L112049309 0
+                MLocalVariable name Ljava/lang/String; null L210506412 L112049309 1
+                MMaxs { stack=2, locals=2 }
+                MEnd
+
+            CMethod access=1, name='getEmails', descriptor='()Ljava/util/List;', signature='()Ljava/util/List<Ljava/lang/String;>;', exceptions=null
+                MAnnotation descriptor=Lxyz/cofe/trambda/clss/Desc; visible=true ann.v.id=7
+                    APairString name=value value="emails of user"
+                    AEnd
+                MCode
+                MLabel L1162918744
+                MLineNumber 22 L1162918744
+                MVarInsn ALOAD #25 0
+                MFieldInsn {opcode=GETFIELD #180, owner='xyz/cofe/trambda/clss/User2', name='emails', descriptor='Ljava/util/List;'}
+                MInsn ARETURN #176
+                MLabel L1321530272
+                MLocalVariable this Lxyz/cofe/trambda/clss/User2; null L1162918744 L1321530272 0
+                MMaxs { stack=1, locals=1 }
+                MEnd
+
+            CMethod access=1, name='setEmails', descriptor='(Ljava/util/List;)V', signature='(Ljava/util/List<Ljava/lang/String;>;)V', exceptions=null
+                MCode
+                MLabel L573673894
+                MLineNumber 23 L573673894
+                MVarInsn ALOAD #25 0
+                MVarInsn ALOAD #25 1
+                MFieldInsn {opcode=PUTFIELD #181, owner='xyz/cofe/trambda/clss/User2', name='emails', descriptor='Ljava/util/List;'}
+                MInsn RETURN #177
+                MLabel L1226020905
+                MLocalVariable this Lxyz/cofe/trambda/clss/User2; null L573673894 L1226020905 0
+                MLocalVariable emails Ljava/util/List; Ljava/util/List<Ljava/lang/String;>; L573673894 L1226020905 1
+                MMaxs { stack=2, locals=2 }
+                MEnd
+
+            CEnd
+        */
+
+        if( definition==null )throw new IllegalStateException("definition==null");
+
+        cw.visit(definition.getVersion(), definition.getAccess(), definition.getName(), definition.getSignature(), definition.getSuperName(), definition.getInterfaces());
+
+        if( source!=null ){
+            cw.visitSource(source.getSource(),source.getDebug());
+        }
+
+        if( annotations!=null ){
+            for( var a : annotations ){
+                if( a!=null ){
+                    a.write(cw);
+                }
+            }
+        }
+
+        if( fields!=null ){
+            for( var f : fields ){
+                if( f!=null ){
+                    f.write(cw);
+                }
+            }
+        }
+
+        if( methods!=null ){
+            for( var m : methods ){
+                if( m!=null ){
+                    m.write(cw);
+                }
+            }
+        }
+
+        cw.visitEnd();
     }
 }
