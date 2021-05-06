@@ -1,6 +1,7 @@
 package xyz.cofe.trambda.bc.cls;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 
@@ -17,12 +18,32 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         this.exceptions = exceptions;
     }
 
+    public CMethod(CMethod sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        access = sample.getAccess();
+        name = sample.getName();
+        descriptor = sample.getDescriptor();
+        signature = sample.getSignature();
+        exceptions = sample.getExceptions();
+        methodVisitorId = sample.methodVisitorId;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public CMethod clone(){
+        return new CMethod(this);
+    }
+
+    public CMethod configure(Consumer<CMethod> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
+    }
+
     //region access
     protected int access;
     public int getAccess(){
         return access;
     }
-
     public void setAccess(int access){
         this.access = access;
     }
@@ -32,7 +53,6 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
     public String getName(){
         return name;
     }
-
     public void setName(String name){
         this.name = name;
     }
@@ -42,7 +62,6 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
     public String getDescriptor(){
         return descriptor;
     }
-
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
@@ -52,18 +71,15 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
     public String getSignature(){
         return signature;
     }
-
     public void setSignature(String signature){
         this.signature = signature;
     }
     //endregion
     //region exceptions
     protected String[] exceptions;
-
     public String[] getExceptions(){
         return exceptions;
     }
-
     public void setExceptions(String[] exceptions){
         this.exceptions = exceptions;
     }

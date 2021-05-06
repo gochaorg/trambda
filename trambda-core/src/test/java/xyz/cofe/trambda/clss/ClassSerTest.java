@@ -585,6 +585,10 @@ public class ClassSerTest {
             System.out.println("-".repeat(80));
 
             Clazz clz = new Clazz(byteCodes);
+            System.out.println("class "+
+                new AccFlags( clz.getDefinition().getAccess() ).flags()
+            );
+
 //            System.out.println("class "+clz.getDefinition());
 //            dumpAnn(clz);
 //

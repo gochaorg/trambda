@@ -6,10 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Stack;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.Tuple2;
+import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
@@ -27,6 +30,29 @@ import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 
 public class Clazz implements GetAnnotations, GetDefinition {
+    protected static final Pattern namePattern =
+        Pattern.compile("(?is)[$\\w][$\\w\\d_]*(\\.[$\\w][$\\w\\d_]*)*");
+
+    public Clazz(String name){
+        if( name==null )throw new IllegalArgumentException( "name==null" );
+        if( !namePattern.matcher(name).matches() ){
+            throw new IllegalArgumentException("name not valid, serr regex: "+namePattern);
+        }
+
+        definition = new CBegin();
+        definition.setAccess(
+            new AccFlags(0)
+                .withOpen(true)
+                .withPublic(true)
+                .withPublic(true)
+                .withSyncronized(true)
+                .withTransitive(true)
+            .value()
+        );
+        definition.setName(name.replace(".","/"));
+        definition.setSuperName("java/lang/Object");
+    }
+
     public Clazz( List<? extends ByteCode> byteCode ){
         if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
 
@@ -62,6 +88,43 @@ public class Clazz implements GetAnnotations, GetDefinition {
     }
     //endregion
 
+    public synchronized String getName(){
+        if( definition==null )throw new IllegalStateException("definition==null");
+        return definition.getName().replace("/",".");
+    }
+    public synchronized void setName(String name){
+        if( name==null )throw new IllegalArgumentException( "name==null" );
+        if( !namePattern.matcher(name).matches() ){
+            throw new IllegalArgumentException("name not valid, serr regex: "+namePattern);
+        }
+        if( definition==null ){
+            definition = new CBegin();
+            definition.setAccess(
+                new AccFlags(0)
+                    .withOpen(true)
+                    .withPublic(true)
+                    .withPublic(true)
+                    .withSyncronized(true)
+                    .withTransitive(true)
+                    .value()
+            );
+            definition.setSuperName("java/lang/Object");
+        }
+        definition.setName(name.replace(".","/"));
+    }
+
+//    public synchronized Optional<String> getSuperClassname(){
+//        if( definition==null )return Optional.empty();
+//
+//        String suprClass = definition.getSuperName();
+//        if( suprClass==null )return Optional.empty();
+//
+//        return
+//            Optional.of(
+//                suprClass.replace("/",".")
+//            );
+//    }
+
     //region source : CSource
     protected CSource source;
     public synchronized CSource getSource(){
@@ -71,7 +134,6 @@ public class Clazz implements GetAnnotations, GetDefinition {
         this.source = source;
     }
     //endregion
-
     //region methods : List<Method>
     protected List<Method> methods;
     public synchronized List<Method> getMethods(){
