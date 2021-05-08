@@ -1,8 +1,10 @@
 package xyz.cofe.trambda.bc.cls;
 
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class CNestHost implements ClsByteCode {
+public class CNestHost implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CNestHost(){}
@@ -24,4 +26,10 @@ public class CNestHost implements ClsByteCode {
     //endregion
 
     public String toString(){ return CNestHost.class.getSimpleName()+" nestHost="+nestHost; }
+
+    @Override
+    public void write(ClassWriter v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitNestHost(getNestHost());
+    }
 }

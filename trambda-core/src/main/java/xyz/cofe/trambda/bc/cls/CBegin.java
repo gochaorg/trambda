@@ -6,13 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import xyz.cofe.collection.ImTree;
 import xyz.cofe.collection.Tree;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class CBegin implements ClsByteCode, ImTree<ByteCode> {
+public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CBegin(){}
@@ -236,5 +238,63 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode> {
         if( methods!=null && !methods.isEmpty() ) e = e.union( Eterable.of( methods ) );
 
         return e.notNull();
+    }
+
+    @Override
+    public void write(ClassWriter v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+
+        v.visit( getVersion(), getAccess(), getName(), getSignature(), getSuperName(), getInterfaces() );
+
+        var src = source;
+        if( src!=null )src.write(v);
+
+        var nh = nestHost;
+        if( nh!=null )nh.write(v);
+
+        var pss = permittedSubclass;
+        if( pss!=null )pss.write(v);
+
+        var oc = outerClass;
+        if( oc!=null )oc.write(v);
+
+        List<ClsByteCode> anns = new ArrayList<>();
+        if( annotations!=null )anns.addAll(annotations);
+        if( typeAnnotations!=null )anns.addAll(annotations);
+        anns.sort( (a,b)->{
+            int o1 = getOrder().getOrDefault(a,-1);
+            int o2 = getOrder().getOrDefault(b,-1);
+            if( o1==o2 )return a.toString().compareTo(b.toString());
+            return Integer.compare(o1,o2);
+        });
+
+        for( var ann : anns ){
+            ann.write(v);
+        }
+
+        List<ClsByteCode> body = new ArrayList<>();
+        if( fields!=null )body.addAll(fields);
+        if( methods!=null )body.addAll(methods);
+        if( nestMembers!=null )body.addAll(nestMembers);
+        if( innerClasses!=null )body.addAll(innerClasses);
+
+        body.sort( (a,b)->{
+            int o1 = getOrder().getOrDefault(a,-1);
+            int o2 = getOrder().getOrDefault(b,-1);
+            if( o1==o2 )return a.toString().compareTo(b.toString());
+            return Integer.compare(o1,o2);
+        });
+
+        for( var b : body ){
+            b.write(v);
+        }
+
+        v.visitEnd();
+    }
+
+    public byte[] toByteCode(){
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
+        write(cw);
+        return cw.toByteArray();
     }
 }

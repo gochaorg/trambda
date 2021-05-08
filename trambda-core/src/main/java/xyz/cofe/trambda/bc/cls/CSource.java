@@ -1,6 +1,9 @@
 package xyz.cofe.trambda.bc.cls;
 
-public class CSource implements ClsByteCode {
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+
+public class CSource implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CSource(){
@@ -36,5 +39,11 @@ public class CSource implements ClsByteCode {
         return CSource.class.getSimpleName()+" " +
             "source=" + (source!=null ? "\""+source+"\"" : "null") +
             ", debug=" + (debug!=null ? "\""+debug+"\"" : "null");
+    }
+
+    @Override
+    public void write(ClassWriter v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitSource(getSource(),getDebug());
     }
 }

@@ -3,12 +3,14 @@ package xyz.cofe.trambda.bc.cls;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 
-public class CField implements ClsByteCode, FldVisIdProperty {
+public class CField implements ClsByteCode, FldVisIdProperty, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CField(){}
@@ -124,4 +126,16 @@ public class CField implements ClsByteCode, FldVisIdProperty {
         this.fieldByteCodes = fld;
     }
     //endregion
+
+    @Override
+    public void write(ClassWriter v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        var fv = v.visitField(getAccess(),getName(),getDescriptor(),getSignature(),getValue());
+        var body = fieldByteCodes;
+        if( body!=null ){
+            for( var b : body ){
+                b.write(fv);
+            }
+        }
+    }
 }

@@ -2,6 +2,8 @@ package xyz.cofe.trambda.bc.cls;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
@@ -10,7 +12,10 @@ import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 import xyz.cofe.trambda.bc.mth.MAbstractBC;
 
-public class CAnnotation implements ClsByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
+public class CAnnotation implements
+    ClsByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes,
+    ClazzWriter
+{
     private static final long serialVersionUID = 1;
 
     public CAnnotation(){}
@@ -75,5 +80,25 @@ public class CAnnotation implements ClsByteCode, AnnVisIdProperty, AnnotationDef
     public Eterable<ByteCode> nodes(){
         if( annotationByteCodes!=null )return Eterable.of(annotationByteCodes);
         return Eterable.empty();
+    }
+
+    @Override
+    public void write(ClassWriter v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+
+        var av = v.visitAnnotation(getDescriptor(), isVisible());
+
+        var abody = annotationByteCodes;
+        if( abody!=null ){
+            var i = -1;
+            for( var ab : abody ){
+                i++;
+                if( ab!=null ){
+                    ab.write(av);
+                }else{
+                    throw new IllegalStateException("annotationByteCodes["+i+"]==null");
+                }
+            }
+        }
     }
 }

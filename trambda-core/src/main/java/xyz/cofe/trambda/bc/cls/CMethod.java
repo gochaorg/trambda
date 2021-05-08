@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
+import xyz.cofe.trambda.bc.mth.MethodWriterCtx;
 import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 
-public class CMethod implements ClsByteCode, MthVisIdProperty {
+public class CMethod implements ClsByteCode, MthVisIdProperty, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CMethod(){}
@@ -131,5 +134,26 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
     public Eterable<ByteCode> nodes(){
         if( methodByteCodes!=null )return Eterable.of(methodByteCodes);
         return Eterable.empty();
+    }
+
+    @Override
+    public void write(ClassWriter v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        var mv = v.visitMethod(
+            getAccess(),getName(),getDescriptor(),getSignature(),getExceptions()
+            );
+
+        var ctx = new MethodWriterCtx();
+
+        var body = methodByteCodes;
+        if( body!=null ){
+            for( var b : body ){
+                if( b!=null ){
+                    b.write(mv, ctx);
+                }
+            }
+        }
+
+
     }
 }
