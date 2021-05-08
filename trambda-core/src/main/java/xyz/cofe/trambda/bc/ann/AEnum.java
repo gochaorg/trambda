@@ -44,6 +44,8 @@ public class AEnum extends AAbstractBC {
     //endregion
 
     public String toString(){
-        return AEnum.class.getSimpleName()+" name="+name+" descriptor="+descriptor+" value="+value;
+        return AEnum.class.getSimpleName()+" name="+name+
+            " descriptor="+descriptor+
+            " value="+(value != null ? "\""+value+"\"" : "null" );
     }
 }

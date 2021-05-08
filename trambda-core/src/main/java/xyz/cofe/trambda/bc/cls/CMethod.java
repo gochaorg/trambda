@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import xyz.cofe.iter.Eterable;
+import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
@@ -115,11 +116,11 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
     @Override
     public String toString(){
         return "CMethod " +
-            "access=" + access +
-            ", name='" + name + '\'' +
-            ", descriptor='" + descriptor + '\'' +
-            ", signature='" + signature + '\'' +
-            ", exceptions=" + Arrays.toString(exceptions);
+            "access="+access+("#"+new AccFlags(access).flags())+
+            " name="+name +
+            " descriptor=" + descriptor +
+            " signature=" + signature +
+            " exceptions=" + Arrays.toString(exceptions);
     }
 
     /**

@@ -79,6 +79,10 @@ public class MTryCatchBlock extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MTryCatchBlock.class.getSimpleName()+" start="+labelStart+" end="+labelEnd+" handler="+labelHandler+" type="+type;
+        return MTryCatchBlock.class.getSimpleName()+
+            " start="+labelStart+
+            " end="+labelEnd+
+            " handler="+labelHandler+
+            " type="+type;
     }
 }

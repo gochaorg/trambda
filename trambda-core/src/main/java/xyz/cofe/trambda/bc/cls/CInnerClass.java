@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.cls;
 
+import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 
 public class CInnerClass implements ClsByteCode {
@@ -53,10 +54,10 @@ public class CInnerClass implements ClsByteCode {
 
     @Override
     public String toString(){
-        return "CInnerClass " +
-            "name='" + name + '\'' +
-            ", outerName='" + outerName + '\'' +
-            ", innerName='" + innerName + '\'' +
-            ", access=" + access ;
+        return CInnerClass.class.getSimpleName() +
+            " name=" + name +
+            " outerName=" + outerName +
+            " innerName=" + innerName +
+            " access=" + access+("#"+new AccFlags(access).flags()) ;
     }
 }

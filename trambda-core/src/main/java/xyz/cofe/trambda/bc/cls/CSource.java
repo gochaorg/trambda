@@ -1,7 +1,5 @@
 package xyz.cofe.trambda.bc.cls;
 
-import xyz.cofe.trambda.bc.ByteCode;
-
 public class CSource implements ClsByteCode {
     private static final long serialVersionUID = 1;
 
@@ -12,15 +10,16 @@ public class CSource implements ClsByteCode {
         this.debug = debug;
     }
 
+    //region source : String
     protected String source;
     public String getSource(){
         return source;
     }
-
     public void setSource(String source){
         this.source = source;
     }
-
+    //endregion
+    //region debug : String
     protected String debug;
 
     public String getDebug(){
@@ -30,11 +29,12 @@ public class CSource implements ClsByteCode {
     public void setDebug(String debug){
         this.debug = debug;
     }
+    //endregion
 
     @Override
     public String toString(){
         return CSource.class.getSimpleName()+" " +
-            "source='" + source + '\'' +
-            ", debug='" + debug + '\'' ;
+            "source=" + (source!=null ? "\""+source+"\"" : "null") +
+            ", debug=" + (debug!=null ? "\""+debug+"\"" : "null");
     }
 }

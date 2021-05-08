@@ -95,8 +95,7 @@ public class MLocalVariableAnnotation extends MAbstractBC implements ByteCode, A
     //endregion
 
     public String toString(){
-        return MLocalVariableAnnotation.class.getSimpleName()
-            +" ann.v.id="+annotationVisitorId+
+        return MLocalVariableAnnotation.class.getSimpleName()+
             " typeRef="+typeRef+
             " typePath="+typePath+
             " startLabels="+ Arrays.toString(startLabels) +

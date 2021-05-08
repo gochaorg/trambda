@@ -15,6 +15,7 @@ import xyz.cofe.trambda.bc.bm.FloatArg;
 import xyz.cofe.trambda.bc.bm.HandleArg;
 import xyz.cofe.trambda.bc.bm.IntArg;
 import xyz.cofe.trambda.bc.bm.LongArg;
+import xyz.cofe.trambda.bc.bm.MHandle;
 import xyz.cofe.trambda.bc.bm.StringArg;
 import xyz.cofe.trambda.bc.bm.TypeArg;
 import xyz.cofe.trambda.bc.mth.*;

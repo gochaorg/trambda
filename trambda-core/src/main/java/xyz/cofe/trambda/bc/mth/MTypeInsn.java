@@ -42,8 +42,9 @@ public class MTypeInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MTypeInsn.class.getSimpleName()+" "+ OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+
-            " "+operand
+        return MTypeInsn.class.getSimpleName()+
+            " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+
+            " operand="+operand
             ;
     }
 }

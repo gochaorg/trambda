@@ -23,5 +23,5 @@ public class CNestHost implements ClsByteCode {
     }
     //endregion
 
-    public String toString(){ return CNestHost.class.getSimpleName()+" "+nestHost; }
+    public String toString(){ return CNestHost.class.getSimpleName()+" nestHost="+nestHost; }
 }

@@ -14,6 +14,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.bm.LdcType;
+import xyz.cofe.trambda.bc.bm.MHandle;
 import xyz.cofe.trambda.bc.mth.*;
 
 /**

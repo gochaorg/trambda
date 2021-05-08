@@ -1,7 +1,5 @@
 package xyz.cofe.trambda.bc.bm;
 
-import xyz.cofe.trambda.bc.mth.MHandle;
-
 /**
  * Аргумент bootstrap метода
  */

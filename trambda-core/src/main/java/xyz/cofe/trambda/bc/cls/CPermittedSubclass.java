@@ -10,6 +10,7 @@ public class CPermittedSubclass implements ClsByteCode {
         this.permittedSubclass = permittedSubclass;
     }
 
+    //region permittedSubclass : String
     protected String permittedSubclass;
 
     public String getPermittedSubclass(){
@@ -19,10 +20,11 @@ public class CPermittedSubclass implements ClsByteCode {
     public void setPermittedSubclass(String permittedSubclass){
         this.permittedSubclass = permittedSubclass;
     }
+    //endregion
 
     @Override
     public String toString(){
         return CPermittedSubclass.class.getSimpleName()+" " +
-            "permittedSubclass='" + permittedSubclass + '\'';
+            "permittedSubclass=" + permittedSubclass;
     }
 }

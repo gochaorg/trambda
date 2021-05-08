@@ -47,7 +47,9 @@ public class MAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProper
     //endregion
 
     public String toString(){
-        return MAnnotation.class.getSimpleName()+" descriptor="+descriptor+" visible="+visible+" ann.v.id="+annotationVisitorId;
+        return MAnnotation.class.getSimpleName()+
+            " descriptor="+descriptor+
+            " visible="+visible;
     }
 
     //region annotationByteCodes : List<AnnotationByteCode>

@@ -71,7 +71,6 @@ public class MInsnAnnotation extends MAbstractBC implements ByteCode, AnnVisIdPr
 
     public String toString(){
         return MInsnAnnotation.class.getSimpleName()+
-            " ann.v.id="+annotationVisitorId+
             " typeRef="+typeRef+
             " typePath="+typePath+
             " descriptor="+descriptor+

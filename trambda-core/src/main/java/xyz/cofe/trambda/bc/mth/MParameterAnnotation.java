@@ -52,7 +52,9 @@ public class MParameterAnnotation extends MAbstractBC implements ByteCode, AnnVi
 
     public String toString(){
         return MParameterAnnotation.class.getSimpleName()+
-            " parameter="+parameter+" descriptor="+descriptor+" visible="+visible;
+            " parameter="+parameter+
+            " descriptor="+descriptor+
+            " visible="+visible;
     }
 
     //region annotationByteCodes : List<AnnotationByteCode>

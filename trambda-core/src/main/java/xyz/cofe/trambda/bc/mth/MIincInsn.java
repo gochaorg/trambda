@@ -57,6 +57,8 @@ public class MIincInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MIincInsn.class.getSimpleName()+" variable="+variable+" increment="+increment;
+        return MIincInsn.class.getSimpleName()+
+            " variable="+variable+
+            " increment="+increment;
     }
 }

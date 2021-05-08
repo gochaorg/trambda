@@ -20,7 +20,11 @@ public abstract class APair<V> extends AAbstractBC {
     //endregion
 
     public String toString(){
-        return this.getClass().getSimpleName()+" name="+name+" value=\""+value+"\"";
+        return
+            this.getClass().getSimpleName()+
+                " name="+name+
+                " value="+(value instanceof String ? "\""+value+"\"" : value)+
+                "";
     }
 
     public static APair<?> create(String name, Object value){

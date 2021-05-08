@@ -31,6 +31,8 @@ public class MLineNumber extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MLineNumber.class.getSimpleName()+" "+line+" "+label;
+        return MLineNumber.class.getSimpleName()+
+            " line="+line+
+            " label="+label;
     }
 }

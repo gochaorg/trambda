@@ -55,8 +55,8 @@ public class MJumpInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MJumpInsn.class.getSimpleName()+" "+
-            OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+
-            " "+label;
+        return MJumpInsn.class.getSimpleName()+
+            " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+
+            " label="+label;
     }
 }

@@ -49,7 +49,9 @@ public class CAnnotation implements ClsByteCode, AnnVisIdProperty, AnnotationDef
 
     //region toString()
     public String toString(){
-        return CAnnotation.class.getSimpleName()+" descriptor="+descriptor+" visible="+visible+" ann.v.id="+annotationVisitorId;
+        return CAnnotation.class.getSimpleName()+
+            " descriptor="+descriptor+
+            " visible="+visible;
     }
     //endregion
 

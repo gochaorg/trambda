@@ -68,7 +68,8 @@ public class CTypeAnnotation implements ClsByteCode, AnnVisIdProperty, Annotatio
     //endregion
 
     public String toString(){
-        return CTypeAnnotation.class.getSimpleName()+" ann.v.id="+annotationVisitorId+" typeRef="+typeRef+" typePath="+typePath+" descriptor="+descriptor+" visible="+visible;
+        return CTypeAnnotation.class.getSimpleName()+
+            " typeRef="+typeRef+" typePath="+typePath+" descriptor="+descriptor+" visible="+visible;
     }
 
     //region annotationByteCodes : List<AnnotationByteCode>

@@ -36,7 +36,9 @@ public class MParameter extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MParameter.class.getSimpleName()+" "+name+" access:"+access+" #"+new AccFlags(access).flags()
+        return MParameter.class.getSimpleName()+
+            " name="+name+
+            " access="+access+"#"+new AccFlags(access).flags()
             ;
     }
 }

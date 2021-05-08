@@ -28,7 +28,7 @@ public class MAnnotationDefault extends MAbstractBC implements ByteCode, AnnVisI
     //endregion
 
     public String toString(){
-        return MAnnotationDefault.class.getSimpleName()+" visitorId="+annotationVisitorId;
+        return MAnnotationDefault.class.getSimpleName();
     }
 
     //region annotationByteCodes : List<AnnotationByteCode>

@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.mth.MHandle;
+import xyz.cofe.trambda.bc.bm.MHandle;
 import xyz.cofe.trambda.bc.bm.HandleArg;
 import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 import xyz.cofe.trambda.bc.MethodDef;

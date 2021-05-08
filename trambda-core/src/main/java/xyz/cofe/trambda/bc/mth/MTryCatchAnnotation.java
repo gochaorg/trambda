@@ -71,7 +71,6 @@ public class MTryCatchAnnotation extends MAbstractBC implements ByteCode, AnnVis
 
     public String toString(){
         return MTryCatchAnnotation.class.getSimpleName()+
-            " ann.v.id="+annotationVisitorId+
             " typeRef="+typeRef+
             " typePath="+typePath+
             " descriptor="+descriptor+

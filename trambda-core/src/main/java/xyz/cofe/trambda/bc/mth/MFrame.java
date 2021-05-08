@@ -115,11 +115,11 @@ public class MFrame extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MFrame.class.getSimpleName()+" { " +
-            "type="+type+
-            ", numLocal="+numLocal+
-            ", local="+(local==null ? "null" : local)+
-            ", numStack="+numStack+", stack="+(stack==null ? "null" : stack)+
-            " }";
+        return MFrame.class.getSimpleName()+
+            " type="+type+
+            " numLocal="+numLocal+
+            " local="+(local==null ? "null" : local)+
+            " numStack="+numStack+", stack="+(stack==null ? "null" : stack)+
+            "";
     }
 }

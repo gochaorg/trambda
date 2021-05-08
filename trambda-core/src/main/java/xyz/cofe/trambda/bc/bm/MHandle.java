@@ -1,7 +1,8 @@
-package xyz.cofe.trambda.bc.mth;
+package xyz.cofe.trambda.bc.bm;
 
 import java.io.Serializable;
 import java.util.Objects;
+import xyz.cofe.trambda.bc.mth.MAbstractBC;
 
 public class MHandle extends MAbstractBC implements Serializable {
     private static final long serialVersionUID = 1;

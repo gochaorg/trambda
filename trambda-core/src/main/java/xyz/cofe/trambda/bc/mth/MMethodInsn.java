@@ -68,8 +68,8 @@ public class MMethodInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MMethodInsn.class.getSimpleName()+" "+
-            OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+"" +
+        return MMethodInsn.class.getSimpleName()+
+            " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+"" +
             " owner="+owner+" name="+name+" desc="+descriptor+" iface="+iface
             ;
     }

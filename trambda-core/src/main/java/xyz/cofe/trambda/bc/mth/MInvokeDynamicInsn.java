@@ -5,6 +5,7 @@ import java.util.List;
 import org.objectweb.asm.Type;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.bm.IntArg;
+import xyz.cofe.trambda.bc.bm.MHandle;
 import xyz.cofe.trambda.bc.bm.StringArg;
 import xyz.cofe.trambda.bc.bm.TypeArg;
 import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
@@ -96,6 +97,10 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MInvokeDynamicInsn.class.getSimpleName()+" {name="+name+" descriptor="+descriptor+" "+bootstrapMethodHandle+" arg="+bootstrapMethodArguments+"}";
+        return MInvokeDynamicInsn.class.getSimpleName()+
+            " name="+name+
+            " descriptor="+descriptor+
+            " bootstrapMethodHandle="+bootstrapMethodHandle+
+            " args="+bootstrapMethodArguments+"";
     }
 }

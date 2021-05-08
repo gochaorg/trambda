@@ -3,6 +3,7 @@ package xyz.cofe.trambda.bc.cls;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
@@ -105,12 +106,12 @@ public class CField implements ClsByteCode, FldVisIdProperty {
 
     @Override
     public String toString(){
-        return "CField" +
-            " access=" + access +
-            ", name='" + name + '\'' +
-            ", descriptor='" + descriptor + '\'' +
-            ", signature='" + signature + '\'' +
-            ", value=" + value ;
+        return CField.class.getSimpleName() +
+            " access="+access+("#"+new AccFlags(access).flags())+
+            " name=" + name +
+            " descriptor=" + descriptor +
+            " signature=" + signature +
+            " value=" + value ;
     }
 
     //region fieldByteCodes : List<FieldByteCode>

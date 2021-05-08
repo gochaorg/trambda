@@ -159,6 +159,7 @@ public class MInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MInsn.class.getSimpleName()+" "+ OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode;
+        return MInsn.class.getSimpleName()+
+            " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode;
     }
 }

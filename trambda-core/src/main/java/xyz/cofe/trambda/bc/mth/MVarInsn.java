@@ -715,6 +715,9 @@ public class MVarInsn extends MAbstractBC implements ByteCode {
     //endregion
 
     public String toString(){
-        return MVarInsn.class.getSimpleName()+" "+ OpCode.code(opcode).map(OpCode::name).orElse("?")+" #"+opcode+" "+variable;
+        return
+            MVarInsn.class.getSimpleName()+
+                " opcode="+ OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+
+                " variable="+variable;
     }
 }

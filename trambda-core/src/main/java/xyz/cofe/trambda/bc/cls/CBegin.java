@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import xyz.cofe.collection.ImTree;
 import xyz.cofe.collection.Tree;
 import xyz.cofe.iter.Eterable;
+import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 
 public class CBegin implements ClsByteCode, ImTree<ByteCode> {
@@ -209,11 +210,11 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode> {
     public String toString(){
         return CBegin.class.getSimpleName()+" " +
             "version=" + version +
-            ", access=" + access +
-            ", name='" + name + '\'' +
-            ", signature='" + signature + '\'' +
-            ", superName='" + superName + '\'' +
-            ", interfaces=" + Arrays.toString(interfaces) +
+            " access="+access+("#"+new AccFlags(access).flags())+
+            " name=" + name +
+            " signature=" + signature +
+            " superName=" + superName +
+            " interfaces=" + Arrays.toString(interfaces) +
             "";
     }
 
