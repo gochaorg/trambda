@@ -1,6 +1,8 @@
 package xyz.cofe.trambda.bc.ann;
 
-public class AEnum extends AAbstractBC {
+import org.objectweb.asm.AnnotationVisitor;
+
+public class AEnum extends AAbstractBC implements AnnotationWriter {
     private static final long serialVersionUID = 1;
 
     public AEnum(){}
@@ -47,5 +49,11 @@ public class AEnum extends AAbstractBC {
         return AEnum.class.getSimpleName()+" name="+name+
             " descriptor="+descriptor+
             " value="+(value != null ? "\""+value+"\"" : "null" );
+    }
+
+    @Override
+    public void write(AnnotationVisitor v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitEnum(getName(),getDescriptor(),getValue());
     }
 }

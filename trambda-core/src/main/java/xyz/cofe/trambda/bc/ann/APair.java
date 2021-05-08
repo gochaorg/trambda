@@ -1,6 +1,8 @@
 package xyz.cofe.trambda.bc.ann;
 
-public abstract class APair<V> extends AAbstractBC {
+import org.objectweb.asm.AnnotationVisitor;
+
+public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
     private static final long serialVersionUID = 1;
 
     protected APair(String name, V value){
@@ -55,45 +57,99 @@ public abstract class APair<V> extends AAbstractBC {
         public APairString(String name, String value){
             super(name, value);
         }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
+        }
     }
     public static class APairByte extends APair<Byte> {
         public APairByte(String name, Byte value){
             super(name, value);
+        }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
         }
     }
     public static class APairBoolean extends APair<Boolean> {
         public APairBoolean(String name, Boolean value){
             super(name, value);
         }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
+        }
     }
     public static class APairCharacter extends APair<Character> {
         public APairCharacter(String name, Character value){
             super(name, value);
+        }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
         }
     }
     public static class APairShort extends APair<Short> {
         public APairShort(String name, Short value){
             super(name, value);
         }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
+        }
     }
     public static class APairInteger extends APair<Integer> {
         public APairInteger(String name, Integer value){
             super(name, value);
+        }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
         }
     }
     public static class APairLong extends APair<Long> {
         public APairLong(String name, Long value){
             super(name, value);
         }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
+        }
     }
     public static class APairFloat extends APair<Float> {
         public APairFloat(String name, Float value){
             super(name, value);
         }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
+        }
     }
     public static class APairDouble extends APair<Double> {
         public APairDouble(String name, Double value){
             super(name, value);
+        }
+
+        @Override
+        public void write(AnnotationVisitor v){
+            if( v==null )throw new IllegalArgumentException( "v==null" );
+            v.visit(getName(), getValue());
         }
     }
 }
