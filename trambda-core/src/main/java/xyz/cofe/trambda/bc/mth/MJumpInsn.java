@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -25,7 +26,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  *
  * IFNULL or IFNONNULL.
  */
-public class MJumpInsn extends MAbstractBC implements ByteCode {
+public class MJumpInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MJumpInsn(){}
@@ -58,5 +59,13 @@ public class MJumpInsn extends MAbstractBC implements ByteCode {
         return MJumpInsn.class.getSimpleName()+
             " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+
             " label="+label;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        v.visitJumpInsn(getOpcode(), ctx.labelCreateOrGet(getLabel()));
     }
 }

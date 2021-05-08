@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -192,7 +193,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  Otherwise, if objectref is null, the putfield instruction throws a NullPointerException.
 
  */
-public class MFieldInsn extends MAbstractBC implements ByteCode {
+public class MFieldInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MFieldInsn(){
@@ -254,5 +255,11 @@ public class MFieldInsn extends MAbstractBC implements ByteCode {
             " name='" + name + '\'' +
             " descriptor='" + descriptor + '\'' +
             '}';
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitFieldInsn(getOpcode(),getOwner(),getName(),getDescriptor());
     }
 }

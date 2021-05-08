@@ -1,8 +1,9 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MMaxs extends MAbstractBC implements ByteCode {
+public class MMaxs extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MMaxs(){
@@ -36,5 +37,11 @@ public class MMaxs extends MAbstractBC implements ByteCode {
         return MMaxs.class.getSimpleName()+
             " stack="+maxStack+
             " locals="+maxLocals+"";
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitMaxs(getMaxStack(),getMaxLocals());
     }
 }

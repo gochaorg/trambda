@@ -1,8 +1,9 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MAnnotableParameterCount extends MAbstractBC implements ByteCode {
+public class MAnnotableParameterCount extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MAnnotableParameterCount(){}
@@ -32,5 +33,14 @@ public class MAnnotableParameterCount extends MAbstractBC implements ByteCode {
 
     public String toString(){
         return MAnnotableParameterCount.class.getSimpleName()+" parameterCount="+parameterCount+" visible="+visible;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitAnnotableParameterCount(
+            getParameterCount(),
+            isVisible()
+        );
     }
 }

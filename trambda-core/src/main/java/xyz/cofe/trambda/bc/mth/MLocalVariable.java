@@ -1,9 +1,10 @@
 package xyz.cofe.trambda.bc.mth;
 
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MLocalVariable extends MAbstractBC implements ByteCode {
+public class MLocalVariable extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MLocalVariable(){}
@@ -80,5 +81,23 @@ public class MLocalVariable extends MAbstractBC implements ByteCode {
             " start="+labelStart+
             " end="+labelEnd+
             " index="+index;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var ls = getLabelStart();
+        var le = getLabelEnd();
+
+        v.visitLocalVariable(
+            getName(),
+            getDescriptor(),
+            getSignature(),
+            ls!=null ? ctx.labelGet(ls) : null,
+            le!=null ? ctx.labelGet(le) : null,
+            getIndex()
+        );
     }
 }

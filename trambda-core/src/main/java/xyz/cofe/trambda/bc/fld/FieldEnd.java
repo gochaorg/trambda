@@ -1,5 +1,7 @@
 package xyz.cofe.trambda.bc.fld;
 
+import org.objectweb.asm.FieldVisitor;
+
 /**
  * end of the method
  */
@@ -18,5 +20,11 @@ public class FieldEnd implements FieldByteCode {
 
     public String toString(){
         return FieldEnd.class.getSimpleName();
+    }
+
+    @Override
+    public void write(FieldVisitor v){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitEnd();
     }
 }

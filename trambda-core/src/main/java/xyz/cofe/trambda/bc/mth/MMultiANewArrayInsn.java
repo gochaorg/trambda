@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -52,7 +53,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * <p>
  * The array class referenced via the run-time constant pool may have more dimensions than the dimensions operand of the multianewarray instruction. In that case, only the first dimensions of the dimensions of the array are created.
  */
-public class MMultiANewArrayInsn extends MAbstractBC implements ByteCode {
+public class MMultiANewArrayInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MMultiANewArrayInsn(){
@@ -89,5 +90,11 @@ public class MMultiANewArrayInsn extends MAbstractBC implements ByteCode {
         return MMultiANewArrayInsn.class.getSimpleName()+
             " descriptor="+descriptor+
             " numDimensions="+numDimensions;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitMultiANewArrayInsn(getDescriptor(),getNumDimensions());
     }
 }

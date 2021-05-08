@@ -1,9 +1,10 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MParameter extends MAbstractBC implements ByteCode {
+public class MParameter extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MParameter(){}
@@ -40,5 +41,11 @@ public class MParameter extends MAbstractBC implements ByteCode {
             " name="+name+
             " access="+access+"#"+new AccFlags(access).flags()
             ;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitParameter(getName(),getAccess());
     }
 }

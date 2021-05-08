@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MFrame extends MAbstractBC implements ByteCode {
+public class MFrame extends MAbstractBC implements MethodWriter {
     //region ElemType
     public static enum ElemType {
         Top(Opcodes.TOP),
@@ -121,5 +122,52 @@ public class MFrame extends MAbstractBC implements ByteCode {
             " local="+(local==null ? "null" : local)+
             " numStack="+numStack+", stack="+(stack==null ? "null" : stack)+
             "";
+    }
+
+    @Override
+    public void write(MethodVisitor mv, MethodWriterCtx ctx){
+        if( mv==null )throw new IllegalArgumentException( "mv==null" );
+
+        Object[] local = getLocal()==null ? null : new Object[getLocal().size()];
+        if( local!=null ){
+            for( int i=0;i<local.length;i++ ){
+                var v = getLocal().get(i);
+                if( v==null ){
+                    local[i] = null;
+                }else {
+                    switch( v ){
+                        case Top: local[i]=Opcodes.TOP; break;
+                        case Float: local[i]=Opcodes.FLOAT; break;
+                        case Double: local[i]=Opcodes.DOUBLE; break;
+                        case Integer: local[i]=Opcodes.INTEGER; break;
+                        case Null: local[i]=Opcodes.NULL; break;
+                        case UninitializedThis: local[i]=Opcodes.UNINITIALIZED_THIS; break;
+                        default:
+                            throw new IllegalArgumentException("unsupported frame local "+v);
+                    }
+                }
+            }
+        }
+        Object[] stack = getStack()==null ? null : new Object[getStack().size()];
+        if( stack!=null ){
+            for( int i=0;i<stack.length;i++ ){
+                var v = getStack().get(i);
+                if( v==null ){
+                    stack[i] = null;
+                }else {
+                    switch( v ){
+                        case Top: stack[i]=Opcodes.TOP; break;
+                        case Float: stack[i]=Opcodes.FLOAT; break;
+                        case Double: stack[i]=Opcodes.DOUBLE; break;
+                        case Integer: stack[i]=Opcodes.INTEGER; break;
+                        case Null: stack[i]=Opcodes.NULL; break;
+                        case UninitializedThis: stack[i]=Opcodes.UNINITIALIZED_THIS; break;
+                        default:
+                            throw new IllegalArgumentException("unsupported frame local "+v);
+                    }
+                }
+            }
+        }
+        mv.visitFrame(getType(),getNumLocal(),local,getNumStack(),stack);
     }
 }

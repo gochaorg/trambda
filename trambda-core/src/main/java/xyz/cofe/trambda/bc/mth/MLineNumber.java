@@ -1,8 +1,9 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MLineNumber extends MAbstractBC implements ByteCode {
+public class MLineNumber extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MLineNumber(){}
@@ -34,5 +35,16 @@ public class MLineNumber extends MAbstractBC implements ByteCode {
         return MLineNumber.class.getSimpleName()+
             " line="+line+
             " label="+label;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var l = getLabel();
+        v.visitLineNumber(getLine(),
+            l!=null ? ctx.labelCreateOrGet(l) : null
+        );
     }
 }

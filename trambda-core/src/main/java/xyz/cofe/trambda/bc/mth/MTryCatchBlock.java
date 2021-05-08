@@ -1,11 +1,14 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
  * try catch block
  */
-public class MTryCatchBlock extends MAbstractBC implements ByteCode {
+public class MTryCatchBlock extends MAbstractBC
+    implements ByteCode, MethodWriter
+{
     private static final long serialVersionUID = 1;
 
     public MTryCatchBlock(){}
@@ -84,5 +87,21 @@ public class MTryCatchBlock extends MAbstractBC implements ByteCode {
             " end="+labelEnd+
             " handler="+labelHandler+
             " type="+type;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var ls = getLabelStart();
+        var le = getLabelEnd();
+        var lh = getLabelHandler();
+        v.visitTryCatchBlock(
+            ls!=null ? ctx.labelGet(ls) : null,
+            le!=null ? ctx.labelGet(le) : null,
+            lh!=null ? ctx.labelGet(lh) : null,
+            getType()
+        );
     }
 }

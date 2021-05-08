@@ -1,6 +1,7 @@
 package xyz.cofe.trambda.bc.mth;
 
 import java.util.Arrays;
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -51,7 +52,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * <p>
  * The match-offset pairs are sorted to support lookup routines that are quicker than linear search.
  */
-public class MLookupSwitchInsn extends MAbstractBC implements ByteCode {
+public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
     public MLookupSwitchInsn(){}
     public MLookupSwitchInsn(String defHdl, int[] keys, String[] labels){
@@ -97,5 +98,18 @@ public class MLookupSwitchInsn extends MAbstractBC implements ByteCode {
             )+(
                 labels!=null ? " label="+Arrays.asList(labels) : ""
             );
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var dl = getDefaultHandlerLabel();
+        v.visitLookupSwitchInsn(
+            dl!=null ? ctx.labelGet(dl) : null,
+            getKeys(),
+            ctx.labelsGet(getLabels())
+        );
     }
 }

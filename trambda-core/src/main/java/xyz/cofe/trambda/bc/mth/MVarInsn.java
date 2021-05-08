@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -681,7 +682,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * The ret opcode can be used in conjunction with the wide instruction (§wide) to
  * access a local variable using a two-byte unsigned index.
  */
-public class MVarInsn extends MAbstractBC implements ByteCode {
+public class MVarInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MVarInsn(){}
@@ -719,5 +720,11 @@ public class MVarInsn extends MAbstractBC implements ByteCode {
             MVarInsn.class.getSimpleName()+
                 " opcode="+ OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+
                 " variable="+variable;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitVarInsn(getOpcode(), getVariable());
     }
 }

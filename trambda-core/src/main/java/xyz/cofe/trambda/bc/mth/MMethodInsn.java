@@ -1,12 +1,13 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
  * the opcode of the type instruction to be visited. This opcode is either
  * INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or INVOKEINTERFACE.
  */
-public class MMethodInsn extends MAbstractBC implements ByteCode {
+public class MMethodInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MMethodInsn(){}
@@ -72,5 +73,11 @@ public class MMethodInsn extends MAbstractBC implements ByteCode {
             " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode+"" +
             " owner="+owner+" name="+name+" desc="+descriptor+" iface="+iface
             ;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitMethodInsn(getOpcode(),getOwner(),getName(),getDescriptor(),isIface());
     }
 }

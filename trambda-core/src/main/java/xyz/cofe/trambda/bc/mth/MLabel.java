@@ -1,8 +1,9 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class MLabel extends MAbstractBC implements ByteCode {
+public class MLabel extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MLabel(){}
@@ -36,5 +37,16 @@ public class MLabel extends MAbstractBC implements ByteCode {
         //noinspection ConstantConditions
         if( n1!=null && n0==null )return false;
         return n0.equals(n1);
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var ln = getName();
+        if( ln==null )throw new IllegalStateException("name not defined");
+
+        v.visitLabel(ctx.labelCreate(ln));
     }
 }

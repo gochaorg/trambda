@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -32,7 +33,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * The iinc opcode can be used in conjunction with the wide instruction (§wide)
  * to access a local variable using a two-byte unsigned index and to increment it by a two-byte immediate signed value.
  */
-public class MIincInsn extends MAbstractBC implements ByteCode {
+public class MIincInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MIincInsn(){}
@@ -60,5 +61,11 @@ public class MIincInsn extends MAbstractBC implements ByteCode {
         return MIincInsn.class.getSimpleName()+
             " variable="+variable+
             " increment="+increment;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitIincInsn(getVariable(),getIncrement());
     }
 }

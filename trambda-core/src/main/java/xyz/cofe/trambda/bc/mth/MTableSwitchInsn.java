@@ -2,6 +2,7 @@ package xyz.cofe.trambda.bc.mth;
 
 import java.util.List;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -52,7 +53,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  *
  * The alignment required of the 4-byte operands of the tableswitch instruction guarantees 4-byte alignment of those operands if and only if the method that contains the tableswitch starts on a 4-byte boundary.
  */
-public class MTableSwitchInsn extends MAbstractBC implements ByteCode {
+public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MTableSwitchInsn(){}
@@ -115,5 +116,20 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode {
             (defaultLabel!=null ? " defLabel="+defaultLabel : "")+
             (labels!=null ? " label="+ List.of(labels) : "")
             ;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var dl = getDefaultLabel();
+        var ls = getLabels();
+
+        v.visitTableSwitchInsn(
+            getMin(), getMax(),
+            dl!=null ? ctx.labelGet(dl) : null,
+            ctx.labelsGet(ls)
+        );
     }
 }

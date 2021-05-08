@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
@@ -140,7 +141,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  *
  * MONITORENTER, or MONITOREXIT.
  */
-public class MInsn extends MAbstractBC implements ByteCode {
+public class MInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MInsn(){}
@@ -161,5 +162,11 @@ public class MInsn extends MAbstractBC implements ByteCode {
     public String toString(){
         return MInsn.class.getSimpleName()+
             " opcode="+OpCode.code(opcode).map(OpCode::name).orElse("?")+"#"+opcode;
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        v.visitInsn(getOpcode());
     }
 }

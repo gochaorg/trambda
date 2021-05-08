@@ -216,7 +216,7 @@ public class Method implements GetAnnotations, GetDefinition {
     protected void build(MCode code){ mv.visitCode(); }
     protected void build(MEnd end){ mv.visitEnd(); }
     protected void build(MTypeInsn tinst){
-        mv.visitTypeInsn(tinst.getOpcode(), tinst.getOperand());
+        mv.visitTypeInsn(tinst.getOpcode(), tinst.getType());
     }
     protected void build(MLabel lbl){ mv.visitLabel( labels.computeIfAbsent(lbl.getName(), n -> new org.objectweb.asm.Label()) ); }
     protected void build(MLineNumber ln){

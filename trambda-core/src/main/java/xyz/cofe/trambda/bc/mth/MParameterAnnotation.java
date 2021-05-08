@@ -2,6 +2,8 @@ package xyz.cofe.trambda.bc.mth;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.TypePath;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
@@ -9,7 +11,10 @@ import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
-public class MParameterAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
+public class MParameterAnnotation extends MAbstractBC
+    implements
+        ByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes, MethodWriter
+{
     private static final long serialVersionUID = 1;
 
     //region annotationVisitorId : int
@@ -76,5 +81,27 @@ public class MParameterAnnotation extends MAbstractBC implements ByteCode, AnnVi
     public Eterable<ByteCode> nodes(){
         if( annotationByteCodes!=null )return Eterable.of(annotationByteCodes);
         return Eterable.empty();
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+
+        var av = v.visitParameterAnnotation(
+            getParameter(), getDescriptor(), isVisible()
+        );
+
+        var abody = annotationByteCodes;
+        if( abody!=null ){
+            var i = -1;
+            for( var ab : abody ){
+                i++;
+                if( ab!=null ){
+                    ab.write(av);
+                }else{
+                    throw new IllegalStateException("annotationByteCodes["+i+"]==null");
+                }
+            }
+        }
     }
 }

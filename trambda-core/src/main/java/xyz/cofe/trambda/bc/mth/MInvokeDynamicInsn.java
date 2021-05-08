@@ -2,8 +2,8 @@ package xyz.cofe.trambda.bc.mth;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
-import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.bm.IntArg;
 import xyz.cofe.trambda.bc.bm.MHandle;
 import xyz.cofe.trambda.bc.bm.StringArg;
@@ -14,7 +14,7 @@ import xyz.cofe.trambda.bc.bm.FloatArg;
 import xyz.cofe.trambda.bc.bm.HandleArg;
 import xyz.cofe.trambda.bc.bm.LongArg;
 
-public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
+public class MInvokeDynamicInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
     public MInvokeDynamicInsn(){
@@ -102,5 +102,65 @@ public class MInvokeDynamicInsn extends MAbstractBC implements ByteCode {
             " descriptor="+descriptor+
             " bootstrapMethodHandle="+bootstrapMethodHandle+
             " args="+bootstrapMethodArguments+"";
+    }
+
+    @Override
+    public void write(MethodVisitor v, MethodWriterCtx ctx){
+        if( v==null )throw new IllegalArgumentException( "v==null" );
+        if( ctx==null )throw new IllegalArgumentException( "ctx==null" );
+
+        var bmh = getBootstrapMethodHandle();
+        if( bmh==null )throw new IllegalStateException("getBootstrapMethodHandle() return null");
+
+        var hdl = new org.objectweb.asm.Handle(
+            bmh.getTag(),
+            bmh.getOwner(),
+            bmh.getName(),
+            bmh.getDesc(),
+            bmh.isIface()
+        );
+
+        var bma = getBootstrapMethodArguments();
+        if( bma==null ){
+            throw new IllegalStateException("getBootstrapMethodArguments() return null");
+        }
+
+        Object[] args = new Object[bma.size()];
+        for( int ai=0; ai<args.length; ai++ ){
+            Object arg = null;
+            var sarg = bma.get(ai);
+            if( sarg instanceof IntArg ){
+                arg = build((IntArg) sarg);
+            }else if( sarg instanceof StringArg ){
+                arg = build((StringArg)sarg);
+            }else if( sarg instanceof FloatArg ){
+                arg = build((FloatArg) sarg);
+            }else if( sarg instanceof LongArg ){
+                arg = build((LongArg) sarg);
+            }else if( sarg instanceof DoubleArg ){
+                arg = build((DoubleArg) sarg);
+            }else if( sarg instanceof TypeArg ){
+                arg = build((TypeArg)sarg);
+            }else if( sarg instanceof HandleArg ){
+                arg = build((HandleArg)sarg, hdl, ctx);
+            }else {
+                throw new UnsupportedOperationException("can't feetch BootstrapMethodArgument from "+sarg);
+            }
+            args[ai] = arg;
+        }
+
+        v.visitInvokeDynamicInsn(getName(),getDescriptor(),hdl,args);
+    }
+
+    protected Object build(IntArg arg){ return arg.getValue(); }
+    protected Object build(LongArg arg){ return arg.getValue(); }
+    protected Object build(FloatArg arg){ return arg.getValue(); }
+    protected Object build(DoubleArg arg){ return arg.getValue(); }
+    protected Object build(StringArg arg){ return arg.getValue(); }
+    protected Object build(TypeArg arg){ return Type.getType(arg.getType()); }
+    protected Object build(HandleArg arg, org.objectweb.asm.Handle bm, MethodWriterCtx ctx){
+        var hdl = arg.getHandle();
+        if( hdl==null )throw new IllegalArgumentException("target handle is null");
+        return ctx.bootstrapArgument(hdl, bm);
     }
 }
