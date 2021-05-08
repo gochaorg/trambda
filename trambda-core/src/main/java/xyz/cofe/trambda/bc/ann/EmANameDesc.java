@@ -2,6 +2,8 @@ package xyz.cofe.trambda.bc.ann;
 
 import java.util.ArrayList;
 import java.util.List;
+import xyz.cofe.iter.Eterable;
+import xyz.cofe.trambda.bc.ByteCode;
 
 public class EmANameDesc extends EmbededAnnotation {
     private static final long serialVersionUID = 1;
@@ -31,5 +33,15 @@ public class EmANameDesc extends EmbededAnnotation {
 
     public String toString(){
         return EmANameDesc.class.getSimpleName()+" name="+name+" descriptor="+descriptor;
+    }
+
+    /**
+     * Возвращает дочерние узлы
+     * @return дочерние узлы
+     */
+    @Override
+    public Eterable<ByteCode> nodes(){
+        if( annotationByteCodes!=null )return Eterable.of(annotationByteCodes);
+        return Eterable.empty();
     }
 }

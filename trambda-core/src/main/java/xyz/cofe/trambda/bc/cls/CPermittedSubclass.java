@@ -22,7 +22,7 @@ public class CPermittedSubclass implements ClsByteCode {
 
     @Override
     public String toString(){
-        return "CPermittedSubclass " +
+        return CPermittedSubclass.class.getSimpleName()+" " +
             "permittedSubclass='" + permittedSubclass + '\'';
     }
 }

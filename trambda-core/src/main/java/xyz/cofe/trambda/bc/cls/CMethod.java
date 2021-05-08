@@ -1,8 +1,12 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
+import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.mth.MethodByteCode;
 import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 
 public class CMethod implements ClsByteCode, MthVisIdProperty {
@@ -39,7 +43,7 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         return this;
     }
 
-    //region access
+    //region access : int
     protected int access;
     public int getAccess(){
         return access;
@@ -57,7 +61,7 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         this.name = name;
     }
     //endregion
-    //region descriptor
+    //region descriptor : String
     protected String descriptor;
     public String getDescriptor(){
         return descriptor;
@@ -66,7 +70,7 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         this.descriptor = descriptor;
     }
     //endregion
-    //region signature
+    //region signature : String
     protected String signature;
     public String getSignature(){
         return signature;
@@ -75,7 +79,7 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         this.signature = signature;
     }
     //endregion
-    //region exceptions
+    //region exceptions : String[]
     protected String[] exceptions;
     public String[] getExceptions(){
         return exceptions;
@@ -84,8 +88,7 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         this.exceptions = exceptions;
     }
     //endregion
-
-    //region methodVisitorId
+    //region methodVisitorId : int = MthVisIdProperty.DEF_METHOD_VISITOR_ID
     protected int methodVisitorId = MthVisIdProperty.DEF_METHOD_VISITOR_ID;
 
     @Override
@@ -98,6 +101,16 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
         methodVisitorId = id;
     }
     //endregion
+    //region methodByteCodes : List<MethodByteCode>
+    protected List<MethodByteCode> methodByteCodes;
+    public List<MethodByteCode> getMethodByteCodes(){
+        if( methodByteCodes==null )methodByteCodes = new ArrayList<>();
+        return methodByteCodes;
+    }
+    public void setMethodByteCodes(List<MethodByteCode> ls){
+        methodByteCodes = ls;
+    }
+    //endregion
 
     @Override
     public String toString(){
@@ -107,5 +120,15 @@ public class CMethod implements ClsByteCode, MthVisIdProperty {
             ", descriptor='" + descriptor + '\'' +
             ", signature='" + signature + '\'' +
             ", exceptions=" + Arrays.toString(exceptions);
+    }
+
+    /**
+     * Возвращает дочерние узлы
+     * @return дочерние узлы
+     */
+    @Override
+    public Eterable<ByteCode> nodes(){
+        if( methodByteCodes!=null )return Eterable.of(methodByteCodes);
+        return Eterable.empty();
     }
 }

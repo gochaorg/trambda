@@ -27,6 +27,8 @@ import xyz.cofe.trambda.bc.cls.CNestHost;
 import xyz.cofe.trambda.bc.cls.CNestMember;
 import xyz.cofe.trambda.bc.cls.COuterClass;
 import xyz.cofe.trambda.bc.cls.CTypeAnnotation;
+import xyz.cofe.trambda.bc.fld.FieldByteCode;
+import xyz.cofe.trambda.bc.mth.MethodByteCode;
 
 /**
  * Дамп байт кода
@@ -261,11 +263,16 @@ public class ClassDump extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value){
         int ci = currentIndexGetAndInc();
+        CField c = new CField(access,name,descriptor,signature,value);
 
         FieldDump dump = new FieldDump(api);
-        dump.byteCode(byteCodeConsumer);
+        dump.byteCode(b -> {
+            if( byteCodeConsumer!=null )byteCodeConsumer.accept(b);
+            if( b instanceof FieldByteCode ){
+                c.getFieldByteCodes().add( (FieldByteCode) b);
+            }
+        });
 
-        CField c = new CField(access,name,descriptor,signature,value);
         c.setFieldVisitorId(dump.getFieldVisitorId());
 
         currentClass( x -> x.order(c,ci).getFields().add(c) );
@@ -277,11 +284,16 @@ public class ClassDump extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions){
         int ci = currentIndexGetAndInc();
+        CMethod method = new CMethod(access,name,descriptor,signature,exceptions);
 
         MethodDump dump = new MethodDump(api);
-        dump.byteCode(byteCodeConsumer);
+        dump.byteCode(b -> {
+            if( byteCodeConsumer!=null )byteCodeConsumer.accept(b);
+            if( b instanceof MethodByteCode ){
+                method.getMethodByteCodes().add((MethodByteCode) b);
+            }
+        });
 
-        CMethod method = new CMethod(access,name,descriptor,signature,exceptions);
         method.setMethodVisitorId(dump.getMethodVisitorId());
         emit(method);
 

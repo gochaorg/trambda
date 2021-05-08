@@ -11,6 +11,7 @@ public class CNestMember implements ClsByteCode {
         this.nestMember = nestMember;
     }
 
+    //region nestMember : String
     protected String nestMember;
 
     public String getNestMember(){
@@ -20,10 +21,11 @@ public class CNestMember implements ClsByteCode {
     public void setNestMember(String nestMember){
         this.nestMember = nestMember;
     }
+    //endregion
 
     @Override
     public String toString(){
-        return "NestMember " +
+        return CNestMember.class.getSimpleName()+" " +
             "nestMember='" + nestMember + '\'' ;
     }
 }

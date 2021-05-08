@@ -25,6 +25,9 @@ import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.EmbededAnnotation;
+import xyz.cofe.trambda.bc.cls.CBegin;
+import xyz.cofe.trambda.bc.cls.CField;
+import xyz.cofe.trambda.bc.cls.CMethod;
 import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 import xyz.cofe.trambda.bc.tree.Clazz;
@@ -612,6 +615,49 @@ public class ClassSerTest {
             dump.byteCode(System.out::println);
             classReader = new ClassReader(clz.toByteCode());
             classReader.accept(dump,0);
+        } catch( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test03(){
+        var classSrc = User2.class;
+        var classUrl = classSrc.getResource(
+            "/"+
+                classSrc.getName().replace(".","/")+".class"
+        );
+        out.println("url "+classUrl);
+        out.println("-".repeat(80));
+
+        try{
+            var classBytes = IOFun.readBytes(classUrl);
+            ClassReader classReader = new ClassReader(classBytes);
+
+            List<ByteCode> byteCodes = new ArrayList<>();
+
+            ClassDump dump = new ClassDump();
+            dump.byteCode( byteCodes::add );
+            classReader.accept(dump,0);
+
+            CBegin begin = byteCodes.stream().filter( b -> b instanceof CBegin ).map( x -> (CBegin)x ).findFirst().get();
+
+            System.out.println("class "+begin);
+
+            begin.walk().tree().forEach( ts -> {
+                if( ts.getLevel()>0 ){
+                    var pref = ts.nodes().limit(ts.getLevel()).map( b -> {
+                        if( b instanceof CMethod ){
+                            return CMethod.class.getSimpleName()+"#"+((CMethod) b).getName()+"()";
+                        }else if( b instanceof CField ){
+                            return CField.class.getSimpleName()+"#"+((CField)b).getName();
+                        }
+                        return b.getClass().getSimpleName();
+                    }).reduce("", (a,b)->a+"/"+b);
+                    System.out.print(pref);
+                }
+                System.out.println("/"+ts.getNode());
+            });
         } catch( IOException e ) {
             e.printStackTrace();
         }

@@ -43,7 +43,7 @@ public class COuterClass implements ClsByteCode {
 
     @Override
     public String toString(){
-        return "OuterClass " +
+        return COuterClass.class.getSimpleName()+" " +
             "owner='" + owner + '\'' +
             ", name='" + name + '\'' +
             ", descriptor='" + descriptor + '\'' ;

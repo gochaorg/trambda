@@ -113,6 +113,7 @@ public class CField implements ClsByteCode, FldVisIdProperty {
             ", value=" + value ;
     }
 
+    //region fieldByteCodes : List<FieldByteCode>
     protected List<FieldByteCode> fieldByteCodes;
     public List<FieldByteCode> getFieldByteCodes(){
         if( fieldByteCodes==null )fieldByteCodes = new ArrayList<>();
@@ -121,4 +122,5 @@ public class CField implements ClsByteCode, FldVisIdProperty {
     public void setFieldByteCodes(List<FieldByteCode> fld){
         this.fieldByteCodes = fld;
     }
+    //endregion
 }

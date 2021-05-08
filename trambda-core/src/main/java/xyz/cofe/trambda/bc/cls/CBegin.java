@@ -6,9 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import xyz.cofe.collection.ImTree;
+import xyz.cofe.collection.Tree;
+import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
 
-public class CBegin implements ClsByteCode {
+public class CBegin implements ClsByteCode, ImTree<ByteCode> {
     private static final long serialVersionUID = 1;
 
     public CBegin(){}
@@ -143,6 +146,7 @@ public class CBegin implements ClsByteCode {
 
     // protected List visitAttribute
 
+    //region nestMembers : List<CNestMember>
     protected List<CNestMember> nestMembers;
     public List<CNestMember> getNestMembers(){
         if( nestMembers==null )nestMembers = new ArrayList<>();
@@ -151,7 +155,8 @@ public class CBegin implements ClsByteCode {
     public void setNestMembers(List<CNestMember> ls){
         nestMembers = ls;
     }
-
+    //endregion
+    //region innerClasses : List<CInnerClass>
     protected List<CInnerClass> innerClasses;
     public List<CInnerClass> getInnerClasses(){
         if( innerClasses==null )innerClasses = new ArrayList<>();
@@ -160,6 +165,7 @@ public class CBegin implements ClsByteCode {
     public void setInnerClasses(List<CInnerClass> ls){
         innerClasses = ls;
     }
+    //endregion
 
     // protected List visitRecordComponent
 
@@ -201,7 +207,7 @@ public class CBegin implements ClsByteCode {
 
     @Override
     public String toString(){
-        return "ClassBegin " +
+        return CBegin.class.getSimpleName()+" " +
             "version=" + version +
             ", access=" + access +
             ", name='" + name + '\'' +
@@ -209,5 +215,25 @@ public class CBegin implements ClsByteCode {
             ", superName='" + superName + '\'' +
             ", interfaces=" + Arrays.toString(interfaces) +
             "";
+    }
+
+    /**
+     * Возвращает дочерние узлы
+     * @return дочерние узлы
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Eterable<ByteCode> nodes(){
+        Eterable<ByteCode> e = Eterable.of(
+            source, outerClass, nestHost, permittedSubclass
+        );
+        if( annotations!=null && !annotations.isEmpty() ) e = e.union( Eterable.of( annotations ) );
+        if( typeAnnotations!=null && !typeAnnotations.isEmpty() ) e = e.union( Eterable.of( typeAnnotations ) );
+        if( nestMembers!=null && !nestMembers.isEmpty() ) e = e.union( Eterable.of( nestMembers ) );
+        if( innerClasses!=null && !innerClasses.isEmpty() ) e = e.union( Eterable.of( innerClasses ) );
+        if( fields!=null && !fields.isEmpty() ) e = e.union( Eterable.of( fields ) );
+        if( methods!=null && !methods.isEmpty() ) e = e.union( Eterable.of( methods ) );
+
+        return e.notNull();
     }
 }

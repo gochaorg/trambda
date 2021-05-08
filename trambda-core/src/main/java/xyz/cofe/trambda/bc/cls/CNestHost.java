@@ -11,6 +11,7 @@ public class CNestHost implements ClsByteCode {
         this.nestHost = nestHost;
     }
 
+    //region nestHost : String
     protected String nestHost;
 
     public String getNestHost(){
@@ -20,6 +21,7 @@ public class CNestHost implements ClsByteCode {
     public void setNestHost(String nestHost){
         this.nestHost = nestHost;
     }
+    //endregion
 
     public String toString(){ return CNestHost.class.getSimpleName()+" "+nestHost; }
 }

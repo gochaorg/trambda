@@ -33,7 +33,7 @@ public class CSource implements ClsByteCode {
 
     @Override
     public String toString(){
-        return "ClassSource " +
+        return CSource.class.getSimpleName()+" " +
             "source='" + source + '\'' +
             ", debug='" + debug + '\'' ;
     }

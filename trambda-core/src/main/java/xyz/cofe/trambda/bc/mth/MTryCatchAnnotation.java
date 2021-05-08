@@ -2,6 +2,7 @@ package xyz.cofe.trambda.bc.mth;
 
 import java.util.ArrayList;
 import java.util.List;
+import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
@@ -87,4 +88,14 @@ public class MTryCatchAnnotation extends MAbstractBC implements ByteCode, AnnVis
         annotationByteCodes = byteCodes;
     }
     //endregion
+
+    /**
+     * Возвращает дочерние узлы
+     * @return дочерние узлы
+     */
+    @Override
+    public Eterable<ByteCode> nodes(){
+        if( annotationByteCodes!=null )return Eterable.of(annotationByteCodes);
+        return Eterable.empty();
+    }
 }

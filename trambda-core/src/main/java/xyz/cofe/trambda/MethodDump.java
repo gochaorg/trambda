@@ -17,7 +17,49 @@ import xyz.cofe.trambda.bc.bm.LdcType;
 import xyz.cofe.trambda.bc.mth.*;
 
 /**
- * Создает дамп байт кода метода, используется в {@link AsmQuery}
+ * Создает дамп байт кода метода, используется в {@link AsmQuery}.
+ *
+ * <p>
+ *
+ * A visitor to visit a Java method.
+ * The methods of this class must be called in the following order:
+ *
+ * <pre>
+ * ( visitParameter )*
+ * [ visitAnnotationDefault ]
+ * ( visitAnnotation
+ * | visitAnnotableParameterCount
+ * | visitParameterAnnotation visitTypeAnnotation
+ * | visitAttribute
+ * )*
+ * [ visitCode
+ *     ( visitFrame
+ *     | visit&lt;i&gt;X&lt;/i&gt;Insn
+ *     | visitLabel
+ *     | visitInsnAnnotation
+ *     | visitTryCatchBlock
+ *     | visitTryCatchAnnotation
+ *     | visitLocalVariable
+ *     | visitLocalVariableAnnotation
+ *     | visitLineNumber
+ *     )* visitMaxs
+ * ] visitEnd.
+ * </pre>
+ *
+ * <p>
+ * In addition, the <b>visit&lt;i&gt;X&lt;/i&gt;Insn</b> and visitLabel methods must be called in the sequential
+ * order of the bytecode instructions of the visited code,
+ *
+ * <p>
+ * <b>visitInsnAnnotation</b> must be called after the annotated instruction,
+ *
+ * <p>
+ * <b>visitTryCatchBlock</b> must be called before the labels passed as arguments have been visited,
+ * <b>visitTryCatchBlockAnnotation</b> must be called after the corresponding try catch block has been visited,
+ *
+ * <p>
+ * and the <b>visitLocalVariable</b>, <b>visitLocalVariableAnnotation</b> and <b>visitLineNumber</b> methods must be called after
+ * the labels passed as arguments have been visited.
  */
 public class MethodDump extends MethodVisitor implements Opcodes {
     public static final AtomicInteger idSeq = new AtomicInteger(0);
@@ -116,10 +158,10 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitAnnotationDefault(){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MAnnotationDefault bc = new MAnnotationDefault();
+        AnnotationDump dump = new AnnotationDump(this.api);
+
+        dump.byteCode( this.byteCodeConsumer,bc );
         bc.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(bc);
@@ -136,10 +178,10 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MAnnotation ann = new MAnnotation(descriptor,visible);
+        AnnotationDump dump = new AnnotationDump(this.api);
+
+        dump.byteCode( this.byteCodeConsumer,ann );
         ann.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(ann);
@@ -164,10 +206,11 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MTypeAnnotation ta = new MTypeAnnotation();
+
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer,ta );
+
         ta.setTypeRef(typeRef);
         ta.setTypePath(typePath!=null ? typePath.toString() : null);
         ta.setDescriptor(descriptor);
@@ -212,10 +255,11 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitParameterAnnotation(int parameter, String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MParameterAnnotation pa = new MParameterAnnotation();
+
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer,pa );
+
         pa.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         pa.setParameter(parameter);
         pa.setDescriptor(descriptor);
@@ -618,10 +662,11 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitInsnAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MInsnAnnotation ia = new MInsnAnnotation();
+        AnnotationDump dump = new AnnotationDump(this.api);
+
+        dump.byteCode( this.byteCodeConsumer,ia );
+
         ia.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         ia.setTypeRef(typeRef);
         ia.setTypePath(typePath!=null ? typePath.toString() : null);
@@ -671,10 +716,11 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitTryCatchAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MTryCatchAnnotation a = new MTryCatchAnnotation(typeRef,typePath!=null ? typePath.toString() : null,descriptor,visible);
+
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer,a );
+
         a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(a);
@@ -722,10 +768,11 @@ public class MethodDump extends MethodVisitor implements Opcodes {
      */
     @Override
     public AnnotationVisitor visitLocalVariableAnnotation(int typeRef, TypePath typePath, Label[] start, Label[] end, int[] index, String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( this.byteCodeConsumer );
-
         MLocalVariableAnnotation a = new MLocalVariableAnnotation();
+
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump.byteCode( this.byteCodeConsumer,a );
+
         a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         a.setTypeRef(typeRef);
