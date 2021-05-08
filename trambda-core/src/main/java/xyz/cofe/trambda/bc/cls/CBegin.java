@@ -1,6 +1,10 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import xyz.cofe.trambda.bc.ByteCode;
 
@@ -90,6 +94,108 @@ public class CBegin implements ClsByteCode {
     }
     public void setInterfaces(String[] interfaces){
         this.interfaces = interfaces;
+    }
+    //endregion
+
+    //region source : CSource
+    protected CSource source;
+    public CSource getSource(){ return source; }
+    public void setSource(CSource s){ source = s; }
+    //endregion
+    //region outerClass : COuterClass
+    protected COuterClass outerClass;
+    public COuterClass getOuterClass(){ return outerClass; }
+    public void setOuterClass(COuterClass s){ outerClass = s; }
+    //endregion
+    //region nestHost : CNestHost
+    protected CNestHost nestHost;
+    public CNestHost getNestHost(){ return nestHost; }
+    public void setNestHost(CNestHost s){ nestHost = s; }
+    //endregion
+    //region permittedSubclass : CPermittedSubclass
+    protected CPermittedSubclass permittedSubclass;
+    public CPermittedSubclass getPermittedSubclass(){ return permittedSubclass; }
+    public void setPermittedSubclass(CPermittedSubclass s){ permittedSubclass = s; }
+    //endregion
+
+    // protected visitModule ...
+
+    //region annotations : List<CAnnotation>
+    protected List<CAnnotation> annotations;
+    public List<CAnnotation> getAnnotations(){
+        if( annotations==null )annotations = new ArrayList<>();
+        return annotations;
+    }
+    public void setAnnotations(List<CAnnotation> ls){
+        annotations = ls;
+    }
+    //endregion
+    //region typeAnnotations : List<CTypeAnnotation>
+    protected List<CTypeAnnotation> typeAnnotations;
+    public List<CTypeAnnotation> getTypeAnnotations(){
+        if( typeAnnotations==null )typeAnnotations = new ArrayList<>();
+        return typeAnnotations;
+    }
+    public void setTypeAnnotations(List<CTypeAnnotation> ls){
+        typeAnnotations = ls;
+    }
+    //endregion
+
+    // protected List visitAttribute
+
+    protected List<CNestMember> nestMembers;
+    public List<CNestMember> getNestMembers(){
+        if( nestMembers==null )nestMembers = new ArrayList<>();
+        return nestMembers;
+    }
+    public void setNestMembers(List<CNestMember> ls){
+        nestMembers = ls;
+    }
+
+    protected List<CInnerClass> innerClasses;
+    public List<CInnerClass> getInnerClasses(){
+        if( innerClasses==null )innerClasses = new ArrayList<>();
+        return innerClasses;
+    }
+    public void setInnerClasses(List<CInnerClass> ls){
+        innerClasses = ls;
+    }
+
+    // protected List visitRecordComponent
+
+    //region fields : List<CField>
+    protected List<CField> fields;
+    public List<CField> getFields(){
+        if( fields==null )fields = new ArrayList<>();
+        return fields;
+    }
+    public void setFields(List<CField> fields){
+        this.fields = fields;
+    }
+    //endregion
+    //region methods : List<CMethod>
+    protected List<CMethod> methods;
+    public List<CMethod> getMethods(){
+        if( methods==null )methods = new ArrayList<>();
+        return methods;
+    }
+    public void setMethods(List<CMethod> methods){
+        this.methods = methods;
+    }
+    //endregion
+    //region order : Map<ClsByteCode,Integer>
+    protected Map<ClsByteCode,Integer> order;
+    public Map<ClsByteCode,Integer> getOrder(){
+        if( order==null )order = new LinkedHashMap<>();
+        return order;
+    }
+    public void setOrder(Map<ClsByteCode,Integer> order){
+        this.order = order;
+    }
+    public CBegin order(ClsByteCode c, int order){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        getOrder().put(c,order);
+        return this;
     }
     //endregion
 

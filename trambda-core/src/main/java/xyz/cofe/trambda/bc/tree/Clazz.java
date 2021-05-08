@@ -113,18 +113,6 @@ public class Clazz implements GetAnnotations, GetDefinition {
         definition.setName(name.replace(".","/"));
     }
 
-//    public synchronized Optional<String> getSuperClassname(){
-//        if( definition==null )return Optional.empty();
-//
-//        String suprClass = definition.getSuperName();
-//        if( suprClass==null )return Optional.empty();
-//
-//        return
-//            Optional.of(
-//                suprClass.replace("/",".")
-//            );
-//    }
-
     //region source : CSource
     protected CSource source;
     public synchronized CSource getSource(){

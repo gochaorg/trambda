@@ -1,9 +1,13 @@
 package xyz.cofe.trambda.bc.fld;
 
+import java.util.ArrayList;
+import java.util.List;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
+import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
-public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationDef {
+public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
     private static final long serialVersionUID = 1;
 
     public FTypeAnnotation(){
@@ -72,4 +76,15 @@ public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty, Annotat
     public String toString(){
         return FTypeAnnotation.class.getSimpleName()+" typeRef="+typeRef+" typePath="+typePath+" descriptor="+descriptor+" visible="+visible;
     }
+
+    //region annotationByteCodes : List<AnnotationByteCode>
+    protected List<AnnotationByteCode> annotationByteCodes;
+    public List<AnnotationByteCode> getAnnotationByteCodes(){
+        if(annotationByteCodes==null)annotationByteCodes = new ArrayList<>();
+        return annotationByteCodes;
+    }
+    public void setAnnotationByteCodes(List<AnnotationByteCode> byteCodes){
+        annotationByteCodes = byteCodes;
+    }
+    //endregion
 }

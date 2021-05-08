@@ -10,8 +10,10 @@ import xyz.cofe.trambda.bc.ann.AEnd;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AEnum;
 import xyz.cofe.trambda.bc.ann.APair;
+import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.EmAArray;
 import xyz.cofe.trambda.bc.ann.EmANameDesc;
+import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
 public class AnnotationDump extends AnnotationVisitor {
     public static final AtomicInteger idSeq = new AtomicInteger(0);
@@ -47,6 +49,19 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     public AnnotationDump byteCode(Consumer<? super AnnVisIdProperty> bc){
         byteCodeConsumer = bc;
+        return this;
+    }
+
+    public AnnotationDump byteCode(Consumer<? super AnnVisIdProperty> bc, GetAnnotationByteCodes sencondConsumer){
+        byteCodeConsumer = b -> {
+            if( bc!=null ){
+                bc.accept(b);
+            }
+
+            if( sencondConsumer!=null && b instanceof AnnotationByteCode ){
+                sencondConsumer.getAnnotationByteCodes().add( (AnnotationByteCode)b );
+            }
+        };
         return this;
     }
 
@@ -113,10 +128,11 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public AnnotationVisitor visitAnnotation(String name, String descriptor){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump = dump.byteCode(byteCodeConsumer);
-
         EmANameDesc emOb = new EmANameDesc();
+
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump = dump.byteCode(byteCodeConsumer,emOb);
+
         emOb.setAnnotationVisitorId(getAnnotationVisitorId());
         emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
         emOb.setName(name);
@@ -140,10 +156,11 @@ public class AnnotationDump extends AnnotationVisitor {
      */
     @Override
     public AnnotationVisitor visitArray(String name){
-        AnnotationDump dump = new AnnotationDump(this.api);
-        dump = dump.byteCode(byteCodeConsumer);
-
         EmAArray emOb = new EmAArray();
+
+        AnnotationDump dump = new AnnotationDump(this.api);
+        dump = dump.byteCode(byteCodeConsumer,emOb);
+
         emOb.setAnnotationVisitorId(getAnnotationVisitorId());
         emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
         emOb.setName(name);

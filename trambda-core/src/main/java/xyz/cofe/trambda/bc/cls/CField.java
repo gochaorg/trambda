@@ -1,7 +1,10 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 
 public class CField implements ClsByteCode, FldVisIdProperty {
@@ -108,5 +111,14 @@ public class CField implements ClsByteCode, FldVisIdProperty {
             ", descriptor='" + descriptor + '\'' +
             ", signature='" + signature + '\'' +
             ", value=" + value ;
+    }
+
+    protected List<FieldByteCode> fieldByteCodes;
+    public List<FieldByteCode> getFieldByteCodes(){
+        if( fieldByteCodes==null )fieldByteCodes = new ArrayList<>();
+        return fieldByteCodes;
+    }
+    public void setFieldByteCodes(List<FieldByteCode> fld){
+        this.fieldByteCodes = fld;
     }
 }

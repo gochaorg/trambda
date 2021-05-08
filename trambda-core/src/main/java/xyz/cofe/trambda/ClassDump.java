@@ -1,6 +1,7 @@
 package xyz.cofe.trambda;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -13,6 +14,7 @@ import org.objectweb.asm.RecordComponentVisitor;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.cls.CAnnotation;
 import xyz.cofe.trambda.bc.cls.CBegin;
 import xyz.cofe.trambda.bc.cls.CEnd;
@@ -26,6 +28,23 @@ import xyz.cofe.trambda.bc.cls.CNestMember;
 import xyz.cofe.trambda.bc.cls.COuterClass;
 import xyz.cofe.trambda.bc.cls.CTypeAnnotation;
 
+/**
+ * Дамп байт кода
+ *
+ * <p>
+ * order:
+ * <ol>
+ *     <li> visit
+ *     <li> [ visitSource ]
+ *     <li> [ visitModule ]
+ *     <li> [ visitNestHost ]
+ *     <li> [ visitPermittedSubclass ]
+ *     <li> [ visitOuterClass ]
+ *     <li> ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
+ *     <li> ( visitNestMember | visitInnerClass | visitRecordComponent | visitField | visitMethod )*
+ *     <li> visitEnd
+ * </ol>
+ */
 public class ClassDump extends ClassVisitor {
     private void dump(String message,Object...args){
         if( message==null )return;
@@ -75,14 +94,65 @@ public class ClassDump extends ClassVisitor {
         }
     }
 
+    protected final ThreadLocal<CBegin> currentClass = new ThreadLocal<>();
+    protected Optional<CBegin> currentClass(){
+        var v = currentClass.get();
+        return v!=null ? Optional.of(v) : Optional.empty();
+    }
+    protected void currentClass(CBegin begin){
+        currentClass.set(begin);
+    }
+    protected void currentClass(Consumer<CBegin> c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        var v = currentClass.get();
+        if( v==null ){
+            throw new IllegalThreadStateException("current class not defined");
+        } else {
+            c.accept(v);
+        }
+    }
+
+    protected final ThreadLocal<Integer> currentIndex = new ThreadLocal<>();
+    protected int currentIndex(){
+        var i = currentIndex.get();
+        if( i==null ){
+            currentIndex.set(0);
+            return 0;
+        }
+        return i;
+    }
+    protected int currentIndexGetAndInc(){
+        var i = currentIndex.get();
+        if( i==null ){
+            currentIndex.set(1);
+            return 0;
+        }
+        currentIndex.set(i+1);
+        return i;
+    }
+    protected void currentIndex(int i){
+        currentIndex.set(i);
+    }
+
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces){
-        emit(new CBegin(version,access,name,signature,superName,interfaces));
+        var c = new CBegin(version,access,name,signature,superName,interfaces);
+        currentClass(c);
+        currentIndex(0);
+        emit(c);
     }
 
     @Override
     public void visitSource(String source, String debug){
-        emit(new CSource(source,debug));
+        int ci = currentIndexGetAndInc();
+
+        var c = new CSource(source,debug);
+        currentClass(x -> {
+            x.setSource(c);
+            x.getOrder().put(c,ci);
+        });
+
+        emit(c);
     }
 
     @Override
@@ -93,21 +163,40 @@ public class ClassDump extends ClassVisitor {
 
     @Override
     public void visitNestHost(String nestHost){
+        int ci = currentIndexGetAndInc();
+        var c = new CNestHost(nestHost);
+
+        currentClass( x -> {
+            x.setNestHost(c);
+            x.getOrder().put(c,ci);
+        });
+
         emit(new CNestHost(nestHost));
     }
 
     @Override
     public void visitOuterClass(String owner, String name, String descriptor){
-        emit(new COuterClass(owner,name,descriptor));
+        int ci = currentIndexGetAndInc();
+        var c = new COuterClass(owner,name,descriptor);
+
+        currentClass( x -> {
+            x.setOuterClass(c);
+            x.getOrder().put(c,ci);
+        });
+
+        emit(c);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible){
-        AnnotationDump dump = new AnnotationDump(api);
-        dump.byteCode(byteCodeConsumer);
-
+        int ci = currentIndexGetAndInc();
         CAnnotation a = new CAnnotation(descriptor,visible);
+
+        AnnotationDump dump = new AnnotationDump(api);
+        dump.byteCode(byteCodeConsumer,a);
+
         a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+        currentClass( x -> x.order(a,ci).getAnnotations().add(a) );
 
         emit(a);
         return dump;
@@ -115,13 +204,16 @@ public class ClassDump extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
+        int ci = currentIndexGetAndInc();
+        CTypeAnnotation a = new CTypeAnnotation(typeRef,typePath!=null ? typePath.toString():null,descriptor,visible);
+
         AnnotationDump dump = new AnnotationDump(api);
-        dump.byteCode(byteCodeConsumer);
+        dump.byteCode(byteCodeConsumer,a);
+        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
-        CTypeAnnotation c = new CTypeAnnotation(typeRef,typePath!=null ? typePath.toString():null,descriptor,visible);
-        c.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+        currentClass( x -> x.order(a,ci).getTypeAnnotations().add(a) );
 
-        emit(c);
+        emit(a);
         return dump;
     }
 
@@ -132,17 +224,32 @@ public class ClassDump extends ClassVisitor {
 
     @Override
     public void visitNestMember(String nestMember){
-        emit(new CNestMember(nestMember));
+        int ci = currentIndexGetAndInc();
+        var c = new CNestMember(nestMember);
+
+        currentClass( x -> x.order(c,ci).getNestMembers().add(c) );
+
+        emit(c);
     }
 
     @Override
     public void visitPermittedSubclass(String permittedSubclass){
-        emit(new CPermittedSubclass(permittedSubclass));
+        int ci = currentIndexGetAndInc();
+        var c = new CPermittedSubclass(permittedSubclass);
+
+        currentClass( x -> x.order(c,ci).setPermittedSubclass(c) );
+
+        emit(c);
     }
 
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access){
-        emit(new CInnerClass(name,outerName,innerName,access));
+        int ci = currentIndexGetAndInc();
+        var c = new CInnerClass(name,outerName,innerName,access);
+
+        currentClass( x -> x.order(c,ci).getInnerClasses().add(c) );
+
+        emit(c);
     }
 
     @Override
@@ -153,11 +260,15 @@ public class ClassDump extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value){
+        int ci = currentIndexGetAndInc();
+
         FieldDump dump = new FieldDump(api);
         dump.byteCode(byteCodeConsumer);
 
         CField c = new CField(access,name,descriptor,signature,value);
         c.setFieldVisitorId(dump.getFieldVisitorId());
+
+        currentClass( x -> x.order(c,ci).getFields().add(c) );
 
         emit(c);
         return dump;
@@ -165,12 +276,16 @@ public class ClassDump extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions){
+        int ci = currentIndexGetAndInc();
+
         MethodDump dump = new MethodDump(api);
         dump.byteCode(byteCodeConsumer);
 
         CMethod method = new CMethod(access,name,descriptor,signature,exceptions);
         method.setMethodVisitorId(dump.getMethodVisitorId());
         emit(method);
+
+        currentClass( x -> x.order(method,ci).getMethods().add(method) );
 
         return dump;
     }

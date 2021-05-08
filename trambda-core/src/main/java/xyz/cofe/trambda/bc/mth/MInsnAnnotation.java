@@ -1,10 +1,14 @@
 package xyz.cofe.trambda.bc.mth;
 
+import java.util.ArrayList;
+import java.util.List;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
+import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
-public class MInsnAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef {
+public class MInsnAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
     private static final long serialVersionUID = 1;
 
     public MInsnAnnotation(){}
@@ -72,4 +76,15 @@ public class MInsnAnnotation extends MAbstractBC implements ByteCode, AnnVisIdPr
             " descriptor="+descriptor+
             " visible="+visible;
     }
+
+    //region annotationByteCodes : List<AnnotationByteCode>
+    protected List<AnnotationByteCode> annotationByteCodes;
+    public List<AnnotationByteCode> getAnnotationByteCodes(){
+        if(annotationByteCodes==null)annotationByteCodes = new ArrayList<>();
+        return annotationByteCodes;
+    }
+    public void setAnnotationByteCodes(List<AnnotationByteCode> byteCodes){
+        annotationByteCodes = byteCodes;
+    }
+    //endregion
 }

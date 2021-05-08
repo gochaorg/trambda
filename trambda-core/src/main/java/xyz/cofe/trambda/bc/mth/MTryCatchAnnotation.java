@@ -1,10 +1,14 @@
 package xyz.cofe.trambda.bc.mth;
 
+import java.util.ArrayList;
+import java.util.List;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
+import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
+import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
-public class MTryCatchAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef {
+public class MTryCatchAnnotation extends MAbstractBC implements ByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
     private static final long serialVersionUID = 1;
 
     public MTryCatchAnnotation(){}
@@ -31,7 +35,7 @@ public class MTryCatchAnnotation extends MAbstractBC implements ByteCode, AnnVis
     public void setTypeRef(int typeRef){
         this.typeRef = typeRef;
     }
-    //endregion
+    //endregionGetAnnotationByteCodes
     //region typePath : String
     protected String typePath;
     public String getTypePath(){
@@ -72,4 +76,15 @@ public class MTryCatchAnnotation extends MAbstractBC implements ByteCode, AnnVis
             " descriptor="+descriptor+
             " visible="+visible;
     }
+
+    //region annotationByteCodes : List<AnnotationByteCode>
+    protected List<AnnotationByteCode> annotationByteCodes;
+    public List<AnnotationByteCode> getAnnotationByteCodes(){
+        if(annotationByteCodes==null)annotationByteCodes = new ArrayList<>();
+        return annotationByteCodes;
+    }
+    public void setAnnotationByteCodes(List<AnnotationByteCode> byteCodes){
+        annotationByteCodes = byteCodes;
+    }
+    //endregion
 }

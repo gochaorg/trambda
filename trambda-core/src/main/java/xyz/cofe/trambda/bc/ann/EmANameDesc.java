@@ -1,5 +1,8 @@
 package xyz.cofe.trambda.bc.ann;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EmANameDesc extends EmbededAnnotation {
     private static final long serialVersionUID = 1;
 
