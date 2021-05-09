@@ -351,6 +351,7 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
         write(cw);
         return cw.toByteArray();
     }
+
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public static CBegin parseByteCode(byte[] byteCode){
         if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
