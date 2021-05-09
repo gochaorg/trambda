@@ -12,6 +12,11 @@ public class AEnum extends AAbstractBC implements AnnotationWriter {
         this.value = value;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public AEnum clone(){
+        return new AEnum(getName(),getDescriptor(),getValue());
+    }
+
     //region name : String
     protected String name;
 

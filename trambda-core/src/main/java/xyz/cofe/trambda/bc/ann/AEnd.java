@@ -7,6 +7,11 @@ public class AEnd extends AAbstractBC implements AnnotationWriter {
 
     public AEnd(){}
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public AEnd clone(){
+        return new AEnd();
+    }
+
     public String toString(){
         return AEnd.class.getSimpleName();
     }

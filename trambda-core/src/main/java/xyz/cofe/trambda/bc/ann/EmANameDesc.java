@@ -9,6 +9,30 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class EmANameDesc extends EmbededAnnotation implements AnnotationWriter {
     private static final long serialVersionUID = 1;
 
+    public EmANameDesc(){
+    }
+    public EmANameDesc(EmANameDesc sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+
+        name = sample.getName();
+        descriptor = sample.getDescriptor();
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    public EmANameDesc clone(){
+        return new EmANameDesc(this);
+    }
+
     //region name : String
     protected String name;
 

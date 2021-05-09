@@ -20,6 +20,7 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
     public V getValue(){ return value; }
     public void setValue(V v){ value=v; }
     //endregion
+    public abstract APair<V> clone();
 
     public String toString(){
         return
@@ -63,6 +64,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
         }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairString clone(){
+            return new APairString(getName(),getValue());
+        }
     }
     public static class APairByte extends APair<Byte> {
         public APairByte(String name, Byte value){
@@ -73,6 +79,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
         public void write(AnnotationVisitor v){
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairByte clone(){
+            return new APairByte(getName(),getValue());
         }
     }
     public static class APairBoolean extends APair<Boolean> {
@@ -85,6 +96,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
         }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairBoolean clone(){
+            return new APairBoolean(getName(),getValue());
+        }
     }
     public static class APairCharacter extends APair<Character> {
         public APairCharacter(String name, Character value){
@@ -95,6 +111,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
         public void write(AnnotationVisitor v){
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairCharacter clone(){
+            return new APairCharacter(getName(),getValue());
         }
     }
     public static class APairShort extends APair<Short> {
@@ -107,6 +128,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
         }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairShort clone(){
+            return new APairShort(getName(),getValue());
+        }
     }
     public static class APairInteger extends APair<Integer> {
         public APairInteger(String name, Integer value){
@@ -117,6 +143,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
         public void write(AnnotationVisitor v){
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairInteger clone(){
+            return new APairInteger(getName(),getValue());
         }
     }
     public static class APairLong extends APair<Long> {
@@ -129,6 +160,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
         }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairLong clone(){
+            return new APairLong(getName(),getValue());
+        }
     }
     public static class APairFloat extends APair<Float> {
         public APairFloat(String name, Float value){
@@ -140,6 +176,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
         }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairFloat clone(){
+            return new APairFloat(getName(),getValue());
+        }
     }
     public static class APairDouble extends APair<Double> {
         public APairDouble(String name, Double value){
@@ -150,6 +191,11 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
         public void write(AnnotationVisitor v){
             if( v==null )throw new IllegalArgumentException( "v==null" );
             v.visit(getName(), getValue());
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        public APairDouble clone(){
+            return new APairDouble(getName(),getValue());
         }
     }
 }
