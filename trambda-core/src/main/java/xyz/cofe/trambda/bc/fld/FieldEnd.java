@@ -8,6 +8,13 @@ import org.objectweb.asm.FieldVisitor;
 public class FieldEnd implements FieldByteCode {
     private static final long serialVersionUID = 1;
 
+    public FieldEnd(){}
+    public FieldEnd(FieldEnd sample){}
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public FieldEnd clone(){
+        return new FieldEnd(this);
+    }
+
     public String toString(){
         return FieldEnd.class.getSimpleName();
     }

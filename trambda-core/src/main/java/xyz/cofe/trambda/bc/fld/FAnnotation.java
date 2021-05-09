@@ -17,6 +17,26 @@ public class FAnnotation implements FieldByteCode, AnnotationDef, GetAnnotationB
         this.descriptor = descriptor;
         this.visible = visible;
     }
+    public FAnnotation(FAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        descriptor = sample.getDescriptor();
+        visible = sample.isVisible();
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public FAnnotation clone(){
+        return new FAnnotation(this);
+    }
 
     //region descriptor : String
     protected String descriptor;

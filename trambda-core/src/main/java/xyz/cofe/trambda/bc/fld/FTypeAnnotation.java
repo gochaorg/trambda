@@ -23,6 +23,30 @@ public class FTypeAnnotation implements FieldByteCode, AnnotationDef, GetAnnotat
         this.visible = visible;
     }
 
+    public FTypeAnnotation(FTypeAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        typeRef = sample.getTypeRef();
+        typePath = sample.getTypePath();
+        descriptor = sample.getDescriptor();
+        visible = sample.isVisible();
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public FTypeAnnotation clone(){
+        return new FTypeAnnotation(this);
+    }
+
     //region typeRef : int
     protected int typeRef;
     public int getTypeRef(){
@@ -58,15 +82,6 @@ public class FTypeAnnotation implements FieldByteCode, AnnotationDef, GetAnnotat
     public void setVisible(boolean visible){
         this.visible = visible;
     }
-    //endregion
-    //region fieldVisitorId : int
-//    protected int fieldVisitorId;
-//    @Override public int getFieldVisitorId(){
-//        return fieldVisitorId;
-//    }
-//    @Override public void setFieldVisitorId(int id){
-//        fieldVisitorId = id;
-//    }
     //endregion
 
     public String toString(){
