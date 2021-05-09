@@ -5,15 +5,15 @@ import java.util.List;
 
 public abstract class EmbededAnnotation extends AAbstractBC implements AnnotationDef, GetAnnotationByteCodes {
     //region embededAnnotationVisitorId : int
-    protected int embededAnnotationVisitorId = AnnVisIdProperty.DEF_ANNOTATION_VISITOR_ID;
-    public int getEmbededAnnotationVisitorId(){ return annotationVisitorId; };
-    public void setEmbededAnnotationVisitorId(int id){
-        this.annotationVisitorId = id;
-    };
+//    protected int embededAnnotationVisitorId = AnnVisIdProperty.DEF_ANNOTATION_VISITOR_ID;
+//    public int getEmbededAnnotationVisitorId(){ return annotationVisitorId; };
+//    public void setEmbededAnnotationVisitorId(int id){
+//        this.annotationVisitorId = id;
+//    };
     //endregion
 
-    @Override
-    public int getAnnotationDefVisitorId(){ return getEmbededAnnotationVisitorId(); }
+//    @Override
+//    public int getAnnotationDefVisitorId(){ return getEmbededAnnotationVisitorId(); }
 
     //region annotationByteCodes : List<AnnotationByteCode>
     protected List<AnnotationByteCode> annotationByteCodes;

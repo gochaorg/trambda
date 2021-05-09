@@ -6,8 +6,8 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AEnd;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AEnum;
 import xyz.cofe.trambda.bc.ann.APair;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
@@ -40,19 +40,19 @@ public class AnnotationDump extends AnnotationVisitor {
         super(api, annotationVisitor);
     }
 
-    private Consumer<? super AnnVisIdProperty> byteCodeConsumer;
+    private Consumer<? super ByteCode> byteCodeConsumer;
 
     /**
      * Указывает функцию принимающую байт код
      * @param bc функция приема байт кода
      * @return SELF ссылка
      */
-    public AnnotationDump byteCode(Consumer<? super AnnVisIdProperty> bc){
+    public AnnotationDump byteCode(Consumer<? super ByteCode> bc){
         byteCodeConsumer = bc;
         return this;
     }
 
-    public AnnotationDump byteCode(Consumer<? super AnnVisIdProperty> bc, GetAnnotationByteCodes sencondConsumer){
+    public AnnotationDump byteCode(Consumer<? super ByteCode> bc, GetAnnotationByteCodes sencondConsumer){
         byteCodeConsumer = b -> {
             if( bc!=null ){
                 bc.accept(b);
@@ -65,27 +65,10 @@ public class AnnotationDump extends AnnotationVisitor {
         return this;
     }
 
-    protected Integer annotationVisitorId;
-    public Integer getAnnotationVisitorId(){ return annotationVisitorId; }
-    public void setAnnotationVisitorId(Integer id){
-        annotationVisitorId = id;
-    }
-    public AnnotationDump annotationVisitorId(Integer id){
-        annotationVisitorId = id;
-        return this;
-    }
-
-    {
-        annotationVisitorId = idSeq.incrementAndGet();
-    }
-
-    protected void emit(AnnVisIdProperty bc){
+    protected void emit(ByteCode bc){
         if( bc==null )throw new IllegalArgumentException( "bc==null" );
         var c = byteCodeConsumer;
         if( c!=null ){
-            if( annotationVisitorId!=null && bc.getAnnotationVisitorId()==-1 ){
-                bc.setAnnotationVisitorId(annotationVisitorId);
-            }
             c.accept(bc);
         }
     }
@@ -133,8 +116,6 @@ public class AnnotationDump extends AnnotationVisitor {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump = dump.byteCode(byteCodeConsumer,emOb);
 
-        emOb.setAnnotationVisitorId(getAnnotationVisitorId());
-        emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
         emOb.setName(name);
         emOb.setDescriptor(descriptor);
 
@@ -161,8 +142,6 @@ public class AnnotationDump extends AnnotationVisitor {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump = dump.byteCode(byteCodeConsumer,emOb);
 
-        emOb.setAnnotationVisitorId(getAnnotationVisitorId());
-        emOb.setEmbededAnnotationVisitorId(dump.getAnnotationVisitorId());
         emOb.setName(name);
 
         return dump;

@@ -23,34 +23,13 @@ import xyz.cofe.text.out.Output;
 import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.EmbededAnnotation;
 import xyz.cofe.trambda.bc.cls.CBegin;
 import xyz.cofe.trambda.bc.cls.CField;
 import xyz.cofe.trambda.bc.cls.CMethod;
-import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
-import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
-import xyz.cofe.trambda.bc.tree.Clazz;
-import xyz.cofe.trambda.bc.tree.GetAnnotations;
-import xyz.cofe.trambda.bc.tree.GetDefinition;
-import xyz.cofe.trambda.bc.tree.Method;
 
 public class ClassSerTest {
     private final Output out = new Output();
-
-    private static <X extends GetAnnotations & GetDefinition> void dumpAnn(X f){
-        if( !f.getAnnotations().isEmpty() ){
-            String indent = "  ";
-            f.getAnnotations().forEach(ann -> {
-                ann.visit((a, ap) -> {
-                    System.out.println(indent+" ".repeat(ap.size()) + "@" + a.getDefinition());
-                    a.getBody().forEach(ab -> {
-                        System.out.println(indent+" ".repeat(ap.size()) + " " + ab);
-                    });
-                });
-            });
-        }
-    }
 
     //region test01
     @Test
@@ -113,7 +92,8 @@ public class ClassSerTest {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible){
                 out.println("annotation descriptor="+descriptor+" visible="+visible);
-                out.setLinePrefix( out.getLinePrefix().trim()+"ann> " );
+                String pref = out.getLinePrefix();
+                out.setLinePrefix( (pref!=null ? pref.trim() : "")+"ann> " );
                 return annotationVisitor();
             }
 
@@ -547,80 +527,6 @@ public class ClassSerTest {
     //endregion
 
     @Test
-    public void test02(){
-        var classSrc = User2.class;
-        var classUrl = classSrc.getResource(
-            "/"+
-                classSrc.getName().replace(".","/")+".class"
-        );
-        out.println("url "+classUrl);
-        out.println("-".repeat(80));
-
-        try{
-            var classBytes = IOFun.readBytes(classUrl);
-            ClassReader classReader = new ClassReader(classBytes);
-
-            List<ByteCode> byteCodes = new ArrayList<>();
-
-            ClassDump dump = new ClassDump();
-            dump.byteCode( byteCodes::add );
-            classReader.accept(dump,0);
-
-            byteCodes.forEach(c -> {
-                if( c instanceof AnnVisIdProperty ){
-                    System.out.print("a.v.id="+((AnnVisIdProperty)c).getAnnotationVisitorId()+" ");
-                    if( c instanceof EmbededAnnotation ){
-                        var e= (EmbededAnnotation)c;
-                        System.out.print("e.v.id="+e.getEmbededAnnotationVisitorId()+" ");
-                    }
-                }
-
-                if( c instanceof MthVisIdProperty ){
-                    System.out.print("m.v.id="+((MthVisIdProperty)c).getMethodVisitorId()+" ");
-                }
-
-                if( c instanceof FldVisIdProperty ){
-                    System.out.print("f.v.id="+((FldVisIdProperty)c).getFieldVisitorId()+" ");
-                }
-
-                System.out.println(c);
-            });
-            System.out.println("-".repeat(80));
-
-            Clazz clz = new Clazz(byteCodes);
-            System.out.println("class "+
-                new AccFlags( clz.getDefinition().getAccess() ).flags()
-            );
-
-//            System.out.println("class "+clz.getDefinition());
-//            dumpAnn(clz);
-//
-//            System.out.println("fields");
-//            clz.getFields().forEach(f -> {
-//                System.out.println(f.getDefinition());
-//                dumpAnn(f);
-//            });
-//
-//            System.out.println("methods");
-//            clz.getMethods().forEach(m -> {
-//                System.out.println(m.getDefinition());
-//                dumpAnn(m);
-//                System.out.println("  body {");
-//                m.getBody().forEach(b -> System.out.println("    "+b));
-//                System.out.println("  }");
-//            });
-
-            System.out.println("= ".repeat(40));
-
-            dump.byteCode(System.out::println);
-            classReader = new ClassReader(clz.toByteCode());
-            classReader.accept(dump,0);
-        } catch( IOException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     public void test03(){
         var classSrc = User2.class;
         var classUrl = classSrc.getResource(
@@ -658,6 +564,13 @@ public class ClassSerTest {
                 }
                 System.out.println("/"+ts.getNode());
             });
+
+            System.out.println("- ".repeat(40));
+
+            byte[] bytes = begin.toByteCode();
+            dump.byteCode(System.out::println);
+            classReader = new ClassReader(bytes);
+            classReader.accept(dump,0);
         } catch( IOException e ) {
             e.printStackTrace();
         }

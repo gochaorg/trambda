@@ -63,8 +63,6 @@ import xyz.cofe.trambda.bc.mth.*;
  * the labels passed as arguments have been visited.
  */
 public class MethodDump extends MethodVisitor implements Opcodes {
-    public static final AtomicInteger idSeq = new AtomicInteger(0);
-
     private void dump(String message,Object...args){
         if( message==null )return;
         if( args==null || args.length==0 ){
@@ -91,25 +89,8 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         return this;
     }
 
-    protected Integer methodVisitorId;
-    public Integer getMethodVisitorId(){ return methodVisitorId; }
-    public void setMethodVisitorId(Integer id){
-        methodVisitorId = id;
-    }
-    public MethodDump methodVisitorId(Integer id){
-        methodVisitorId = id;
-        return this;
-    }
-
-    {
-        methodVisitorId = idSeq.incrementAndGet();
-    }
-
     protected void emit(ByteCode bc){
         if( bc==null )throw new IllegalArgumentException( "bc==null" );
-        if( bc instanceof MthVisIdProperty ){
-            ((MthVisIdProperty) bc).setMethodVisitorId(getMethodVisitorId());
-        }
         var c = byteCodeConsumer;
         if( c!=null ){
             c.accept(bc);
@@ -163,7 +144,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
 
         dump.byteCode( this.byteCodeConsumer,bc );
-        bc.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(bc);
         return dump;
@@ -183,7 +163,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
 
         dump.byteCode( this.byteCodeConsumer,ann );
-        ann.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(ann);
         return dump;
@@ -216,7 +195,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         ta.setTypePath(typePath!=null ? typePath.toString() : null);
         ta.setDescriptor(descriptor);
         ta.setVisible(visible);
-        ta.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         emit(ta);
         return dump;
@@ -261,7 +239,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer,pa );
 
-        pa.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         pa.setParameter(parameter);
         pa.setDescriptor(descriptor);
         pa.setVisible(visible);
@@ -668,7 +645,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
 
         dump.byteCode( this.byteCodeConsumer,ia );
 
-        ia.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         ia.setTypeRef(typeRef);
         ia.setTypePath(typePath!=null ? typePath.toString() : null);
         ia.setDescriptor(descriptor);
@@ -722,8 +698,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer,a );
 
-        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
-
         emit(a);
         return dump;
     }
@@ -773,8 +747,6 @@ public class MethodDump extends MethodVisitor implements Opcodes {
 
         AnnotationDump dump = new AnnotationDump(this.api);
         dump.byteCode( this.byteCodeConsumer,a );
-
-        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         a.setTypeRef(typeRef);
         a.setTypePath(typePath!=null ? typePath.toString() : null);

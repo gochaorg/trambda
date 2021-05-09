@@ -5,12 +5,11 @@ import java.util.List;
 import org.objectweb.asm.FieldVisitor;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
-public class FAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
+public class FAnnotation implements FieldByteCode, AnnotationDef, GetAnnotationByteCodes {
     private static final long serialVersionUID = 1;
 
     public FAnnotation(){}
@@ -35,24 +34,6 @@ public class FAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationD
     }
     public void setVisible(boolean visible){
         this.visible = visible;
-    }
-    //endregion
-    //region annotationVisitorId : int
-    private int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){
-        return annotationVisitorId;
-    }
-    public void setAnnotationVisitorId(int annotationVisitorId){
-        this.annotationVisitorId = annotationVisitorId;
-    }
-    //endregion
-    //region fieldVisitorId : int
-    private int fieldVisitorId;
-    @Override public int getFieldVisitorId(){
-        return fieldVisitorId;
-    }
-    @Override public void setFieldVisitorId(int id){
-        fieldVisitorId = id;
     }
     //endregion
 

@@ -197,7 +197,6 @@ public class ClassDump extends ClassVisitor {
         AnnotationDump dump = new AnnotationDump(api);
         dump.byteCode(byteCodeConsumer,a);
 
-        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
         currentClass( x -> x.order(a,ci).getAnnotations().add(a) );
 
         emit(a);
@@ -211,7 +210,6 @@ public class ClassDump extends ClassVisitor {
 
         AnnotationDump dump = new AnnotationDump(api);
         dump.byteCode(byteCodeConsumer,a);
-        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
 
         currentClass( x -> x.order(a,ci).getTypeAnnotations().add(a) );
 
@@ -273,8 +271,6 @@ public class ClassDump extends ClassVisitor {
             }
         });
 
-        c.setFieldVisitorId(dump.getFieldVisitorId());
-
         currentClass( x -> x.order(c,ci).getFields().add(c) );
 
         emit(c);
@@ -294,7 +290,6 @@ public class ClassDump extends ClassVisitor {
             }
         });
 
-        method.setMethodVisitorId(dump.getMethodVisitorId());
         emit(method);
 
         currentClass( x -> x.order(method,ci).getMethods().add(method) );

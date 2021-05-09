@@ -2,18 +2,15 @@ package xyz.cofe.trambda.bc.cls;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
-import xyz.cofe.trambda.bc.mth.MAbstractBC;
 
 public class CAnnotation implements
-    ClsByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes,
+    ClsByteCode, AnnotationDef, GetAnnotationByteCodes,
     ClazzWriter
 {
     private static final long serialVersionUID = 1;
@@ -40,15 +37,6 @@ public class CAnnotation implements
     }
     public void setVisible(boolean visible){
         this.visible = visible;
-    }
-    //endregion
-    //region annotationVisitorId : int
-    private int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){
-        return annotationVisitorId;
-    }
-    public void setAnnotationVisitorId(int annotationVisitorId){
-        this.annotationVisitorId = annotationVisitorId;
     }
     //endregion
 

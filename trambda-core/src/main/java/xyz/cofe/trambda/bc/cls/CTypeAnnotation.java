@@ -7,13 +7,12 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
 public class CTypeAnnotation
-    implements ClsByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes,
+    implements ClsByteCode, AnnotationDef, GetAnnotationByteCodes,
     ClazzWriter
 {
     private static final long serialVersionUID = 1;
@@ -28,13 +27,6 @@ public class CTypeAnnotation
         this.visible = visible;
     }
 
-    //region annotationVisitorId : int
-    protected int annotationVisitorId = AnnVisIdProperty.DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){ return annotationVisitorId; };
-    public void setAnnotationVisitorId(int id){
-        this.annotationVisitorId = id;
-    }
-    //endregion
     //region typeRef : int
     protected int typeRef;
     public int getTypeRef(){

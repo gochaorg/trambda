@@ -6,7 +6,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.AnnotationWriter;
@@ -15,7 +14,6 @@ import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 public class MTypeAnnotation extends MAbstractBC
     implements
         ByteCode,
-        AnnVisIdProperty,
         AnnotationDef,
         GetAnnotationByteCodes,
         MethodWriter
@@ -30,13 +28,6 @@ public class MTypeAnnotation extends MAbstractBC
         this.visible = visible;
     }
 
-    //region annotationVisitorId : int
-    protected int annotationVisitorId = AnnVisIdProperty.DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){ return annotationVisitorId; };
-    public void setAnnotationVisitorId(int id){
-        this.annotationVisitorId = id;
-    }
-    //endregion
     //region typeRef
     protected int typeRef;
     public int getTypeRef(){

@@ -6,12 +6,11 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
-public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes {
+public class FTypeAnnotation implements FieldByteCode, AnnotationDef, GetAnnotationByteCodes {
     private static final long serialVersionUID = 1;
 
     public FTypeAnnotation(){
@@ -24,13 +23,6 @@ public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty, Annotat
         this.visible = visible;
     }
 
-    //region annotationVisitorId : int
-    protected int annotationVisitorId = AnnVisIdProperty.DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){ return annotationVisitorId; };
-    public void setAnnotationVisitorId(int id){
-        this.annotationVisitorId = id;
-    }
-    //endregion
     //region typeRef : int
     protected int typeRef;
     public int getTypeRef(){
@@ -68,13 +60,13 @@ public class FTypeAnnotation implements FieldByteCode, AnnVisIdProperty, Annotat
     }
     //endregion
     //region fieldVisitorId : int
-    protected int fieldVisitorId;
-    @Override public int getFieldVisitorId(){
-        return fieldVisitorId;
-    }
-    @Override public void setFieldVisitorId(int id){
-        fieldVisitorId = id;
-    }
+//    protected int fieldVisitorId;
+//    @Override public int getFieldVisitorId(){
+//        return fieldVisitorId;
+//    }
+//    @Override public void setFieldVisitorId(int id){
+//        fieldVisitorId = id;
+//    }
     //endregion
 
     public String toString(){

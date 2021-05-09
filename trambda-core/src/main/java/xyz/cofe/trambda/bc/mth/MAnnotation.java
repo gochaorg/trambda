@@ -5,14 +5,13 @@ import java.util.List;
 import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
 public class MAnnotation
     extends MAbstractBC
-    implements ByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes, MethodWriter
+    implements ByteCode, AnnotationDef, GetAnnotationByteCodes, MethodWriter
 {
     private static final long serialVersionUID = 1;
 
@@ -38,15 +37,6 @@ public class MAnnotation
     }
     public void setVisible(boolean visible){
         this.visible = visible;
-    }
-    //endregion
-    //region annotationVisitorId : int
-    protected int annotationVisitorId = DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){
-        return annotationVisitorId;
-    }
-    public void setAnnotationVisitorId(int annotationVisitorId){
-        this.annotationVisitorId = annotationVisitorId;
     }
     //endregion
 

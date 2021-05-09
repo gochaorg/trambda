@@ -6,24 +6,16 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.TypePath;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
 public class MParameterAnnotation extends MAbstractBC
     implements
-        ByteCode, AnnVisIdProperty, AnnotationDef, GetAnnotationByteCodes, MethodWriter
+        ByteCode, AnnotationDef, GetAnnotationByteCodes, MethodWriter
 {
     private static final long serialVersionUID = 1;
 
-    //region annotationVisitorId : int
-    protected int annotationVisitorId = AnnVisIdProperty.DEF_ANNOTATION_VISITOR_ID;
-    public int getAnnotationVisitorId(){ return annotationVisitorId; };
-    public void setAnnotationVisitorId(int id){
-        this.annotationVisitorId = id;
-    }
-    //endregion
     //region parameter : int
     protected int parameter;
     public int getParameter(){

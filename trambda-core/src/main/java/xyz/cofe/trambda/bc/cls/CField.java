@@ -3,14 +3,11 @@ package xyz.cofe.trambda.bc.cls;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.AccFlags;
-import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
-import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 
-public class CField implements ClsByteCode, FldVisIdProperty, ClazzWriter {
+public class CField implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CField(){}
@@ -23,7 +20,6 @@ public class CField implements ClsByteCode, FldVisIdProperty, ClazzWriter {
     }
     public CField(CField sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
-        fieldVisitorId = sample.fieldVisitorId;
         access = sample.getAccess();
         name = sample.getName();
         descriptor = sample.getDescriptor();
@@ -42,18 +38,6 @@ public class CField implements ClsByteCode, FldVisIdProperty, ClazzWriter {
         return this;
     }
 
-    //region fieldVisitorId
-    protected int fieldVisitorId = FldVisIdProperty.DEF_FIELD_VISITOR_ID;
-    @Override
-    public int getFieldVisitorId(){
-        return fieldVisitorId;
-    }
-
-    @Override
-    public void setFieldVisitorId(int id){
-        fieldVisitorId = id;
-    }
-    //endregion
     //region access
     protected int access;
     public int getAccess(){

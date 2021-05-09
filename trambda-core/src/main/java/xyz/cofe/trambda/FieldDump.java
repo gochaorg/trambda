@@ -10,12 +10,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.TypeReference;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.ann.AnnVisIdProperty;
 import xyz.cofe.trambda.bc.fld.FAnnotation;
 import xyz.cofe.trambda.bc.fld.FieldEnd;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FTypeAnnotation;
-import xyz.cofe.trambda.bc.fld.FldVisIdProperty;
 
 public class FieldDump extends FieldVisitor {
     private void dump(String message,Object...args){
@@ -69,25 +67,8 @@ public class FieldDump extends FieldVisitor {
 
     public static final AtomicInteger idSeq = new AtomicInteger(0);
 
-    protected Integer fieldVisitorId;
-    public Integer getFieldVisitorId(){ return fieldVisitorId; }
-    public void setFieldVisitorId(Integer id){
-        fieldVisitorId = id;
-    }
-    public FieldDump fieldVisitorId(Integer id){
-        fieldVisitorId = id;
-        return this;
-    }
-
-    {
-        fieldVisitorId = idSeq.incrementAndGet();
-    }
-
     protected void emit(FieldByteCode bc){
         if( bc==null )throw new IllegalArgumentException( "bc==null" );
-        if( bc instanceof FldVisIdProperty ){
-            ((FldVisIdProperty)bc).setFieldVisitorId(getFieldVisitorId());
-        }
         var c = byteCodeConsumer;
         if( c!=null ){
             c.accept(bc);
@@ -105,25 +86,12 @@ public class FieldDump extends FieldVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible){
         AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( annVisitor.get() );
 
         FAnnotation a = new FAnnotation(descriptor,visible);
-        a.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+        dump.byteCode( byteCodeConsumer, a );
 
         emit(a);
         return dump;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Supplier<Consumer<? super AnnVisIdProperty>> annVisitor = ()->{
-        //noinspection rawtypes
-        return (Consumer)this.byteCodeConsumer;
-    };
-
-    public FieldDump annotationByteCode( Consumer<? super AnnVisIdProperty> cons ){
-        if( cons==null )throw new IllegalArgumentException( "cons==null" );
-        annVisitor = () -> cons;
-        return this;
     }
 
     /**
@@ -142,10 +110,10 @@ public class FieldDump extends FieldVisitor {
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
         AnnotationDump dump = new AnnotationDump(this.api);
-        dump.byteCode( annVisitor.get() );
-
         FTypeAnnotation ta = new FTypeAnnotation();
-        ta.setAnnotationVisitorId(dump.getAnnotationVisitorId());
+
+        dump.byteCode( byteCodeConsumer, ta );
+
         ta.setTypeRef(typeRef);
         ta.setTypePath(typePath!=null ? typePath.toString() : null);
         ta.setDescriptor(descriptor);

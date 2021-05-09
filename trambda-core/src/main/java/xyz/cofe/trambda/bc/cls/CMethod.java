@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 import xyz.cofe.trambda.bc.mth.MethodWriterCtx;
-import xyz.cofe.trambda.bc.mth.MthVisIdProperty;
 
-public class CMethod implements ClsByteCode, MthVisIdProperty, ClazzWriter {
+public class CMethod implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CMethod(){}
@@ -33,7 +31,6 @@ public class CMethod implements ClsByteCode, MthVisIdProperty, ClazzWriter {
         descriptor = sample.getDescriptor();
         signature = sample.getSignature();
         exceptions = sample.getExceptions();
-        methodVisitorId = sample.methodVisitorId;
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
@@ -90,19 +87,6 @@ public class CMethod implements ClsByteCode, MthVisIdProperty, ClazzWriter {
     }
     public void setExceptions(String[] exceptions){
         this.exceptions = exceptions;
-    }
-    //endregion
-    //region methodVisitorId : int = MthVisIdProperty.DEF_METHOD_VISITOR_ID
-    protected int methodVisitorId = MthVisIdProperty.DEF_METHOD_VISITOR_ID;
-
-    @Override
-    public int getMethodVisitorId(){
-        return methodVisitorId;
-    }
-
-    @Override
-    public void setMethodVisitorId(int id){
-        methodVisitorId = id;
     }
     //endregion
     //region methodByteCodes : List<MethodByteCode>
