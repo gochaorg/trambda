@@ -24,6 +24,27 @@ public class MInsnAnnotation extends MAbstractBC
         this.descriptor = descriptor;
         this.visible = visible;
     }
+    public MInsnAnnotation(MInsnAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+
+        typeRef = sample.getTypeRef();
+        typePath = sample.getTypePath();
+        descriptor = sample.getDescriptor();
+        visible = sample.isVisible();
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MInsnAnnotation clone(){ return new MInsnAnnotation(this); }
 
     //region typeRef : int
     protected int typeRef;

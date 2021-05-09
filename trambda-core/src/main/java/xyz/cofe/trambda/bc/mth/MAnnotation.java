@@ -20,6 +20,24 @@ public class MAnnotation
         this.descriptor = descriptor;
         this.visible = visible;
     }
+    public MAnnotation(MAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        this.descriptor = sample.getDescriptor();
+        this.visible = sample.isVisible();
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public MAnnotation clone(){ return new MAnnotation(this); }
 
     //region descriptor : String
     protected String descriptor;

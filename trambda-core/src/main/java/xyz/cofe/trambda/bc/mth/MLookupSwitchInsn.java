@@ -54,12 +54,22 @@ import xyz.cofe.trambda.bc.ByteCode;
  */
 public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
+
     public MLookupSwitchInsn(){}
     public MLookupSwitchInsn(String defHdl, int[] keys, String[] labels){
         this.defaultHandlerLabel = defHdl;
         this.keys = keys;
         this.labels = labels;
     }
+    public MLookupSwitchInsn(MLookupSwitchInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        defaultHandlerLabel = sample.defaultHandlerLabel;
+        if( sample.keys!=null )keys = Arrays.copyOf(sample.keys,sample.keys.length);
+        if( sample.labels!=null )labels = Arrays.copyOf(sample.labels,sample.labels.length);
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MLookupSwitchInsn clone(){ return new MLookupSwitchInsn(this); }
+
     //region defaultHandlerLabel
     private String defaultHandlerLabel;
 

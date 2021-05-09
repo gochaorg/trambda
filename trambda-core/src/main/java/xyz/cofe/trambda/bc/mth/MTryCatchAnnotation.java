@@ -22,6 +22,26 @@ public class MTryCatchAnnotation extends MAbstractBC
         this.descriptor = descriptor;
         this.visible = visible;
     }
+    public MTryCatchAnnotation(MTryCatchAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        typePath = sample.typePath;
+        typeRef = sample.typeRef;
+        descriptor = sample.descriptor;
+        visible = sample.visible;
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MTryCatchAnnotation clone(){ return new MTryCatchAnnotation(this); }
 
     //region typeRef : int
     protected int typeRef;

@@ -62,6 +62,13 @@ public class MMultiANewArrayInsn extends MAbstractBC implements MethodWriter {
         this.descriptor = descriptor;
         this.numDimensions = numDimensions;
     }
+    public MMultiANewArrayInsn(MMultiANewArrayInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        descriptor = sample.descriptor;
+        numDimensions = sample.numDimensions;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MMultiANewArrayInsn clone(){ return new MMultiANewArrayInsn(this); }
 
     //region descriptor
     private String descriptor;

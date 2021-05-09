@@ -9,7 +9,6 @@ public class MHandle implements Serializable, BootstrapMethArg {
 
     public MHandle(){
     }
-
     public MHandle(org.objectweb.asm.Handle sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         tag = sample.getTag();
@@ -17,6 +16,18 @@ public class MHandle implements Serializable, BootstrapMethArg {
         name = sample.getName();
         owner = sample.getOwner();
         iface = sample.isInterface();
+    }
+    public MHandle(MHandle sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        tag = sample.getTag();
+        desc = sample.getDesc();
+        name = sample.getName();
+        owner = sample.getOwner();
+        iface = sample.isIface();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public MHandle clone(){
+        return new MHandle(this);
     }
 
     //region tag : int

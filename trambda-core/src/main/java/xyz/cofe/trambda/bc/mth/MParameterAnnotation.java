@@ -16,6 +16,29 @@ public class MParameterAnnotation extends MAbstractBC
 {
     private static final long serialVersionUID = 1;
 
+    public MParameterAnnotation(){
+    }
+    public MParameterAnnotation(MParameterAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+
+        parameter = sample.parameter;
+        descriptor = sample.descriptor;
+        visible = sample.visible;
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MParameterAnnotation clone(){ return new MParameterAnnotation(this); }
+
     //region parameter : int
     protected int parameter;
     public int getParameter(){

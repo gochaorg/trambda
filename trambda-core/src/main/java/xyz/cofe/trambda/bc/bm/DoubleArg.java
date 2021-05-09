@@ -12,6 +12,12 @@ public class DoubleArg implements BootstrapMethArg {
     public DoubleArg(Double v){
         value = v;
     }
+    public DoubleArg(DoubleArg sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        value = sample.getValue();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public DoubleArg clone(){ return new DoubleArg(this); }
 
     private Double value;
     public Double getValue(){

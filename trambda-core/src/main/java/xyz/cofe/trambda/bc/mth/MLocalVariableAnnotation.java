@@ -19,6 +19,29 @@ public class MLocalVariableAnnotation extends MAbstractBC
     private static final long serialVersionUID = 1;
 
     public MLocalVariableAnnotation(){}
+    public MLocalVariableAnnotation(MLocalVariableAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        typeRef = sample.typeRef;
+        typePath = sample.typePath;
+        if( sample.startLabels!=null )startLabels = Arrays.copyOf(sample.startLabels, sample.startLabels.length);
+        if( sample.endLabels!=null )endLabels = Arrays.copyOf(sample.endLabels, sample.endLabels.length);
+        if( sample.index!=null )index = Arrays.copyOf(sample.index, sample.index.length);
+        descriptor = sample.descriptor;
+        visible = sample.visible;
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MLocalVariableAnnotation clone(){ return new MLocalVariableAnnotation(this); }
 
     //region typeRef : int
     protected int typeRef;

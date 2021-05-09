@@ -56,6 +56,22 @@ public class MInvokeDynamicInsn extends MAbstractBC implements MethodWriter {
         }
     }
 
+    public MInvokeDynamicInsn(MInvokeDynamicInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        name = sample.getName();
+        descriptor = sample.getDescriptor();
+
+        var bmh = sample.bootstrapMethodHandle;
+        if( bmh!=null )bootstrapMethodHandle = bmh.clone();
+
+        var l = sample.bootstrapMethodArguments;
+        if( l!=null ){
+            bootstrapMethodArguments = new ArrayList<>(l);
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MInvokeDynamicInsn clone(){ return new MInvokeDynamicInsn(this); }
+
     //region name : String
     private String name;
     public String getName(){

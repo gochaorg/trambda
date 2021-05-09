@@ -14,6 +14,14 @@ public class MMaxs extends MAbstractBC implements MethodWriter {
         this.maxStack = maxStack;
     }
 
+    public MMaxs(MMaxs sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        maxLocals = sample.maxLocals;
+        maxStack = sample.maxStack;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MMaxs clone(){ return new MMaxs(this); }
+
     //region maxStack : int
     private int maxStack;
     public int getMaxStack(){

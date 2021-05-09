@@ -34,6 +34,13 @@ public class MJumpInsn extends MAbstractBC implements MethodWriter {
         this.opcode = op;
         this.label = label;
     }
+    public MJumpInsn(MJumpInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        opcode = sample.getOpcode();
+        label = sample.getLabel();
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MJumpInsn clone(){ return new MJumpInsn(this); }
 
     //region opcode : int
     private int opcode;

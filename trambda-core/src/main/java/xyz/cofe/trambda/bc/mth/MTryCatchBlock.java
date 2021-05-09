@@ -20,6 +20,16 @@ public class MTryCatchBlock extends MAbstractBC
         this.type = type;
     }
 
+    public MTryCatchBlock(MTryCatchBlock sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        labelStart = sample.labelStart;
+        labelEnd = sample.labelEnd;
+        labelHandler = sample.labelHandler;
+        type = sample.type;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MTryCatchBlock clone(){ return new MTryCatchBlock(this); }
+
     //region start
     private String labelStart;
 

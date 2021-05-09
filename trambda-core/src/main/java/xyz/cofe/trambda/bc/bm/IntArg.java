@@ -12,6 +12,12 @@ public class IntArg implements BootstrapMethArg {
     public IntArg(Integer v){
         value = v;
     }
+    public IntArg(IntArg sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        value = sample.getValue();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public IntArg clone(){ return new IntArg(this); }
 
     private Integer value;
 

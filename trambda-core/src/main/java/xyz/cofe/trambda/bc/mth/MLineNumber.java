@@ -11,6 +11,13 @@ public class MLineNumber extends MAbstractBC implements MethodWriter {
         this.line = line;
         this.label = label;
     }
+    public MLineNumber(MLineNumber sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        line = sample.line;
+        label = sample.label;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MLineNumber clone(){ return new MLineNumber(this); }
 
     //region line : int
     private int line;

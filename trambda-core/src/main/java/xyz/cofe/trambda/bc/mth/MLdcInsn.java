@@ -2,6 +2,7 @@ package xyz.cofe.trambda.bc.mth;
 
 import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
 import xyz.cofe.trambda.bc.bm.LdcType;
 import xyz.cofe.trambda.bc.bm.MHandle;
 
@@ -12,6 +13,18 @@ public class MLdcInsn extends MAbstractBC implements MethodWriter {
         this.value = value;
         this.ldcType = ldcType;
     }
+    public MLdcInsn(MLdcInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        ldcType = sample.getLdcType();
+        if( sample.value instanceof BootstrapMethArg ){
+            value = ((BootstrapMethArg)sample.value).clone();
+        }else{
+            value = sample.value;
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MLdcInsn clone(){ return new MLdcInsn(this); }
+
     //region ldcType : LdcType
     private LdcType ldcType;
     public LdcType getLdcType(){

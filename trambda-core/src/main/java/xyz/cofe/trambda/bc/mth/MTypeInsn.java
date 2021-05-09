@@ -17,6 +17,13 @@ public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
         this.opcode = op;
         this.type = type;
     }
+    public MTypeInsn(MTypeInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        opcode = sample.opcode;
+        type = sample.type;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MTypeInsn clone(){ return new MTypeInsn(this); }
 
     //region opcode : int
     private int opcode;

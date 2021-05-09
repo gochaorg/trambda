@@ -41,6 +41,13 @@ public class MIincInsn extends MAbstractBC implements MethodWriter {
         this.variable = variable;
         this.increment = increment;
     }
+    public MIincInsn(MIincInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        variable = sample.getVariable();
+        increment = sample.getIncrement();
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MIincInsn clone(){ return new MIincInsn(this); }
 
     //region variable : int
     private int variable;

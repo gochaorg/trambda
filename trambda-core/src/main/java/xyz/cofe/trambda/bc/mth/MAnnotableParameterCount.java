@@ -11,6 +11,14 @@ public class MAnnotableParameterCount extends MAbstractBC implements ByteCode, M
         this.parameterCount = parameterCount;
         this.visible = visible;
     }
+    public MAnnotableParameterCount(MAnnotableParameterCount sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        parameterCount = sample.getParameterCount();
+        visible = sample.isVisible();
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public MAnnotableParameterCount clone(){ return new MAnnotableParameterCount(this); }
 
     //region parameterCount : int
     protected int parameterCount;

@@ -204,6 +204,15 @@ public class MFieldInsn extends MAbstractBC implements MethodWriter {
         this.name = name;
         this.descriptor = descriptor;
     }
+    public MFieldInsn(MFieldInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        this.opcode = sample.getOpcode();
+        this.owner = sample.getOwner();
+        this.name = sample.getName();
+        this.descriptor = sample.getDescriptor();
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MFieldInsn clone(){ return new MFieldInsn(this); }
 
     //region opcode
     private int opcode;

@@ -18,6 +18,18 @@ public class MLocalVariable extends MAbstractBC implements MethodWriter {
         this.index = index;
     }
 
+    public MLocalVariable(MLocalVariable sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        name = sample.name;
+        descriptor = sample.descriptor;
+        signature = sample.signature;
+        labelStart = sample.labelStart;
+        labelEnd = sample.labelEnd;
+        index = sample.index;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MLocalVariable clone(){ return new MLocalVariable(this); }
+
     //region name : String
     private String name;
     public String getName(){

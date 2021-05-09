@@ -18,6 +18,16 @@ public class MMethodInsn extends MAbstractBC implements MethodWriter {
         this.descriptor = descriptor;
         this.iface = iface;
     }
+    public MMethodInsn(MMethodInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        opcode = sample.opcode;
+        owner = sample.owner;
+        name = sample.name;
+        descriptor = sample.descriptor;
+        iface = sample.iface;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MMethodInsn clone(){ return new MMethodInsn(this); }
 
     //region opcode : int
     private int opcode;

@@ -9,4 +9,5 @@ import java.io.Serializable;
  * <a href="https://www.baeldung.com/java-invoke-dynamic">An Introduction to Invoke Dynamic in the JVM</a>
  */
 public interface BootstrapMethArg extends Serializable {
+    public BootstrapMethArg clone();
 }

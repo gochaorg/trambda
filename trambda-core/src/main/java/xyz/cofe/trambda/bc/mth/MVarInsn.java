@@ -696,6 +696,8 @@ public class MVarInsn extends MAbstractBC implements ByteCode, MethodWriter {
         variable = sample.variable;
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MVarInsn clone(){ return new MVarInsn(this); }
+
     //region opcode
     private int opcode;
     public int getOpcode(){

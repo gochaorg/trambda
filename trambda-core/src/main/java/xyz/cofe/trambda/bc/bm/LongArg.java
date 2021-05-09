@@ -12,6 +12,12 @@ public class LongArg implements BootstrapMethArg {
     public LongArg(Long v){
         value = v;
     }
+    public LongArg(LongArg sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        value = sample.getValue();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public LongArg clone(){ return new LongArg(this); }
 
     //region value : Long
     private Long value;

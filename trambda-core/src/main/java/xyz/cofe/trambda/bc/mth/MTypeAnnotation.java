@@ -27,8 +27,28 @@ public class MTypeAnnotation extends MAbstractBC
         this.descriptor = descriptor;
         this.visible = visible;
     }
+    public MTypeAnnotation(MTypeAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        this.typeRef = sample.typeRef;
+        this.typePath = sample.typePath;
+        this.descriptor = sample.descriptor;
+        this.visible = sample.visible;
 
-    //region typeRef
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MTypeAnnotation clone(){ return new MTypeAnnotation(this); }
+
+    //region typeRef : int
     protected int typeRef;
     public int getTypeRef(){
         return typeRef;

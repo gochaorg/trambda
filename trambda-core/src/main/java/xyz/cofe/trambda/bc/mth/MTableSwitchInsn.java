@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import java.util.Arrays;
 import java.util.List;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -63,6 +64,16 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
         this.defaultLabel = dflt;
         this.labels = labels;
     }
+    public MTableSwitchInsn(MTableSwitchInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+
+        min = sample.min;
+        max = sample.max;
+        defaultLabel = sample.defaultLabel;
+        if( sample.labels!=null )labels = Arrays.copyOf(sample.labels, sample.labels.length);
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MTableSwitchInsn clone(){ return new MTableSwitchInsn(this); }
 
     //region min
     private int min;

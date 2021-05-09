@@ -14,6 +14,12 @@ public class StringArg implements BootstrapMethArg {
     public StringArg(String v){
         value = v;
     }
+    public StringArg(StringArg sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        value = sample.getValue();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public StringArg clone(){ return new StringArg(this); }
 
     //region value : String
     private String value;

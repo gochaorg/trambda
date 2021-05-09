@@ -68,6 +68,15 @@ public class MFrame extends MAbstractBC implements MethodWriter {
         this.numStack = numStack;
         this.stack = init.apply(stack);
     }
+    public MFrame(MFrame sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        type = sample.getType();
+        numLocal = sample.getNumLocal();
+        if( sample.local!=null )this.local = new ArrayList<>(sample.local);
+        if( sample.stack!=null )this.stack = new ArrayList<>(sample.stack);
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MFrame clone(){ return new MFrame(this); }
 
     //region type:int
     private int type;

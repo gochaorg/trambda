@@ -11,6 +11,13 @@ public class MIntInsn extends MAbstractBC implements MethodWriter {
         this.opcode = op;
         this.operand = operand;
     }
+    public MIntInsn(MIntInsn sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        opcode = sample.getOpcode();
+        operand = sample.getOperand();
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MIntInsn clone(){ return new MIntInsn(this); }
 
     //region opcode : int
     private int opcode;

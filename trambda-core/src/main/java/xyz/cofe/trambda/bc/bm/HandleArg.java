@@ -1,5 +1,7 @@
 package xyz.cofe.trambda.bc.bm;
 
+import org.objectweb.asm.Handle;
+
 /**
  * Аргумент bootstrap метода
  */
@@ -10,6 +12,15 @@ public class HandleArg implements BootstrapMethArg {
     public HandleArg(MHandle handle){
         this.handle = handle;
     }
+    public HandleArg(HandleArg sample){
+        if( sample!=null )throw new IllegalArgumentException( "sample!=null" );
+        var h = sample.handle;
+        if( h!=null ){
+            handle = h.clone();
+        }
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public HandleArg clone(){ return new HandleArg(this); }
 
     private MHandle handle;
     public MHandle getHandle(){

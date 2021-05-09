@@ -12,6 +12,12 @@ public class FloatArg implements BootstrapMethArg {
     public FloatArg(Float v){
         value = v;
     }
+    public FloatArg(FloatArg sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        value = sample.getValue();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public FloatArg clone(){ return new FloatArg(this); }
 
     private Float value;
     public Float getValue(){

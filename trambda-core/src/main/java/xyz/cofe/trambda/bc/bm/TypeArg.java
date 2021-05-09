@@ -12,6 +12,12 @@ public class TypeArg implements BootstrapMethArg {
     public TypeArg(String type){
         this.type = type;
     }
+    public TypeArg(TypeArg sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        type = sample.getType();
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public TypeArg clone(){ return new TypeArg(this); }
 
     private String type;
     public String getType(){

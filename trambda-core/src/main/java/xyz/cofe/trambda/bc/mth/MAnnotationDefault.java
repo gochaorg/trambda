@@ -15,6 +15,22 @@ public class MAnnotationDefault extends MAbstractBC
     private static final long serialVersionUID = 1;
 
     public MAnnotationDefault(){}
+    public MAnnotationDefault(MAnnotationDefault sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public MAnnotationDefault clone(){ return new MAnnotationDefault(this); }
 
     public String toString(){
         return MAnnotationDefault.class.getSimpleName();

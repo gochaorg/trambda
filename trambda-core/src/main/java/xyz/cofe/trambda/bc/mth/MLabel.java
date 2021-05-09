@@ -8,6 +8,12 @@ public class MLabel extends MAbstractBC implements MethodWriter {
 
     public MLabel(){}
     public MLabel(String name){this.name = name;}
+    public MLabel(MLabel sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        name = sample.getName();
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MLabel clone(){ return new MLabel(this); }
 
     private String name;
     public String getName(){ return name; }

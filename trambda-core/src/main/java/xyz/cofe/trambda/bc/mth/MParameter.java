@@ -12,6 +12,13 @@ public class MParameter extends MAbstractBC implements MethodWriter {
         this.access = access;
         this.name = name;
     }
+    public MParameter(MParameter sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        access = sample.access;
+        name = sample.name;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod") public MParameter clone(){ return new MParameter(this); }
 
     //region access : int
     private int access;
