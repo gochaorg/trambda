@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.ByteCode;
@@ -10,6 +11,21 @@ public class CPermittedSubclass implements ClsByteCode, ClazzWriter {
     public CPermittedSubclass(){}
     public CPermittedSubclass(String permittedSubclass){
         this.permittedSubclass = permittedSubclass;
+    }
+    public CPermittedSubclass(CPermittedSubclass sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        permittedSubclass = sample.permittedSubclass;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public CPermittedSubclass clone(){
+        return new CPermittedSubclass(this);
+    }
+
+    public CPermittedSubclass configure(Consumer<CPermittedSubclass> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
     }
 
     //region permittedSubclass : String

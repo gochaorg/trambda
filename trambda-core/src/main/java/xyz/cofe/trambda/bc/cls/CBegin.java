@@ -35,7 +35,59 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
         name = sample.getName();
         signature = sample.getSignature();
         superName = sample.getSuperName();
-        interfaces = sample.getInterfaces();
+        if( sample.interfaces!=null )interfaces = Arrays.copyOf(sample.interfaces, sample.interfaces.length);
+
+        source = sample.source!=null ? sample.source.clone() : null;
+        outerClass = sample.outerClass!=null ? sample.outerClass.clone() : null;
+        nestHost = sample.nestHost!=null ? sample.nestHost.clone() : null;
+        permittedSubclass = sample.permittedSubclass!=null ? sample.permittedSubclass.clone() : null;
+
+        if( sample.annotations!=null ){
+            annotations = new ArrayList<>();
+            for( var a : sample.annotations ){
+                annotations.add( a!=null ? a.clone() : null );
+            }
+        }
+
+        if( sample.typeAnnotations!=null ){
+            typeAnnotations = new ArrayList<>();
+            for( var a : sample.typeAnnotations ){
+                typeAnnotations.add( a!=null ? a.clone() : null );
+            }
+        }
+
+        if( sample.nestMembers!=null ){
+            nestMembers = new ArrayList<>();
+            for( var a : sample.nestMembers ){
+                nestMembers.add( a!=null ? a.clone() : null );
+            }
+        }
+
+        if( sample.innerClasses!=null ){
+            innerClasses = new ArrayList<>();
+            for( var a : sample.innerClasses ){
+                innerClasses.add( a!=null ? a.clone() : null );
+            }
+        }
+
+        if( sample.fields!=null ){
+            fields = new ArrayList<>();
+            for( var a : sample.fields ){
+                fields.add( a!=null ? a.clone() : null );
+            }
+        }
+
+        if( sample.methods!=null ){
+            methods = new ArrayList<>();
+            for( var a : sample.methods ){
+                methods.add( a!=null ? a.clone() : null );
+            }
+        }
+
+        if( sample.order!=null ){
+            order = new LinkedHashMap<>();
+            order.putAll(sample.order);
+        }
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
@@ -262,7 +314,7 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
 
         List<ClsByteCode> anns = new ArrayList<>();
         if( annotations!=null )anns.addAll(annotations);
-        if( typeAnnotations!=null )anns.addAll(annotations);
+        if( typeAnnotations!=null )anns.addAll(typeAnnotations);
         anns.sort( (a,b)->{
             int o1 = getOrder().getOrDefault(a,-1);
             int o2 = getOrder().getOrDefault(b,-1);

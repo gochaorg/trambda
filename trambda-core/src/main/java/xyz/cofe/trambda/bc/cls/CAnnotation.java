@@ -2,6 +2,7 @@ package xyz.cofe.trambda.bc.cls;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
@@ -19,6 +20,31 @@ public class CAnnotation implements
     public CAnnotation(String descriptor, boolean visible){
         this.descriptor = descriptor;
         this.visible = visible;
+    }
+    public CAnnotation(CAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        descriptor = sample.descriptor;
+        visible = sample.visible;
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public CAnnotation clone(){
+        return new CAnnotation(this);
+    }
+
+    public CAnnotation configure(Consumer<CAnnotation> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
     }
 
     //region descriptor : String

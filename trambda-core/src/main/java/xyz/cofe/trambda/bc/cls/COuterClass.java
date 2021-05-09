@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.ByteCode;
@@ -8,11 +9,27 @@ public class COuterClass implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public COuterClass(){}
-
     public COuterClass(String owner, String name, String descriptor){
         this.owner = owner;
         this.name = name;
         this.descriptor = descriptor;
+    }
+    public COuterClass(COuterClass sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        owner = sample.owner;
+        name = sample.name;
+        descriptor = sample.descriptor;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public COuterClass clone(){
+        return new COuterClass(this);
+    }
+
+    public COuterClass configure(Consumer<COuterClass> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
     }
 
     //region owner : String
@@ -35,11 +52,9 @@ public class COuterClass implements ClsByteCode, ClazzWriter {
     //endregion
     //region descriptor : String
     protected String descriptor;
-
     public String getDescriptor(){
         return descriptor;
     }
-
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }

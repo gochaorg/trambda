@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
@@ -11,6 +12,22 @@ public class CSource implements ClsByteCode, ClazzWriter {
     public CSource(String source, String debug){
         this.source = source;
         this.debug = debug;
+    }
+    public CSource(CSource sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        source = sample.source;
+        debug = sample.debug;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public CSource clone(){
+        return new CSource(this);
+    }
+
+    public CSource configure(Consumer<CSource> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
     }
 
     //region source : String

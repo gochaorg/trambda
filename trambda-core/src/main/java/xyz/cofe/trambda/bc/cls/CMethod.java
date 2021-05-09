@@ -32,6 +32,12 @@ public class CMethod implements ClsByteCode, ClazzWriter {
         descriptor = sample.getDescriptor();
         signature = sample.getSignature();
         exceptions = sample.getExceptions();
+        if( sample.methodByteCodes!=null ){
+            methodByteCodes = new ArrayList<>();
+            for( var mb : sample.methodByteCodes ){
+                methodByteCodes.add( mb!=null ? mb.clone() : null );
+            }
+        }
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")

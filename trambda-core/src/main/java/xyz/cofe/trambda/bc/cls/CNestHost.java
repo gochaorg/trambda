@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.ByteCode;
@@ -8,18 +9,26 @@ public class CNestHost implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CNestHost(){}
-
     public CNestHost(String nestHost){
         this.nestHost = nestHost;
+    }
+    public CNestHost(CNestHost sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        nestHost = sample.nestHost;
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public CNestHost clone(){ return new CNestHost(this); }
+
+    public CNestHost configure(Consumer<CNestHost> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
     }
 
     //region nestHost : String
     protected String nestHost;
-
-    public String getNestHost(){
-        return nestHost;
-    }
-
+    public String getNestHost(){ return nestHost; }
     public void setNestHost(String nestHost){
         this.nestHost = nestHost;
     }

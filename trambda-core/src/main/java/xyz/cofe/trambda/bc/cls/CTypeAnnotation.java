@@ -2,6 +2,7 @@ package xyz.cofe.trambda.bc.cls;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.TypePath;
@@ -19,12 +20,41 @@ public class CTypeAnnotation
 
     public CTypeAnnotation(){
     }
-
     public CTypeAnnotation(int typeRef, String typePath, String descriptor, boolean visible){
         this.typeRef = typeRef;
         this.typePath = typePath;
         this.descriptor = descriptor;
         this.visible = visible;
+    }
+    public CTypeAnnotation(CTypeAnnotation sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+
+        typePath = sample.typePath;
+        typeRef = sample.typeRef;
+        descriptor = sample.descriptor;
+        visible = sample.visible;
+
+        if( sample.annotationByteCodes!=null ){
+            annotationByteCodes = new ArrayList<>();
+            for( var b : sample.annotationByteCodes ){
+                if( b!=null ){
+                    annotationByteCodes.add(b.clone());
+                }else{
+                    annotationByteCodes.add(null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public CTypeAnnotation clone(){
+        return new CTypeAnnotation(this);
+    }
+
+    public CTypeAnnotation configure(Consumer<CTypeAnnotation> conf){
+        if( conf==null )throw new IllegalArgumentException( "conf==null" );
+        conf.accept(this);
+        return this;
     }
 
     //region typeRef : int
