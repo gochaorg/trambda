@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
+import xyz.cofe.trambda.bc.fld.FieldEnd;
 
 public class CField implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
@@ -118,8 +119,11 @@ public class CField implements ClsByteCode, ClazzWriter {
         var body = fieldByteCodes;
         if( body!=null ){
             for( var b : body ){
-                b.write(fv);
+                if( !(b instanceof FieldEnd) ){
+                    b.write(fv);
+                }
             }
         }
+        fv.visitEnd();
     }
 }

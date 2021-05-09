@@ -6,11 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.collection.ImTree;
 import xyz.cofe.collection.Tree;
 import xyz.cofe.iter.Eterable;
+import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
 
@@ -296,5 +298,19 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
         write(cw);
         return cw.toByteArray();
+    }
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    public static CBegin parseByteCode(byte[] byteCode){
+        if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
+
+        ClassReader classReader = new ClassReader(byteCode);
+        List<ByteCode> byteCodes = new ArrayList<>();
+
+        ClassDump dump = new ClassDump();
+        dump.byteCode( byteCodes::add );
+        classReader.accept(dump,0);
+
+        return byteCodes.stream().filter( b -> b instanceof CBegin )
+            .map( b -> (CBegin)b ).findFirst().get();
     }
 }

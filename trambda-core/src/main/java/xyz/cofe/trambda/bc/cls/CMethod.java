@@ -8,6 +8,7 @@ import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.mth.MEnd;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 import xyz.cofe.trambda.bc.mth.MethodWriterCtx;
 
@@ -132,12 +133,12 @@ public class CMethod implements ClsByteCode, ClazzWriter {
         var body = methodByteCodes;
         if( body!=null ){
             for( var b : body ){
-                if( b!=null ){
+                if( b!=null && !(b instanceof MEnd) ){
                     b.write(mv, ctx);
                 }
             }
         }
 
-
+        mv.visitEnd();
     }
 }

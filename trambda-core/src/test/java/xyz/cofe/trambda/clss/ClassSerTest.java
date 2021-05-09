@@ -538,15 +538,9 @@ public class ClassSerTest {
 
         try{
             var classBytes = IOFun.readBytes(classUrl);
-            ClassReader classReader = new ClassReader(classBytes);
 
-            List<ByteCode> byteCodes = new ArrayList<>();
 
-            ClassDump dump = new ClassDump();
-            dump.byteCode( byteCodes::add );
-            classReader.accept(dump,0);
-
-            CBegin begin = byteCodes.stream().filter( b -> b instanceof CBegin ).map( x -> (CBegin)x ).findFirst().get();
+            CBegin begin = CBegin.parseByteCode(classBytes);
 
             System.out.println("class "+begin);
 
@@ -568,8 +562,11 @@ public class ClassSerTest {
             System.out.println("- ".repeat(40));
 
             byte[] bytes = begin.toByteCode();
+
+            ClassDump dump = new ClassDump();
             dump.byteCode(System.out::println);
-            classReader = new ClassReader(bytes);
+
+            var classReader = new ClassReader(bytes);
             classReader.accept(dump,0);
         } catch( IOException e ) {
             e.printStackTrace();
