@@ -4,9 +4,11 @@ import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.AccFlagsProperty;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.InnerClassFlags;
 
-public class CInnerClass implements ClsByteCode, ClazzWriter {
+public class CInnerClass implements ClsByteCode, ClazzWriter, AccFlagsProperty, InnerClassFlags {
     private static final long serialVersionUID = 1;
 
     public CInnerClass(){}

@@ -7,12 +7,14 @@ import java.util.function.Consumer;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.AccFlagsProperty;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.MethodFlags;
 import xyz.cofe.trambda.bc.mth.MEnd;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 import xyz.cofe.trambda.bc.mth.MethodWriterCtx;
 
-public class CMethod implements ClsByteCode, ClazzWriter {
+public class CMethod implements ClsByteCode, ClazzWriter, AccFlagsProperty, MethodFlags {
     private static final long serialVersionUID = 1;
 
     public CMethod(){}

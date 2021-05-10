@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.AccFlagsProperty;
+import xyz.cofe.trambda.bc.FieldFlags;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FieldEnd;
 
-public class CField implements ClsByteCode, ClazzWriter {
+public class CField implements ClsByteCode, ClazzWriter, AccFlagsProperty, FieldFlags {
     private static final long serialVersionUID = 1;
 
     public CField(){}

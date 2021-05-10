@@ -539,25 +539,9 @@ public class ClassSerTest {
         try{
             var classBytes = IOFun.readBytes(classUrl);
 
-
             CBegin begin = CBegin.parseByteCode(classBytes);
 
             System.out.println("class "+begin);
-
-            begin.walk().tree().forEach( ts -> {
-                if( ts.getLevel()>0 ){
-                    var pref = ts.nodes().limit(ts.getLevel()).map( b -> {
-                        if( b instanceof CMethod ){
-                            return CMethod.class.getSimpleName()+"#"+((CMethod) b).getName()+"()";
-                        }else if( b instanceof CField ){
-                            return CField.class.getSimpleName()+"#"+((CField)b).getName();
-                        }
-                        return b.getClass().getSimpleName();
-                    }).reduce("", (a,b)->a+"/"+b);
-                    System.out.print(pref);
-                }
-                System.out.println("/"+ts.getNode());
-            });
 
             System.out.println("- ".repeat(40));
 
@@ -571,5 +555,11 @@ public class ClassSerTest {
         } catch( IOException e ) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void test04(){
+        var clz = CBegin.parseByteCode(User2.class);
+        CDump.dump(clz);
     }
 }

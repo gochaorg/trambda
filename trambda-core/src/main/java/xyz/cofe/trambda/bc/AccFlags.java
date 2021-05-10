@@ -506,7 +506,7 @@ public class AccFlags {
      * <p> Применимо к : method
      * @return is synchronized
      */
-    public boolean isSyncronized(){ return has(ACC_SYNCHRONIZED); }
+    public boolean isSynchronized(){ return has(ACC_SYNCHRONIZED); }
 
     /**
      * Declared synchronized; invocation is wrapped by a monitor use.
@@ -517,7 +517,7 @@ public class AccFlags {
      * @param v as synchronized
      * @return flags
      */
-    public AccFlags withSyncronized(boolean v){ return new AccFlags(set(flags,ACC_SYNCHRONIZED,v)); }
+    public AccFlags withSynchronized(boolean v){ return new AccFlags(set(flags,ACC_SYNCHRONIZED,v)); }
     static { flagName.put("Syncronized", ACC_SYNCHRONIZED); }
     //endregion
     //region synthetic - Заявлен синтетический; отсутствует в исходном коде.

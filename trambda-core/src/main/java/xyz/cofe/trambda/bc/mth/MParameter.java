@@ -3,12 +3,14 @@ package xyz.cofe.trambda.bc.mth;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.AccFlagsProperty;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.ParameterFlags;
 
 /**
  * Visits a parameter of this method.
  */
-public class MParameter extends MAbstractBC implements MethodWriter {
+public class MParameter extends MAbstractBC implements MethodWriter, AccFlagsProperty, ParameterFlags {
     private static final long serialVersionUID = 1;
 
     public MParameter(){}

@@ -1,5 +1,8 @@
 package xyz.cofe.trambda.bc.cls;
 
+import java.io.IOError;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -11,12 +14,15 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.collection.ImTree;
 import xyz.cofe.collection.Tree;
+import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.ClassDump;
 import xyz.cofe.trambda.bc.AccFlags;
+import xyz.cofe.trambda.bc.AccFlagsProperty;
 import xyz.cofe.trambda.bc.ByteCode;
+import xyz.cofe.trambda.bc.ClassFlags;
 
-public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
+public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter, AccFlagsProperty, ClassFlags {
     private static final long serialVersionUID = 1;
 
     public CBegin(){}
@@ -115,7 +121,6 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
     public int getAccess(){
         return access;
     }
-
     public void setAccess(int access){
         this.access = access;
     }
@@ -294,6 +299,7 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
         return e.notNull();
     }
 
+    //region toByteCode(), parseByteCode()
     @Override
     public void write(ClassWriter v){
         if( v==null )throw new IllegalArgumentException( "v==null" );
@@ -366,4 +372,27 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter {
         return byteCodes.stream().filter( b -> b instanceof CBegin )
             .map( b -> (CBegin)b ).findFirst().get();
     }
+
+    public static CBegin parseByteCode(Class<?> clazz){
+        if( clazz==null )throw new IllegalArgumentException( "clazz==null" );
+
+        var resName = "/"+clazz.getName().replace(".","/")+".class";
+        var classUrl = clazz.getResource(resName);
+
+        if( classUrl==null )throw new IOError(
+            new IOException("resource "+resName+" not found")
+        );
+
+        return parseByteCode(classUrl);
+    }
+
+    public static CBegin parseByteCode(URL url){
+        if( url==null )throw new IllegalArgumentException( "url==null" );
+        try{
+            return parseByteCode(IOFun.readBytes(url));
+        } catch( IOException e ) {
+            throw new IOError(e);
+        }
+    }
+    //endregion
 }
