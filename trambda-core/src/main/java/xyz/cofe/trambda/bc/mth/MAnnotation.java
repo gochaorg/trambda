@@ -9,6 +9,19 @@ import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
+/**
+ * Visits an annotation of this method.
+ *
+ * <p>
+ * {@link #descriptor} the class descriptor of the annotation class.
+ *
+ * <p>
+ * {@link #visible}  {@literal true} if the annotation is visible at runtime.
+ *
+ * <p>
+ * a visitor to visit the annotation values, or {@literal null} if this visitor is not
+ * interested in visiting this annotation.
+ */
 public class MAnnotation
     extends MAbstractBC
     implements ByteCode, AnnotationDef, GetAnnotationByteCodes, MethodWriter

@@ -22,6 +22,9 @@ import xyz.cofe.trambda.bc.AccFlagsProperty;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ClassFlags;
 
+/**
+ * Описывает класс / модуль
+ */
 public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter, AccFlagsProperty, ClassFlags {
     private static final long serialVersionUID = 1;
 

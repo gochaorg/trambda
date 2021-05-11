@@ -9,6 +9,14 @@ import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
+/**
+ * Visits the default value of this annotation interface method.
+ *
+ * <p>a visitor to the visit the actual default value of this annotation interface method, or
+ * {@literal null} if this visitor is not interested in visiting this default value. The
+ * 'name' parameters passed to the methods of this annotation visitor are ignored. Moreover,
+ * exacly one visit method must be called on this annotation visitor, followed by visitEnd.
+ */
 public class MAnnotationDefault extends MAbstractBC
     implements ByteCode, AnnotationDef, GetAnnotationByteCodes, MethodWriter
 {
