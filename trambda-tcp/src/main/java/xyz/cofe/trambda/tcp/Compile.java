@@ -1,16 +1,15 @@
 package xyz.cofe.trambda.tcp;
 
-import xyz.cofe.trambda.bc.MethodDef;
-import xyz.cofe.trambda.tcp.Message;
+import xyz.cofe.trambda.LambdaDump;
 
 public class Compile implements Message {
-    private MethodDef methodDef;
+    private LambdaDump dump;
 
-    public MethodDef getMethodDef(){
-        return methodDef;
+    public LambdaDump getDump(){
+        return dump;
     }
 
-    public void setMethodDef(MethodDef methodDef){
-        this.methodDef = methodDef;
+    public void setDump(LambdaDump dump){
+        this.dump = dump;
     }
 }

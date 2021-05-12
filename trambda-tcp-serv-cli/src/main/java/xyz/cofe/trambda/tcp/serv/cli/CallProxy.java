@@ -1,7 +1,9 @@
 package xyz.cofe.trambda.tcp.serv.cli;
 
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.Invoke;
 import xyz.cofe.trambda.sec.MethodDescTypes;
 
@@ -23,7 +25,7 @@ public class CallProxy {
         return invoke.getMethodTypes();
     }
 
-    public MethodDef getScope(){
+    public Tuple2<LambdaDump, LambdaNode> getScope(){
         return invoke.getScope();
     }
 

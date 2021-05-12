@@ -1,8 +1,10 @@
 package xyz.cofe.trambda.tcp.serv.cli;
 
 import java.util.List;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.mth.MFieldInsn;
-import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.FieldAccess;
 import xyz.cofe.trambda.sec.SecurAccess;
 import xyz.cofe.trambda.sec.TypeDesc;
@@ -46,7 +48,7 @@ public class FieldProxy {
         return fieldAccess.isWriteAccess();
     }
 
-    public MethodDef getScope(){
+    public Tuple2<LambdaDump, LambdaNode> getScope(){
         return fieldAccess.getScope();
     }
 
@@ -54,7 +56,7 @@ public class FieldProxy {
         return fieldAccess.getInstruction();
     }
 
-    public static List<SecurAccess<?, MethodDef>> inspect(MethodDef mdef){
+    public static List<SecurAccess<?, Tuple2<LambdaDump, LambdaNode>>> inspect(LambdaDump mdef){
         return SecurAccess.inspect(mdef);
     }
 }

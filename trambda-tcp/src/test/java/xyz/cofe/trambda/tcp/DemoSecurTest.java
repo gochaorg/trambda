@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
 import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
+import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.Query;
-import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.SecurAccess;
 import xyz.cofe.trambda.sec.SecurityFilters;
 import xyz.cofe.trambda.tcp.demo.IEnv;
@@ -32,7 +32,7 @@ public class DemoSecurTest {
         System.out.println(DemoSecurTest.class.getSimpleName()+".test01");
         System.out.println("=".repeat(80));
 
-        AtomicReference<MethodDef> mdefRef = new AtomicReference<>();
+        AtomicReference<LambdaDump> mdefRef = new AtomicReference<>();
 
         Query<IEnv> query = new AsmQuery<IEnv>(){
             /**
@@ -44,7 +44,7 @@ public class DemoSecurTest {
              * @return результат вызова
              */
             @Override
-            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, LambdaDump mdef){
                 mdefRef.set(mdef);
                 return super.call(fn, sl, mdef);
             }

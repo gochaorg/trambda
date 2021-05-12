@@ -20,9 +20,10 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
+import xyz.cofe.fn.Tuple2;
 import xyz.cofe.text.Text;
-import xyz.cofe.trambda.MethodDefRestore;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.sec.SecurAccess;
 import xyz.cofe.trambda.sec.SecurityFilter;
 
@@ -57,7 +58,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     /**
      * Функция фильтра безопасности
      */
-    protected final SecurityFilter<String,MethodDef> securityFilter;
+    protected final SecurityFilter<String,Tuple2<LambdaDump, LambdaNode>> securityFilter;
 
     /**
      * Конструктор
@@ -74,7 +75,9 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
      * @param envBuilder функция получения сервиса
      * @param securityFilter функция фильтра безопасности
      */
-    public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurityFilter<String,MethodDef> securityFilter){
+    public TcpSession(Socket socket,
+                      Function<TcpSession<ENV>,ENV> envBuilder,
+                      SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         if( securityFilter ==null ){
@@ -417,12 +420,23 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected final Map<Integer, Method> compiled = new ConcurrentHashMap<>();
     protected final Map<String, Integer> methodDefHash2compileKey = new ConcurrentHashMap<>();
 
-    protected Method compile(MethodDef mdef, String hash){
-        log.info("compile '{}' hash {}",mdef.getName(),hash);
+    protected Method compile(LambdaDump dump, String hash){
+        var ln = dump.getLambdaNode();
+        var methName = ln!=null ?
+            ln.walk()
+                .map( n -> n.getMethod() ).filter( Objects::nonNull )
+                .map( m -> m.getName()+":"+m.getDescriptor() )
+                .reduce( "", (a,b)->a+" "+b )
+            : "?";
+
+        log.info("compile '{}' hash {}",
+            methName,
+            hash
+        );
 
         if( securityFilter !=null ){
             log.debug("inspect byte code for SecurAccess");
-            var secAcc = SecurAccess.inspect(mdef);
+            var secAcc = SecurAccess.inspect(dump);
 
             if( log.isTraceEnabled() ){
                 secAcc.forEach(sa -> log.trace("SecurAccess: {}",sa));
@@ -445,65 +459,37 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             }
         }
 
-        var clName = TcpSession.class.getName().toLowerCase()+".Build1";
-        var methName = "lambda1";
-
-        log.debug("generate bytecode "+clName+" method "+methName);
-        var byteCode = new MethodDefRestore().className(clName).methodName(methName).methodDef(mdef).generate();
-
-        ClassLoader cl = createClassLoader(clName, byteCode);
-
-        log.debug("try load class "+clName);
-        //noinspection rawtypes
-        Class c;
-        try{
-            c = Class.forName(clName,true,cl);
-        } catch( ClassNotFoundException e ) {
-            throw new Error(e);
-        }
-
-        Method m = null;
-        log.debug("find method "+methName);
-        for( var delMeth : c.getDeclaredMethods() ){
-            if( delMeth.getName().equals(methName) ){
-                m = delMeth;
-                break;
-            }
-        }
-
-        if( m==null ){
-            throw new Error("compiled method '"+methName+"' not found");
-        }
-
-        return m;
-    }
-    protected ClassLoader createClassLoader(String clName, byte[] byteCode){
-        log.debug("create classloader");
-        return new ClassLoader(ClassLoader.getSystemClassLoader()) {
-            @Override
-            protected void finalize() throws Throwable{
-                try {
-                    LoggerFactory.getLogger(TcpSession.class).info("ClassLoader finalize()");
-                } finally {
-                    super.finalize();
+        return dump
+            .restore()
+            .classLoader( cb -> new ClassLoader() {
+                @Override
+                protected void finalize() throws Throwable{
+                    try {
+                        LoggerFactory.getLogger(TcpSession.class).info("ClassLoader finalize()");
+                    } finally {
+                        super.finalize();
+                    }
                 }
-            }
 
-            @Override
-            protected Class<?> findClass(String name) throws ClassNotFoundException{
-                if( name!=null && name.equals(clName) ){
-                    return defineClass(name,byteCode,0,byteCode.length);
+                @Override
+                protected Class<?> findClass(String name) throws ClassNotFoundException{
+                    if( name!=null && name.equals(cb.javaName().getName()) ){
+                        var bytes = cb.toByteCode();
+                        LoggerFactory.getLogger(TcpSession.class).info("ClassLoader defineClass {}",name);
+                        return defineClass(name,bytes,0,bytes.length);
+                    }
+                    return super.findClass(name);
                 }
-                return super.findClass(name);
-            }
-        };
+            })
+            .method();
     }
+
     protected void process(Compile compile,TcpHeader header){
         var sid = header.getSid();
         log.info("compile request, sid={}",sid.map(Objects::toString).orElse("?"));
 
         try{
-            var mdef = compile.getMethodDef();
+            var mdef = compile.getDump();
             if( mdef==null ){
                 throw new IllegalArgumentException("compile.getMethodDef() == null");
             }

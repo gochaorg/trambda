@@ -1,15 +1,12 @@
 package xyz.cofe.trambda.tcp;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -22,10 +19,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.cofe.fn.Tuple2;
-import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.text.Text;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.LambdaDump;
 
 import static xyz.cofe.trambda.tcp.TcpHeader.encode;
 
@@ -459,11 +454,11 @@ public class TcpProtocol {
         }
     }
 
-    public ResultConsumer<Compile,CompileResult> compile(MethodDef methodDef){
+    public ResultConsumer<Compile,CompileResult> compile(LambdaDump methodDef){
         if( methodDef==null )throw new IllegalArgumentException( "methodDef==null" );
 
         Compile cmpl = new Compile();
-        cmpl.setMethodDef(methodDef);
+        cmpl.setDump(methodDef);
         return new ResultConsumer<>(this, cmpl, errorConsumers, responseConsumers);
     }
     public ResultConsumer<Execute,ExecuteResult> execute(CompileResult cres){

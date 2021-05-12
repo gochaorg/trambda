@@ -1,21 +1,15 @@
 package xyz.cofe.trambda.tcp;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.LambdaDump;
 
 public class TcpClient implements AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
@@ -190,7 +184,7 @@ public class TcpClient implements AutoCloseable {
 
     //region client api
     //region compile()
-    public ResultConsumer<Compile,CompileResult> compile(MethodDef methodDef){
+    public ResultConsumer<Compile,CompileResult> compile(LambdaDump methodDef){
         if( methodDef==null )throw new IllegalArgumentException( "methodDef==null" );
         return proto.compile(methodDef);
     }

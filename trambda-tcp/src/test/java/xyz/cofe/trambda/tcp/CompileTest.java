@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.tcp.demo.LinuxEnv;
 import static xyz.cofe.trambda.tcp.LOG.*;
 
@@ -59,8 +59,7 @@ public class CompileTest {
             return;
         }
 
-        MethodDef mdef = new MethodDef();
-        mdef.setName("testDummy");
+        LambdaDump mdef = new LambdaDump();
 
         log.info("async send");
 

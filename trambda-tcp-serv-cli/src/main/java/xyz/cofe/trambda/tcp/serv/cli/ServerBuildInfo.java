@@ -3,7 +3,9 @@ package xyz.cofe.trambda.tcp.serv.cli;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.util.function.Consumer;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.sec.SecurityFilter;
 import xyz.cofe.trambda.tcp.TcpServer;
 
@@ -26,13 +28,13 @@ public class ServerBuildInfo<A> {
     }
     //endregion
     //region securFilter : SecurFilter<String, MethodDef>
-    private SecurityFilter<String, MethodDef> securityFilter;
+    private SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter;
 
-    public SecurityFilter<String, MethodDef> getSecurFilter(){
+    public SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> getSecurFilter(){
         return securityFilter;
     }
 
-    public void setSecurFilter(SecurityFilter<String, MethodDef> securityFilter){
+    public void setSecurFilter(SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter){
         this.securityFilter = securityFilter;
     }
     //endregion

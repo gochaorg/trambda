@@ -17,7 +17,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.sec.SecurityFilter;
 
 /**
@@ -64,7 +66,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     /**
      * Функция фильтрации байт-кода
      */
-    protected final SecurityFilter<String,MethodDef> securityFilter;
+    protected final SecurityFilter<String,Tuple2<LambdaDump, LambdaNode>> securityFilter;
 
     /**
      * Создание сервера
@@ -72,7 +74,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * @param envBuilder Функция получения сервиса для новой сессии
      * @param securityFilter Функция фильтрации байт-кода
      */
-    public TcpServer(ServerSocket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurityFilter<String,MethodDef> securityFilter){
+    public TcpServer(ServerSocket socket, Function<TcpSession<ENV>,ENV> envBuilder, SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         this.envBuilder = envBuilder;

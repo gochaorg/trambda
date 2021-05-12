@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.LambdaDump;
 
 public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     protected final TcpClient client;
@@ -57,7 +57,7 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     protected final Map<Fn1<?,?>,CompileResult> fnKeys = new ConcurrentHashMap<>();
 
     @Override
-    protected <RES> RES call(Fn1<ENV, RES> fn, SerializedLambda sl, MethodDef mdef){
+    protected <RES> RES call(Fn1<ENV, RES> fn, SerializedLambda sl, LambdaDump mdef){
         var key = fnKeys.get(fn);
         if( key!=null ){
             return call(key,sl);
