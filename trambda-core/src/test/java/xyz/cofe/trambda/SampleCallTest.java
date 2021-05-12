@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.io.fs.File;
 import xyz.cofe.text.Align;
 import xyz.cofe.text.Text;
@@ -28,7 +29,7 @@ public class SampleCallTest {
         var res =
             new AsmQuery<IEnv>(){
                 @Override
-                protected <RES> RES call(Fn<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+                protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
                     mdefRef.set(mdef);
                     return super.call(fn, sl, mdef);
                 }

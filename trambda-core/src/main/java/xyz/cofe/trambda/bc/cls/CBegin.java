@@ -10,13 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.collection.ImTree;
-import xyz.cofe.collection.Tree;
 import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.ClassDump;
+import xyz.cofe.trambda.JavaClassName;
 import xyz.cofe.trambda.bc.AccFlags;
 import xyz.cofe.trambda.bc.AccFlagsProperty;
 import xyz.cofe.trambda.bc.ByteCode;
@@ -135,6 +134,87 @@ public class CBegin implements ClsByteCode, ImTree<ByteCode>, ClazzWriter, AccFl
     }
     public void setName(String name){
         this.name = name;
+    }
+    public static class JavaNamed {
+        public final CBegin cBegin;
+        public JavaNamed(CBegin cBegin){
+            if( cBegin==null )throw new IllegalArgumentException( "cBegin==null" );
+            this.cBegin = cBegin;
+        }
+
+        //region name : String
+        public String getName(){
+            var n = cBegin.getName();
+            if( n==null )return null;
+            return new JavaClassName(n).name;
+        }
+
+        public void setName(String name){
+            if( name==null ){
+                cBegin.setName( null );
+            }else {
+                cBegin.setName( new JavaClassName(name).rawName() );
+            }
+        }
+        //endregion
+        //region simpleName : String
+        public String getSimpleName(){
+            var n = cBegin.getName();
+            if( n==null )return null;
+
+            return new JavaClassName(n).simpleName;
+        }
+
+        public void setSimpleName( String name ){
+            if( name==null )throw new IllegalArgumentException( "name==null" );
+            if( !JavaClassName.validId.matcher(name).matches() ){
+                throw new IllegalArgumentException("name not match "+ JavaClassName.validId );
+            }
+
+            var curName = cBegin.getName();
+            if( curName==null ){
+                cBegin.setName(name);
+                return;
+            }
+
+            cBegin.setName( new JavaClassName(curName).withSimpleName(name).rawName() );
+        }
+        //endregion
+        //region package : String
+        public String getPackage(){
+            var n = cBegin.getName();
+            if( n==null )return "";
+
+            return new JavaClassName(n).packageName;
+        }
+
+        public void setPackage(String name){
+            if( name==null || name.length()<1 ){
+                var n = cBegin.getName();
+                if( n!=null ){
+                    cBegin.setName( new JavaClassName(n).withPackage("").rawName() );
+                }
+            }else {
+                var n = cBegin.getName();
+                //noinspection ReplaceNullCheck
+                if( n==null ){
+                    cBegin.setName( new JavaClassName("Class0").withPackage(name).rawName() );
+                }else{
+                    cBegin.setName( new JavaClassName(n).withPackage(name).rawName() );
+                }
+            }
+        }
+        //endregion
+
+        public String toString(){
+            var n = cBegin.getName();
+            if( n==null )return "null?";
+
+            return new JavaClassName(n).name;
+        }
+    }
+    public JavaNamed javaName(){
+        return new JavaNamed(this);
     }
     //endregion
     //region signature : String

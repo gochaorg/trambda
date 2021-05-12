@@ -6,8 +6,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
-import xyz.cofe.trambda.Fn;
 import xyz.cofe.trambda.MethodDefRestore;
 import xyz.cofe.trambda.Query;
 import xyz.cofe.trambda.bc.MethodDef;
@@ -23,14 +23,14 @@ public class LocalTest {
     }
 
     private AsmQuery<IEnv> queryInst;
-    private final Map<Fn<?,?>, Method> implMethod = new ConcurrentHashMap<>();
+    private final Map<Fn1<?,?>, Method> implMethod = new ConcurrentHashMap<>();
 
     public synchronized Query<IEnv> query(){
         if( queryInst!=null )return queryInst;
 
         queryInst = new AsmQuery<>(){
             @Override
-            protected <RES> RES call(Fn<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
                 var meth = implMethod.computeIfAbsent(fn, x -> {
                     return compile(mdef);
                 });

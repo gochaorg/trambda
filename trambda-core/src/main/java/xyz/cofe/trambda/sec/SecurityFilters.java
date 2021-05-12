@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import xyz.cofe.trambda.Tuple2;
+import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.bc.MethodDef;
 
 public class SecurityFilters<MESSAGE,SCOPE> implements SecurityFilter<MESSAGE,SCOPE> {

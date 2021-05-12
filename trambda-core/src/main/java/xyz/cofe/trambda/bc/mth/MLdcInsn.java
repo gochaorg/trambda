@@ -1,6 +1,7 @@
 package xyz.cofe.trambda.bc.mth;
 
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
 import xyz.cofe.trambda.bc.bm.LdcType;
@@ -65,6 +66,16 @@ public class MLdcInsn extends MAbstractBC implements MethodWriter {
                     hdl1.getTag(), hdl1.getOwner(), hdl1.getName(), hdl1.getDesc(), hdl1.isIface()
                 );
                 v.visitLdcInsn(hdl0);
+                break;
+            case Array:
+            case Method:
+            case Object:
+                if( value==null )throw new IllegalStateException("value is null");
+                if( value instanceof Type ){
+                    v.visitLdcInsn(value);
+                }else{
+                    v.visitLdcInsn(Type.getType(value.toString()));
+                }
                 break;
             default:
                 throw new UnsupportedOperationException("not impl for ldc type = "+getLdcType());

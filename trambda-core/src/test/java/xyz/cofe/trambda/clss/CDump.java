@@ -1,11 +1,12 @@
 package xyz.cofe.trambda.clss;
 
+import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.cls.CBegin;
 import xyz.cofe.trambda.bc.cls.CField;
 import xyz.cofe.trambda.bc.cls.CMethod;
 
 public class CDump {
-    public static void dump(CBegin begin){
+    public static void dump(ByteCode begin){
         if( begin==null )throw new IllegalArgumentException( "begin==null" );
         begin.walk().tree().forEach( ts -> {
             if( ts.getLevel()>0 ){

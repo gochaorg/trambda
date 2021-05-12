@@ -3,6 +3,7 @@ package xyz.cofe.trambda;
 import java.lang.invoke.SerializedLambda;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sample.EnvLocal;
 import xyz.cofe.trambda.sample.IEnv;
@@ -28,7 +29,7 @@ public class SecurTest {
         IEnv env = new EnvLocal();
         AsmQuery<IEnv> query = new AsmQuery<IEnv>(){
             @Override
-            protected <RES> RES call(Fn<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
                 mdefRef.set(mdef);
                 return super.call(fn, sl, mdef);
             }

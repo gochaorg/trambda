@@ -535,18 +535,18 @@ public class MethodDump extends MethodVisitor implements Opcodes {
         } else if ( value instanceof String) {
             emit(new MLdcInsn(value,LdcType.String));
         } else if ( value instanceof org.objectweb.asm.Type) {
-            int sort = ((org.objectweb.asm.Type) value).getSort();
+            var tvalue = (org.objectweb.asm.Type)value;
+            int sort = tvalue.getSort();
+
             if (sort == org.objectweb.asm.Type.OBJECT) {
-                //emit(new LdcInsn(cst,LdcType.Object));
-                throw new IllegalArgumentException("not impl ldc object");
+                emit(new MLdcInsn(tvalue.getDescriptor(),LdcType.Object));
+                //throw new IllegalArgumentException("not impl ldc object");
             } else if (sort == org.objectweb.asm.Type.ARRAY) {
-                // ...
-                //emit(new LdcInsn(cst,LdcType.Object));
-                throw new IllegalArgumentException("not impl ldc array");
+                emit(new MLdcInsn(tvalue.getDescriptor(),LdcType.Array));
+                //throw new IllegalArgumentException("not impl ldc array");
             } else if (sort == org.objectweb.asm.Type.METHOD) {
                 // ...
-                //emit(new LdcInsn(cst,LdcType.Object));
-                throw new IllegalArgumentException("not impl ldc method");
+                emit(new MLdcInsn(tvalue.getDescriptor(),LdcType.Method));
             } else {
                 throw new UnsupportedOperationException("unsupported ldc sort="+sort);
             }

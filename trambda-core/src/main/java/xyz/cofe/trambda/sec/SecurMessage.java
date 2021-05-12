@@ -1,7 +1,6 @@
 package xyz.cofe.trambda.sec;
 
 import java.io.Serializable;
-import xyz.cofe.trambda.CloneSupport;
 
 public class SecurMessage<MESSAGE,SCOPE> implements Serializable {
     private static final long serialVersionUID = 1;

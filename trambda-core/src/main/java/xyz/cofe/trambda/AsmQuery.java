@@ -20,6 +20,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.io.fn.IOFun;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.bm.MHandle;
@@ -32,14 +33,14 @@ import xyz.cofe.trambda.bc.MethodDef;
  *
  * <p>
  * Это клас по сути является абстрактным,
- * и для реализации конечной функциональности требуется переопределить метод {@link #call(Fn, SerializedLambda, MethodDef)}
+ * и для реализации конечной функциональности требуется переопределить метод {@link #call(Fn1, SerializedLambda, MethodDef)}
  *
  * <p>
  * Данный класс по сути выполняет следующие функции
  *
  * <ol>
- *     <li>Метода {@link #apply(Fn)} - получает байт код fn</li>
- *     <li>Полученный байт код передает в {@link #call(Fn, SerializedLambda, MethodDef)}</li>
+ *     <li>Метода {@link #apply(Fn1)} - получает байт код fn</li>
+ *     <li>Полученный байт код передает в {@link #call(Fn1, SerializedLambda, MethodDef)}</li>
  * </ol>
  *
  * <pre>
@@ -74,12 +75,12 @@ public class AsmQuery<ENV> implements Query<ENV> {
     /**
      * Кэш серилизованных лямбд
      */
-    protected Map<Fn<ENV, ? extends Object>, SerializedLambda> serializedLambdas = new LinkedHashMap<>();
+    protected Map<Fn1<ENV, ? extends Object>, SerializedLambda> serializedLambdas = new LinkedHashMap<>();
 
     /**
      * Кэш серилизованных лямбд - байт-код
      */
-    protected Map<Fn<ENV, ? extends Object>, MethodDef> fn2mdef = new LinkedHashMap<>();
+    protected Map<Fn1<ENV, ? extends Object>, MethodDef> fn2mdef = new LinkedHashMap<>();
 
     /**
      * Кэш сериализованых лямбд - байт-код
@@ -93,7 +94,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
      * @return результат вызова
      */
     @Override
-    public <RES> RES apply(Fn<ENV, RES> fn){
+    public <RES> RES apply(Fn1<ENV, RES> fn){
         if( fn==null )throw new IllegalArgumentException( "fn==null" );
 
         var sl = serializedLambdas.get(fn);
@@ -130,7 +131,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
      * @param <RES> результат вызова
      * @return результат вызова
      */
-    protected <RES> RES call( Fn<ENV, RES> fn, SerializedLambda sl, MethodDef mdef ){
+    protected <RES> RES call( Fn1<ENV, RES> fn, SerializedLambda sl, MethodDef mdef ){
         return null;
     }
 
@@ -178,7 +179,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
      * @param <RES> Тип результата вызова лямбды
      * @return байт-код
      */
-    private <RES> MethodDef getMethodDef( SerializedLambda sl, Fn<ENV, RES> fn ){
+    private <RES> MethodDef getMethodDef( SerializedLambda sl, Fn1<ENV, RES> fn ){
         var slId = idOf(sl);
         var cached = methods.get(slId);
         if( cached!=null ){

@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
-import xyz.cofe.trambda.Fn;
 import xyz.cofe.trambda.Query;
 import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sec.SecurAccess;
@@ -44,7 +44,7 @@ public class DemoSecurTest {
              * @return результат вызова
              */
             @Override
-            protected <RES> RES call(Fn<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
                 mdefRef.set(mdef);
                 return super.call(fn, sl, mdef);
             }

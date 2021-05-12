@@ -1,5 +1,6 @@
 package xyz.cofe.trambda.bc.mth;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -86,24 +87,24 @@ import xyz.cofe.trambda.bc.ByteCode;
  * is silently ignored).
  */
 public class MFrame extends MAbstractBC implements MethodWriter {
-    //region ElemType
-    public static enum ElemType {
-        Top(Opcodes.TOP),
-        Integer(Opcodes.INTEGER),
-        Float(Opcodes.FLOAT),
-        Long(Opcodes.LONG),
-        Double(Opcodes.DOUBLE),
-        Null(Opcodes.NULL),
-        UninitializedThis(Opcodes.UNINITIALIZED_THIS);
-        public final int code;
-        ElemType(int code){
-            this.code = code;
-        }
-    }
-    //endregion
+//    //region ElemType
+//    public static enum ElemType {
+//        Top(Opcodes.TOP),
+//        Integer(Opcodes.INTEGER),
+//        Float(Opcodes.FLOAT),
+//        Long(Opcodes.LONG),
+//        Double(Opcodes.DOUBLE),
+//        Null(Opcodes.NULL),
+//        UninitializedThis(Opcodes.UNINITIALIZED_THIS);
+//        public final int code;
+//        ElemType(int code){
+//            this.code = code;
+//        }
+//    }
+//    //endregion
 
     public MFrame(){}
-    public MFrame(int type, int numLocal, List<ElemType> local, int numStack, List<ElemType> stack){
+    public MFrame(int type, int numLocal, List<Object> local, int numStack, List<Object> stack){
         this.type = type;
         this.numLocal = numLocal;
         this.local = local;
@@ -113,30 +114,35 @@ public class MFrame extends MAbstractBC implements MethodWriter {
     public MFrame(int type, int numLocal, Object[] local, int numStack, Object[] stack){
         this.type = type;
         this.numLocal = numLocal;
-        Function<Object[],List<ElemType>> init = (arr) -> {
+        Function<Object[],List<Object>> init = (arr) -> {
             if( arr==null )return null;
-            var res = new ArrayList<ElemType>();
+            var res = new ArrayList<Object>();
             for( var l : arr ){
                 if( l==null ){
                     res.add(null);
                 }else{
-                    if( Objects.equals(l,Opcodes.TOP) ){
-                        res.add(ElemType.Top);
-                    }else if( Objects.equals(l,Opcodes.INTEGER) ){
-                        res.add(ElemType.Integer);
-                    }else if( Objects.equals(l,Opcodes.FLOAT) ){
-                        res.add(ElemType.Float);
-                    }else if( Objects.equals(l,Opcodes.LONG) ){
-                        res.add(ElemType.Long);
-                    }else if( Objects.equals(l,Opcodes.DOUBLE) ){
-                        res.add(ElemType.Double);
-                    }else if( Objects.equals(l,Opcodes.NULL) ){
-                        res.add(ElemType.Null);
-                    }else if( Objects.equals(l,Opcodes.UNINITIALIZED_THIS) ){
-                        res.add(ElemType.UninitializedThis);
-                    }else {
-                        throw new IllegalArgumentException("undefined type in frame "+l);
+                    if( l instanceof Serializable ){
+                        res.add(l);
+                    }else{
+                        throw new IllegalArgumentException("not serializable");
                     }
+//                    if( Objects.equals(l,Opcodes.TOP) ){
+//                        res.add(ElemType.Top);
+//                    }else if( Objects.equals(l,Opcodes.INTEGER) ){
+//                        res.add(ElemType.Integer);
+//                    }else if( Objects.equals(l,Opcodes.FLOAT) ){
+//                        res.add(ElemType.Float);
+//                    }else if( Objects.equals(l,Opcodes.LONG) ){
+//                        res.add(ElemType.Long);
+//                    }else if( Objects.equals(l,Opcodes.DOUBLE) ){
+//                        res.add(ElemType.Double);
+//                    }else if( Objects.equals(l,Opcodes.NULL) ){
+//                        res.add(ElemType.Null);
+//                    }else if( Objects.equals(l,Opcodes.UNINITIALIZED_THIS) ){
+//                        res.add(ElemType.UninitializedThis);
+//                    }else {
+//                        throw new IllegalArgumentException("undefined type in frame "+l);
+//                    }
                 }
             }
             return res;
@@ -174,11 +180,11 @@ public class MFrame extends MAbstractBC implements MethodWriter {
     }
     //endregion
     //region local:List<ElemType>
-    private List<ElemType> local;
-    public List<ElemType> getLocal(){
+    private List<Object> local;
+    public List<Object> getLocal(){
         return local;
     }
-    public void setLocal(List<ElemType> local){
+    public void setLocal(List<Object> local){
         this.local = local;
     }
     //endregion
@@ -192,11 +198,11 @@ public class MFrame extends MAbstractBC implements MethodWriter {
     }
     //endregion
     //region stack:List<ElemType>
-    private List<ElemType> stack;
-    public List<ElemType> getStack(){
+    private List<Object> stack;
+    public List<Object> getStack(){
         return stack;
     }
-    public void setStack(List<ElemType> stack){
+    public void setStack(List<Object> stack){
         this.stack = stack;
     }
     //endregion
@@ -217,41 +223,13 @@ public class MFrame extends MAbstractBC implements MethodWriter {
         Object[] local = getLocal()==null ? null : new Object[getLocal().size()];
         if( local!=null ){
             for( int i=0;i<local.length;i++ ){
-                var v = getLocal().get(i);
-                if( v==null ){
-                    local[i] = null;
-                }else {
-                    switch( v ){
-                        case Top: local[i]=Opcodes.TOP; break;
-                        case Float: local[i]=Opcodes.FLOAT; break;
-                        case Double: local[i]=Opcodes.DOUBLE; break;
-                        case Integer: local[i]=Opcodes.INTEGER; break;
-                        case Null: local[i]=Opcodes.NULL; break;
-                        case UninitializedThis: local[i]=Opcodes.UNINITIALIZED_THIS; break;
-                        default:
-                            throw new IllegalArgumentException("unsupported frame local "+v);
-                    }
-                }
+                local[i] = getLocal().get(i);
             }
         }
         Object[] stack = getStack()==null ? null : new Object[getStack().size()];
         if( stack!=null ){
             for( int i=0;i<stack.length;i++ ){
-                var v = getStack().get(i);
-                if( v==null ){
-                    stack[i] = null;
-                }else {
-                    switch( v ){
-                        case Top: stack[i]=Opcodes.TOP; break;
-                        case Float: stack[i]=Opcodes.FLOAT; break;
-                        case Double: stack[i]=Opcodes.DOUBLE; break;
-                        case Integer: stack[i]=Opcodes.INTEGER; break;
-                        case Null: stack[i]=Opcodes.NULL; break;
-                        case UninitializedThis: stack[i]=Opcodes.UNINITIALIZED_THIS; break;
-                        default:
-                            throw new IllegalArgumentException("unsupported frame local "+v);
-                    }
-                }
+                stack[i] = getStack().get(i);
             }
         }
         mv.visitFrame(getType(),getNumLocal(),local,getNumStack(),stack);

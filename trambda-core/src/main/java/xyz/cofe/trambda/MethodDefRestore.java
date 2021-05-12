@@ -9,6 +9,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.bc.*;
 import xyz.cofe.trambda.bc.bm.DoubleArg;
 import xyz.cofe.trambda.bc.bm.FloatArg;
@@ -118,7 +119,7 @@ public class MethodDefRestore {
             "java/lang/Object", null
         );
 
-        Map<String,Tuple2<MethodDef,Integer>> mdefMap = new LinkedHashMap<>();
+        Map<String, Tuple2<MethodDef,Integer>> mdefMap = new LinkedHashMap<>();
         List<Tuple2<MethodDef,Integer>> lmdef = new ArrayList<>();
         lmdef.add(Tuple2.of(methodDef,0));
         while( !lmdef.isEmpty() ){
@@ -310,16 +311,17 @@ public class MethodDefRestore {
                 if( v==null ){
                     local[i] = null;
                 }else {
-                    switch( v ){
-                        case Top: local[i]=Opcodes.TOP; break;
-                        case Float: local[i]=Opcodes.FLOAT; break;
-                        case Double: local[i]=Opcodes.DOUBLE; break;
-                        case Integer: local[i]=Opcodes.INTEGER; break;
-                        case Null: local[i]=Opcodes.NULL; break;
-                        case UninitializedThis: local[i]=Opcodes.UNINITIALIZED_THIS; break;
-                        default:
-                            throw new IllegalArgumentException("unsupported frame local "+v);
-                    }
+//                    switch( v ){
+//                        case Top: local[i]=Opcodes.TOP; break;
+//                        case Float: local[i]=Opcodes.FLOAT; break;
+//                        case Double: local[i]=Opcodes.DOUBLE; break;
+//                        case Integer: local[i]=Opcodes.INTEGER; break;
+//                        case Null: local[i]=Opcodes.NULL; break;
+//                        case UninitializedThis: local[i]=Opcodes.UNINITIALIZED_THIS; break;
+//                        default:
+//                            throw new IllegalArgumentException("unsupported frame local "+v);
+//                    }
+                    throw new UnsupportedOperationException("not impl");
                 }
             }
         }
@@ -330,16 +332,17 @@ public class MethodDefRestore {
                 if( v==null ){
                     stack[i] = null;
                 }else {
-                    switch( v ){
-                        case Top: stack[i]=Opcodes.TOP; break;
-                        case Float: stack[i]=Opcodes.FLOAT; break;
-                        case Double: stack[i]=Opcodes.DOUBLE; break;
-                        case Integer: stack[i]=Opcodes.INTEGER; break;
-                        case Null: stack[i]=Opcodes.NULL; break;
-                        case UninitializedThis: stack[i]=Opcodes.UNINITIALIZED_THIS; break;
-                        default:
-                            throw new IllegalArgumentException("unsupported frame local "+v);
-                    }
+//                    switch( v ){
+//                        case Top: stack[i]=Opcodes.TOP; break;
+//                        case Float: stack[i]=Opcodes.FLOAT; break;
+//                        case Double: stack[i]=Opcodes.DOUBLE; break;
+//                        case Integer: stack[i]=Opcodes.INTEGER; break;
+//                        case Null: stack[i]=Opcodes.NULL; break;
+//                        case UninitializedThis: stack[i]=Opcodes.UNINITIALIZED_THIS; break;
+//                        default:
+//                            throw new IllegalArgumentException("unsupported frame local "+v);
+//                    }
+                    throw new UnsupportedOperationException("not impl");
                 }
             }
         }

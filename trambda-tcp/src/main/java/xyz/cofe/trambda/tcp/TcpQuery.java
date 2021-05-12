@@ -8,8 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
-import xyz.cofe.trambda.Fn;
 import xyz.cofe.trambda.bc.MethodDef;
 
 public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
@@ -54,10 +54,10 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
         }
     }
 
-    protected final Map<Fn<?,?>,CompileResult> fnKeys = new ConcurrentHashMap<>();
+    protected final Map<Fn1<?,?>,CompileResult> fnKeys = new ConcurrentHashMap<>();
 
     @Override
-    protected <RES> RES call(Fn<ENV, RES> fn, SerializedLambda sl, MethodDef mdef){
+    protected <RES> RES call(Fn1<ENV, RES> fn, SerializedLambda sl, MethodDef mdef){
         var key = fnKeys.get(fn);
         if( key!=null ){
             return call(key,sl);

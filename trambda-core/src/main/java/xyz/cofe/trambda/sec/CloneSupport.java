@@ -1,4 +1,4 @@
-package xyz.cofe.trambda;
+package xyz.cofe.trambda.sec;
 
 /**
  * Поддержка клонирования объекта

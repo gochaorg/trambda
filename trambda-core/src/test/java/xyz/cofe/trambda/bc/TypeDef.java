@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import xyz.cofe.trambda.Tuple2;
+import xyz.cofe.fn.Tuple2;
 
 public class TypeDef {
     private final List<TypeDef> input;
