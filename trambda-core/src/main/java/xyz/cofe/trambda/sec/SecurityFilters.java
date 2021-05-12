@@ -8,7 +8,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import xyz.cofe.fn.Tuple2;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 
 public class SecurityFilters<MESSAGE,SCOPE> implements SecurityFilter<MESSAGE,SCOPE> {
     private final List<Function<SecurAccess<?,SCOPE>, Optional<Tuple2<MESSAGE,Boolean>>>> validators;
@@ -52,10 +53,10 @@ public class SecurityFilters<MESSAGE,SCOPE> implements SecurityFilter<MESSAGE,SC
     public static <MESSAGE,SCOPE> Builder<MESSAGE,SCOPE> create(Class<MESSAGE> cMsg, Class<SCOPE> cScope){
         return new Builder<>();
     }
-    public static Builder<String, MethodDef> create(){
-        return create(String.class, MethodDef.class);
+    public static Builder<String, Tuple2<LambdaDump, LambdaNode>> create(){
+        return create(null, null);
     }
-    public static SecurityFilters<String, MethodDef> create(Consumer<Builder<String, MethodDef>> conf ){
+    public static SecurityFilters<String, Tuple2<LambdaDump, LambdaNode>> create(Consumer<Builder<String, Tuple2<LambdaDump, LambdaNode>>> conf ){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         var bld = create();
         conf.accept(bld);

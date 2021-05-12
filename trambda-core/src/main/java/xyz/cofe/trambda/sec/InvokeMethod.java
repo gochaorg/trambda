@@ -1,11 +1,13 @@
 package xyz.cofe.trambda.sec;
 
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.mth.MMethodInsn;
 
 public class InvokeMethod extends Invoke<MMethodInsn> {
-    public InvokeMethod(MMethodInsn methodInsn, MethodDef mdef){
-        super(methodInsn, mdef);
+    public InvokeMethod(MMethodInsn methodInsn, Tuple2<LambdaDump, LambdaNode> scope){
+        super(methodInsn, scope);
     }
 
     public InvokeMethod(InvokeMethod sample){

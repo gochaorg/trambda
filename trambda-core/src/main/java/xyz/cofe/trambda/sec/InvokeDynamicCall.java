@@ -1,11 +1,13 @@
 package xyz.cofe.trambda.sec;
 
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
-import xyz.cofe.trambda.bc.MethodDef;
 
 public class InvokeDynamicCall extends Invoke<MInvokeDynamicInsn> {
-    public InvokeDynamicCall(MInvokeDynamicInsn invokeDynamicInsn, MethodDef mdef){
-        super(invokeDynamicInsn, mdef);
+    public InvokeDynamicCall(MInvokeDynamicInsn invokeDynamicInsn, Tuple2<LambdaDump,LambdaNode> scope){
+        super(invokeDynamicInsn, scope);
     }
 
     public InvokeDynamicCall(InvokeDynamicCall sample){

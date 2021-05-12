@@ -7,8 +7,8 @@ import java.lang.invoke.SerializedLambda;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
+import xyz.cofe.fn.Fn1;
 import xyz.cofe.io.fs.File;
-import xyz.cofe.trambda.bc.MethodDef;
 
 public class AsmQueryTest {
     @Test
@@ -21,15 +21,25 @@ public class AsmQueryTest {
     public void getByteCode(){
         System.out.println("getByteCode");
 
-        var refMthods = new AtomicReference<Map<String, MethodDef>>();
-        new AsmQuery<String>(){
-            {
-                refMthods.set(methods);
-            }
-        }.apply( env -> env+env );
+        AtomicReference<LambdaDump> dump1 = new AtomicReference<>();
 
-        if( refMthods.get()!=null ){
-            System.out.println("methods found, count="+refMthods.get().size());
+        new AsmQuery<String>(){
+            /**
+             * Реализация вызова лямбды
+             *
+             * @param fn   лямбда
+             * @param sl   лямбда - сериализация
+             * @param dump байт-код лямбды
+             * @return результат вызова
+             */
+            @Override
+            protected <RES> RES call(Fn1<String, RES> fn, SerializedLambda sl, LambdaDump dump){
+                dump1.set(dump);
+                return super.call(fn, sl, dump);
+            }
+        }.apply(env -> env+env );
+
+        if( dump1.get()!=null ){
             File file = new File("target/test/byteCode/AsmQueryTest/getByteCode.dat");
             File dir = file.getParent();
             if( !dir.exists() )dir.createDirectories();
@@ -37,7 +47,7 @@ public class AsmQueryTest {
             try( var strm = file.writeStream() ){
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(strm);
                 objectOutputStream.writeObject(
-                    refMthods.get().values().iterator().next()
+                    dump1.get()
                 );
                 objectOutputStream.flush();
                 System.out.println("writed "+file);
@@ -45,32 +55,6 @@ public class AsmQueryTest {
                 e.printStackTrace();
             }
         }
-    }
-
-    //@Test
-    public void readByteCodeFromFile(){
-        File file = new File("target/test/byteCode/AsmQueryTest/getByteCode.dat");
-        if( !file.exists() ){
-            System.out.println("not found "+file);
-            return;
-        }
-
-        MethodDef mdef = null;
-        try( var strm = file.readStream() ){
-            var objectStream = new ObjectInputStream(strm);
-            mdef = (MethodDef) objectStream.readObject();
-        } catch( IOException | ClassNotFoundException e ) {
-            e.printStackTrace();
-            return;
-        }
-
-        System.out.println("read method:");
-        System.out.println("name "+mdef.getName());
-        System.out.println("desc "+mdef.getDescriptor());
-        System.out.println("sign "+mdef.getSignature());
-        System.out.println("accs "+mdef.getAccess());
-
-        mdef.getByteCodes().stream().map(b->"  "+b.toString()).forEach(System.out::println);
     }
 
     public static class SomeC01 {

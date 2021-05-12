@@ -4,7 +4,6 @@ import java.lang.invoke.SerializedLambda;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import xyz.cofe.fn.Fn1;
-import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.sample.EnvLocal;
 import xyz.cofe.trambda.sample.IEnv;
 import xyz.cofe.trambda.sec.MethodDescTypes;
@@ -24,12 +23,12 @@ public class SecurTest {
         System.out.println("test01");
         System.out.println("=".repeat(60));
 
-        AtomicReference<MethodDef> mdefRef = new AtomicReference<>();
+        AtomicReference<LambdaDump> mdefRef = new AtomicReference<>();
 
         IEnv env = new EnvLocal();
         AsmQuery<IEnv> query = new AsmQuery<IEnv>(){
             @Override
-            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+            protected <RES> RES call(Fn1<IEnv, RES> fn, SerializedLambda sl, LambdaDump mdef){
                 mdefRef.set(mdef);
                 return super.call(fn, sl, mdef);
             }
@@ -48,12 +47,12 @@ public class SecurTest {
             );
 
         System.out.println("-".repeat(60));
-        var mdef = mdefRef.get();
-        System.out.println(MethodDescTypes.parse(mdef.getDescriptor()));
+        var dump = mdefRef.get();
+        System.out.println(MethodDescTypes.parse(dump.getLambdaNode().getMethod().getDescriptor()));
 
         System.out.println("- ".repeat(30));
 
-        var secAcc = SecurAccess.inspect(mdef);
+        var secAcc = SecurAccess.inspect(dump);
         secAcc.forEach(System.out::println);
 
         var sfilters = SecurityFilters.create()

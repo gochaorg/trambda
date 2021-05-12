@@ -72,7 +72,7 @@ public class LambdaDump implements Serializable {
      */
     public synchronized LambdaDump dump( Fn1<?,?> fn ){
         if( fn==null )throw new IllegalArgumentException( "fn==null" );
-        return  dump((Serializable)fn);
+        return  dumpSLambda((Serializable)fn);
     }
 
     /**
@@ -87,30 +87,50 @@ public class LambdaDump implements Serializable {
     /**
      * кеш лямбда / сериализованная форма
      */
-    protected transient final Map<Serializable,SerializedLambda> serializableLambdaCache
+    public transient final Map<Serializable,SerializedLambda> serializableLambdaCache
         = new LinkedHashMap<>();
 
     /**
      * кеш сериализованная лямбда / корневой узел байт кода
      */
-    protected transient final Map<SerializedLambda,LambdaNode> lambdaNodeCache
+    public transient final Map<SerializedLambda,LambdaNode> lambdaNodeCache
         = new LinkedHashMap<>();
+
+    protected void onSerializedLambda( SerializedLambda sl ){
+    }
+
+    protected void onLambdaNode( LambdaNode ln ){
+    }
+
+    protected boolean cacheSerializedLambda = true;
+    public synchronized boolean isCacheSerializedLambda(){
+        return cacheSerializedLambda;
+    }
+    public synchronized void setCacheSerializedLambda( boolean v ){
+        cacheSerializedLambda = v;
+    }
 
     /**
      * создание дампа лямбды
      * @param serializableLambda лямбда
      * @return дамп
      */
-    protected synchronized LambdaDump dump( Serializable serializableLambda ){
+    protected synchronized LambdaDump dumpSLambda(Serializable serializableLambda ){
         if( serializableLambda==null )throw new IllegalArgumentException( "serializableLambda==null" );
 
         SerializedLambda sl;
         try{
-            sl = serializableLambdaCache.computeIfAbsent(
-                serializableLambda, x -> serializedLambda(serializableLambda) );
+            if( cacheSerializedLambda ){
+                sl = serializableLambdaCache.computeIfAbsent(
+                    serializableLambda, x -> serializedLambda(serializableLambda));
+            }else{
+                sl = serializedLambda(serializableLambda);
+            }
         } catch( Exception e ) {
             throw new IOError(e);
         }
+
+        onSerializedLambda(sl);
 
         var lnode = lambdaNodeCache.computeIfAbsent(
             sl,
@@ -124,6 +144,8 @@ public class LambdaDump implements Serializable {
                 );
             }
         );
+
+        onLambdaNode(lnode);
 
         var ldump = new LambdaDump();
         ldump.setLambdaNode(lnode);
@@ -161,7 +183,7 @@ public class LambdaDump implements Serializable {
     /**
      * кеш байт кода
      */
-    protected transient final Map<Class<?>,Map<String,CBegin>> classByteCodeCache
+    public transient final Map<Class<?>,Map<String,CBegin>> classByteCodeCache
         = new HashMap<>();
 
     /**

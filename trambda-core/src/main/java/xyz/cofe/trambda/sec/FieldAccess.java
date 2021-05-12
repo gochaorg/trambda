@@ -1,15 +1,15 @@
 package xyz.cofe.trambda.sec;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.mth.MFieldInsn;
-import xyz.cofe.trambda.bc.MethodDef;
 import xyz.cofe.trambda.bc.mth.OpCode;
 
-public class FieldAccess extends SecurAccess<MFieldInsn,MethodDef> {
-    public FieldAccess(MethodDef methodDef, MFieldInsn fieldInsn){
+public class FieldAccess extends SecurAccess<MFieldInsn, Tuple2<LambdaDump, LambdaNode>> {
+    public FieldAccess(MFieldInsn fieldInsn, Tuple2<LambdaDump, LambdaNode> methodDef){
         super(fieldInsn, methodDef);
     }
 
@@ -22,34 +22,33 @@ public class FieldAccess extends SecurAccess<MFieldInsn,MethodDef> {
         return new FieldAccess(this);
     }
 
-    public static List<FieldAccess> inspectField(MethodDef mdef ){
+    public static List<FieldAccess> inspectField(LambdaDump mdef ){
         if( mdef==null )throw new IllegalArgumentException( "mdef==null" );
         List<FieldAccess> result = new ArrayList<>();
-        inspectField(result,mdef,null);
+        inspectField(result,mdef);
         return result;
     }
-    private static void inspectField(List<FieldAccess> result, MethodDef mdef, Set<MethodDef> visited ){
-        if( visited==null )visited = new HashSet<>();
-        if( mdef==null )throw new IllegalArgumentException( "mdef==null" );
+    private static void inspectField(List<FieldAccess> result, LambdaDump dump){
+        if( dump==null )throw new IllegalArgumentException( "dump==null" );
         if( result==null )throw new IllegalArgumentException( "result==null" );
-        if( visited.contains(mdef) )return;
-        visited.add(mdef);
 
-        if( mdef.getByteCodes()!=null ){
-            for( var bc : mdef.getByteCodes() ){
-                if( bc instanceof MFieldInsn ){
-                    result.add(new FieldAccess(mdef,(MFieldInsn)bc) );
+        var lnode = dump.getLambdaNode();
+        if( lnode==null )throw new IllegalArgumentException("dump.getLambdaNode()==null");
+
+        lnode.walk().tree().forEach( t -> {
+            var node = t.getNode();
+            var meth = node.getMethod();
+            var byteCodes = meth!=null ? meth.getMethodByteCodes() : null;
+            if( byteCodes!=null ){
+                for( var bc : byteCodes ){
+                    if( bc==null )continue;
+
+                    if( bc instanceof MFieldInsn ){
+                        result.add(new FieldAccess((MFieldInsn)bc, Tuple2.of(dump,node)) );
+                    }
                 }
             }
-        }
-
-        if( mdef.getRefs()!=null ){
-            for( var m : mdef.getRefs() ){
-                if( m!=null ){
-                    inspectField(result,m,visited);
-                }
-            }
-        }
+        });
     }
 
     public String getOwner(){
