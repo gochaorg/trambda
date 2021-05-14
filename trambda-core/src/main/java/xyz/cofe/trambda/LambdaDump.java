@@ -481,7 +481,7 @@ public class LambdaDump implements Serializable {
 
             if( rlog.isTraceEnabled() ){
                 rlog.trace("dump generated class");
-                dump(rootClass);
+                traceByteCode(rootClass);
             }
 
             if( rootConsumer!=null ){
@@ -490,22 +490,9 @@ public class LambdaDump implements Serializable {
 
             return rootClass;
         }
-        private static void dump(ByteCode begin){
+        private static void traceByteCode(ByteCode begin){
             if( begin==null )throw new IllegalArgumentException( "begin==null" );
-            begin.walk().tree().forEach( ts -> {
-                if( ts.getLevel()>0 ){
-                    var pref = ts.nodes().limit(ts.getLevel()).map( b -> {
-                        if( b instanceof CMethod ){
-                            return CMethod.class.getSimpleName()+"#"+((CMethod) b).getName()+"()";
-                        }else if( b instanceof CField ){
-                            return CField.class.getSimpleName()+"#"+((CField)b).getName();
-                        }
-                        return b.getClass().getSimpleName();
-                    }).reduce("", (a,b)->a+"/"+b);
-                    rlog.trace(pref);
-                }
-                rlog.trace("/"+ts.getNode());
-            });
+            dump(rlog::trace,begin);
         }
         //endregion
         //region classLoader : Fn1<CBegin,ClassLoader>
@@ -573,5 +560,24 @@ public class LambdaDump implements Serializable {
      */
     public Restore restore(){
         return new Restore(this);
+    }
+
+    public static void dump(Consumer<String> log, ByteCode byteCode){
+        if( log==null )throw new IllegalArgumentException( "log==null" );
+        if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );
+        byteCode.walk().tree().forEach( ts -> {
+            var pref = "";
+            if( ts.getLevel()>0 ){
+                pref = ts.nodes().limit(ts.getLevel()).map( b -> {
+                    if( b instanceof CMethod ){
+                        return CMethod.class.getSimpleName()+"#"+((CMethod) b).getName()+"()";
+                    }else if( b instanceof CField ){
+                        return CField.class.getSimpleName()+"#"+((CField)b).getName();
+                    }
+                    return b.getClass().getSimpleName();
+                }).reduce("", (a,b)->a+"/"+b);
+            }
+            log.accept(pref+"/"+ts.getNode());
+        });
     }
 }

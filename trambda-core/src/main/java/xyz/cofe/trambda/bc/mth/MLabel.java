@@ -53,6 +53,6 @@ public class MLabel extends MAbstractBC implements MethodWriter {
         var ln = getName();
         if( ln==null )throw new IllegalStateException("name not defined");
 
-        v.visitLabel(ctx.labelCreate(ln));
+        v.visitLabel(ctx.labelCreateOrGet(ln));
     }
 }
