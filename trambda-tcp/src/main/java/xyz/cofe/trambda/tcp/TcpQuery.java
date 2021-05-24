@@ -29,7 +29,6 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     public static <ENV> Builder<ENV> create(Class<ENV> c){
         return new Builder<>();
     }
-
     public static class Builder<ENV> {
         protected String host = "localhost";
         public Builder<ENV> host(String address){
@@ -53,7 +52,6 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
             }
         }
     }
-
     protected final Map<Fn1<?,?>,CompileResult> fnKeys = new ConcurrentHashMap<>();
 
     @Override
@@ -67,7 +65,6 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
             return call(ckey,sl);
         }
     }
-
     protected <RES> RES call(CompileResult key,SerializedLambda sl){
         var execRes = client.execute(key).configure( exec -> {
             if( sl.getCapturedArgCount()>0 ){

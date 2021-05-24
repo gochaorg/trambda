@@ -2,12 +2,14 @@ package xyz.cofe.trambda.tcp.serv.cli;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.sec.SecurityFilter;
 import xyz.cofe.trambda.sec.SecurityFilters;
 
 public class SecurityConfiguration {
-    private SecurityFilters.Builder<String,MethodDef> sfBuilder;
+    private SecurityFilters.Builder<String, Tuple2<LambdaDump, LambdaNode>> sfBuilder;
 
     public SecurityConfiguration(){
         sfBuilder = SecurityFilters.create();
@@ -29,7 +31,7 @@ public class SecurityConfiguration {
         f.call(spb);
     }
 
-    public SecurityFilter<String, MethodDef> createFilter(){
+    public SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> createFilter(){
         return sfBuilder.build();
     }
 }

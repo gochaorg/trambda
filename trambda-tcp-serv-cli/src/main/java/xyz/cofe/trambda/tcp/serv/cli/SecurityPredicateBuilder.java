@@ -2,13 +2,15 @@ package xyz.cofe.trambda.tcp.serv.cli;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
-import xyz.cofe.trambda.bc.MethodDef;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.sec.SecurityFilters;
 
-public class SecurityPredicateBuilder<SELF extends SecurityFilters.PredicateBuilder<String ,MethodDef,SELF>> {
-    private final SecurityFilters.PredicateBuilder<String,MethodDef,SELF> sfpb;
+public class SecurityPredicateBuilder<SELF extends SecurityFilters.PredicateBuilder<String , Tuple2<LambdaDump, LambdaNode>,SELF>> {
+    private final SecurityFilters.PredicateBuilder<String,Tuple2<LambdaDump, LambdaNode>,SELF> sfpb;
 
-    public SecurityPredicateBuilder(SecurityFilters.PredicateBuilder<String, MethodDef,SELF> sfpb){
+    public SecurityPredicateBuilder(SecurityFilters.PredicateBuilder<String, Tuple2<LambdaDump, LambdaNode>,SELF> sfpb){
         this.sfpb = sfpb;
     }
 
