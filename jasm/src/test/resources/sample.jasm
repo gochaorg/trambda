@@ -1,0 +1,24 @@
+class SomeClass {
+    public SomeClass() {
+    }
+    private SomeClass() {
+    }
+
+    name  : int
+    protected name2 : int
+    private   name3 : int
+    public static name4 : int
+    public final name4 : int
+    public static final name4 : int
+    public volatile name4 : int
+    public static volatile name4 : int
+    public transient name4 : int
+    public mandated name4 : int
+    public meth1( a : int ) : int {
+        asm {
+            #...
+            label:
+            #...
+        }
+    }
+}
