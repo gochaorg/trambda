@@ -133,6 +133,17 @@ public class TcpClient implements AutoCloseable {
             throw new IllegalStateException("can't close from self");
         }
 
+        if( !socket.isClosed() ){
+            try {
+                log.info("close socket");
+                socket.shutdownOutput();
+                socket.shutdownInput();
+                socket.close();
+            } catch( IOException ex ){
+                log.error("socket not closed",ex);
+            }
+        }
+
         if( socketReaderThread.isAlive() ){
             socketReaderThread.interrupt();
             try{
@@ -149,15 +160,6 @@ public class TcpClient implements AutoCloseable {
                 }
                 log.warn("terminate socketReaderThread");
                 socketReaderThread.stop();
-            }
-        }
-
-        if( !socket.isClosed() ){
-            try {
-                log.info("close socket");
-                socket.close();
-            } catch( IOException ex ){
-                log.error("socket not closed",ex);
             }
         }
     }
@@ -193,6 +195,23 @@ public class TcpClient implements AutoCloseable {
     public ResultConsumer<Execute,ExecuteResult> execute(CompileResult cres){
         if( cres==null )throw new IllegalArgumentException( "cres==null" );
         return proto.execute(cres);
+    }
+    //endregion
+    //region subscribe()
+    public ResultConsumer<Subscribe,SubscribeResult> subscribe(Subscribe subscribe,Consumer<ServerEvent> listener){
+        if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        return proto.subscribe(subscribe).onSuccess( m -> {
+            log.debug("proto.listenServerEvent");
+            proto.listenServerEvent(listener);
+        });
+    }
+    public ResultConsumer<Subscribe,SubscribeResult> subscribe(String publisher,Consumer<ServerEvent> listener){
+        if( publisher==null )throw new IllegalArgumentException( "publisher==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        Subscribe subscribe = new Subscribe();
+        subscribe.setPublisher(publisher);
+        return subscribe(subscribe,listener);
     }
     //endregion
     //region ping()

@@ -1,6 +1,7 @@
 package xyz.cofe.trambda.tcp;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -150,7 +151,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * @see SessionCreated
      */
     protected TcpSession<ENV> create(Socket sock){
-        TcpSession<ENV> ses = new TcpSession<>(sock,envBuilder, securityFilter);
+        TcpSession<ENV> ses = new TcpSession<>(this, sock,envBuilder, securityFilter);
         try{
             sock.setSoTimeout(sessionSoTimeout());
         } catch( SocketException e ) {
@@ -167,6 +168,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         return ses;
     }
 
+    //region session / server shutdown
     /**
      * Завершение всех сессий и остановка сервера
      * @see #closeSocket()
@@ -302,7 +304,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     public void close() throws Exception {
         shutdown();
     }
-
+    //endregion
     //region listeners
     protected final ListenersHelper<TrListener,TrEvent> listeners = new ListenersHelper<>(TrListener::trEvent);
 
@@ -470,4 +472,17 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
         }
     }
     //endregion
+
+    protected final Map<String,Publisher<?>> publishers = new ConcurrentHashMap<>();
+    public <T extends Serializable> Publisher<T> publisher(String name){
+        if( name==null )throw new IllegalArgumentException( "name==null" );
+        var pub = publishers.computeIfAbsent( name, n -> (Publisher<?>) createPublisher(n) );
+        //noinspection unchecked
+        return (Publisher<T>) pub;
+    }
+
+    protected Publisher<?> createPublisher(String name){
+        log.info("create publisher {}",name);
+        return new Publisher<>();
+    }
 }

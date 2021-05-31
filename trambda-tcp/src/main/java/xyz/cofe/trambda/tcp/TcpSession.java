@@ -2,12 +2,14 @@ package xyz.cofe.trambda.tcp;
 
 import java.io.IOError;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.fn.Tuple2;
+import xyz.cofe.fn.Tuple3;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.LambdaNode;
@@ -61,12 +64,17 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected final SecurityFilter<String,Tuple2<LambdaDump, LambdaNode>> securityFilter;
 
     /**
+     * Сервер
+     */
+    protected final TcpServer<ENV> server;
+
+    /**
      * Конструктор
      * @param socket сокет
      * @param envBuilder функция получения сервиса
      */
-    public TcpSession(Socket socket, Function<TcpSession<ENV>,ENV> envBuilder){
-        this(socket,envBuilder,null);
+    public TcpSession(TcpServer<ENV> server, Socket socket, Function<TcpSession<ENV>,ENV> envBuilder){
+        this(server, socket,envBuilder,null);
     }
 
     /**
@@ -75,20 +83,28 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
      * @param envBuilder функция получения сервиса
      * @param securityFilter функция фильтра безопасности
      */
-    public TcpSession(Socket socket,
+    public TcpSession(TcpServer<ENV> server, Socket socket,
                       Function<TcpSession<ENV>,ENV> envBuilder,
                       SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter){
+        if( server==null )throw new IllegalArgumentException( "server==null" );
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
-        if( securityFilter ==null ){
-            this.securityFilter = x -> List.of();
-        }else{
-            this.securityFilter = securityFilter;
-        }
+        this.server = server;
+        this.securityFilter = Objects.requireNonNullElseGet(securityFilter, () -> x -> List.of());
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
         this.env = envBuilder.apply(this);
     }
+
+    //region server : TcpServer<ENV>
+    /**
+     * Возвращает сервер
+     * @return сервер
+     */
+    public TcpServer<ENV> getServer(){
+        return server;
+    }
+    //endregion
 
     //region env : ENV - Предоставляемый сервис клиенту
     /**
@@ -321,6 +337,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     //endregion
     //region close()
     public void close(){
+        unsubscribeAll();
         if( !socket.isClosed() ){
             try{
                 socket.close();
@@ -365,6 +382,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
 
         fireEvent(new SessionFinished(this));
+        unsubscribeAll();
     }
     //endregion
 
@@ -397,6 +415,8 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             process((Compile) msg, header);
         }else if(msg instanceof Execute){
             process((Execute) msg, header);
+        }else if(msg instanceof Subscribe ){
+            process((Subscribe) msg, header);
         }
     }
     //endregion
@@ -424,7 +444,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         var ln = dump.getLambdaNode();
         var methName = ln!=null ?
             ln.walk()
-                .map( n -> n.getMethod() ).filter( Objects::nonNull )
+                .map(LambdaNode::getMethod).filter( Objects::nonNull )
                 .map( m -> m.getName()+":"+m.getDescriptor() )
                 .reduce( "", (a,b)->a+" "+b )
             : "?";
@@ -459,6 +479,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             }
         }
 
+        //noinspection deprecation
         return dump
             .restore()
             .classLoader( cb -> new ClassLoader() {
@@ -606,7 +627,6 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
     }
     //endregion
-
     //endregion
 
     //region SessionFinished
@@ -620,4 +640,92 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         public TcpSession<?> getSession(){ return session; }
     }
     //endregion
+
+    protected final Map<String,
+        Tuple3<Publisher.Subscriber<?>, Long, AutoCloseable>
+        > subscribers = new HashMap<>();
+
+    protected void unsubscribeAll(){
+        synchronized( subscribers ){
+            subscribers.forEach( (pubName,s)->{
+                try{
+                    s.c().close();
+                } catch( Exception e ) {
+                    log.error("unsubscribe error",e);
+                }
+            });
+        }
+    }
+
+    protected void process(Subscribe msg, TcpHeader header){
+        var sid = header.getSid();
+        var pubName = msg.getPublisher();
+
+        log.info("subscribe, pubName={}, sid={}", pubName, sid.map(Objects::toString).orElse("?"));
+
+        if( pubName==null ){
+            log.error("pubName is null");
+
+            try{
+                var errmsg = new ErrMessage().message("pubName is null");
+                if( sid.isPresent() ){
+                    proto.send( errmsg, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send( errmsg );
+                }
+
+                proto.send( new ErrMessage().message("pubName is null") );
+            } catch( IOException e ) {
+                log.error("fail send response", e);
+            }
+            return;
+        }
+
+        var pub = getServer().publisher(pubName);
+
+        synchronized( subscribers ){
+            var res = new SubscribeResult();
+
+            if( subscribers.containsKey(pubName) ){
+                var t = subscribers.get(pubName);
+                res.setSubscribeTime(t.b());
+            } else {
+                Publisher.Subscriber<Serializable> subscriber = subscriber();
+                long t = System.currentTimeMillis();
+                res.setSubscribeTime(t);
+
+                var cl = pub.addListen(subscriber);
+                subscribers.put(pubName, Tuple3.of(subscriber, t, cl));
+            }
+
+            try{
+                if( sid.isPresent() ){
+                    proto.send(res, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send(res);
+                }
+                log.debug("subscribed to {}",pubName);
+            } catch( IOException e ){
+                log.error("fail send response", e);
+            }
+        }
+    }
+
+    protected Publisher.Subscriber<Serializable> subscriber(){
+        return new Publisher.Subscriber<Serializable>() {
+            @Override
+            public void notification(Serializable ev){
+                log.info("send notification");
+
+                ServerEvent sev = new ServerEvent();
+                sev.setEvent(ev);
+
+                try{
+                    proto.send(sev);
+                } catch( IOException e ) {
+                    log.error("fail send response", e);
+                }
+            }
+        };
+    }
 }

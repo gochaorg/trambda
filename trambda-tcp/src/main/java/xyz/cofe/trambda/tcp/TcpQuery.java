@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.LambdaDump;
@@ -78,5 +79,21 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
             }
         }).fetch();
         return (RES)execRes.getValue();
+    }
+
+    public <T> AutoCloseable subscribe(Consumer<T> consumer){
+        if( consumer==null )throw new IllegalArgumentException( "consumer==null" );
+
+        Consumer<ServerEvent> subl =  serverEvent -> {
+            var ev = serverEvent.getEvent();
+            T tEv = (T)ev;
+            consumer.accept(tEv);
+        };
+
+        var sub = client.subscribe("defaultPublisher", subl).fetch();
+
+        return ()->{
+            throw new UnsupportedOperationException("here must be unsubscribe");
+        };
     }
 }

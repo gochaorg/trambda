@@ -11,8 +11,11 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -386,16 +389,18 @@ public class TcpProtocol {
                 responseConsumers.remove(refId);
 
                 var cons = errorConsumers.remove(refId);
-                if( cons!=null ){
+                if( cons != null ){
                     cons.accept((ErrMessage) msg);
                     return;
                 }
             }
 
             var cons = unbindedErrorConsumer;
-            if( cons!=null ){
+            if( cons != null ){
                 cons.accept((ErrMessage) msg, header);
             }
+        }else if( msg instanceof ServerEvent ){
+            process((ServerEvent) msg, header);
         }else{
             var refIdOpt = header.getReferrer();
             if( refIdOpt.isPresent() ){
@@ -441,6 +446,30 @@ public class TcpProtocol {
             log().error("fail send pong response");
         }
     }
+
+    protected Set<Consumer<ServerEvent>> serverEventListeners = new CopyOnWriteArraySet<>();
+    public AutoCloseable listenServerEvent( Consumer<ServerEvent> listener ){
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        serverEventListeners.add(listener);
+        return () -> {
+            serverEventListeners.remove(listener);
+        };
+    }
+    public void removeServerEventListener( Consumer<ServerEvent> listener ){
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        serverEventListeners.remove(listener);
+    }
+
+    protected void process(ServerEvent sevent, TcpHeader header){
+        log().info("process ServerEvent {}",sevent);
+        var sevListeners = serverEventListeners;
+        if( sevListeners!=null ){
+            for( var ls : sevListeners ){
+                log().debug("ls.accept");
+                ls.accept(sevent);
+            }
+        }
+    }
     //endregion
 
     @SuppressWarnings("UnusedReturnValue")
@@ -459,7 +488,8 @@ public class TcpProtocol {
 
         Compile cmpl = new Compile();
         cmpl.setDump(methodDef);
-        return new ResultConsumer<>(this, cmpl, errorConsumers, responseConsumers);
+        //noinspection unchecked,rawtypes,rawtypes
+        return new ResultConsumer(this, cmpl, errorConsumers, responseConsumers);
     }
     public ResultConsumer<Execute,ExecuteResult> execute(CompileResult cres){
         if( cres==null )throw new IllegalArgumentException( "cres==null" );
@@ -467,7 +497,12 @@ public class TcpProtocol {
         Execute exec = new Execute();
         exec.setKey(cres.getKey());
         exec.setHash(cres.getHash());
-
-        return new ResultConsumer<>(this, exec, errorConsumers, responseConsumers);
+        //noinspection unchecked,rawtypes,rawtypes
+        return new ResultConsumer(this, exec, errorConsumers, responseConsumers);
+    }
+    public ResultConsumer<Subscribe,SubscribeResult> subscribe(Subscribe subscribe){
+        if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
+        //noinspection unchecked,rawtypes,rawtypes
+        return new ResultConsumer(this, subscribe, errorConsumers, responseConsumers);
     }
 }

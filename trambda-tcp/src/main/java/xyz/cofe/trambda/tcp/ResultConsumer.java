@@ -5,14 +5,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import xyz.cofe.fn.Tuple;
+import xyz.cofe.fn.Tuple2;
 
 public class ResultConsumer<Req extends Message, Res extends Message> {
     private final TcpProtocol proto;
     private final Req req;
     private final Map<Integer,Consumer<ErrMessage>> errorConsumers;
-    private final Map<Integer,Consumer<? extends Message>> responseConsumers;
+    private final Map<Integer,Consumer<Res>> responseConsumers;
 
-    public ResultConsumer(TcpProtocol proto, Req req, Map<Integer,Consumer<ErrMessage>> errorConsumers, Map<Integer,Consumer<? extends Message>> responseConsumers){
+    public ResultConsumer(TcpProtocol proto, Req req, Map<Integer,Consumer<ErrMessage>> errorConsumers, Map<Integer,Consumer<Res>> responseConsumers){
         if( req == null ) throw new IllegalArgumentException("req==null");
         if( proto == null )throw new IllegalArgumentException( "proto==null" );
         if( errorConsumers == null )throw new IllegalArgumentException( "errorConsumers == null" );
@@ -24,19 +26,58 @@ public class ResultConsumer<Req extends Message, Res extends Message> {
         this.responseConsumers = responseConsumers;
     }
 
-    private volatile Consumer<? extends Message> consumer;
+    private volatile Consumer<Res> consumer;
 
     public ResultConsumer<Req, Res> onSuccess(Consumer<Res> response){
+        return onSuccess(response, null);
+    }
+
+    public ResultConsumer<Req, Res> onSuccess(Consumer<Res> response, Consumer<Tuple2<Consumer<Res>,Consumer<Res>>> changes){
         if( response == null ) throw new IllegalArgumentException("response==null");
-        consumer = response;
+        if( consumer!=null ){
+            @SuppressWarnings("rawtypes") Consumer eCons = consumer;
+            consumer = msg -> {
+                //noinspection unchecked
+                eCons.accept(msg);
+                //noinspection unchecked,rawtypes,rawtypes
+                ((Consumer)response).accept(msg);
+            };
+            if( changes!=null ){
+                //noinspection unchecked
+                changes.accept(Tuple2.of(eCons, consumer));
+            }
+        }else {
+            consumer = response;
+            if( changes!=null ){
+                changes.accept(Tuple2.of(null, consumer));
+            }
+        }
         return this;
     }
 
     private volatile Consumer<ErrMessage> errConsumer;
 
     public ResultConsumer<Req, Res> onFail(Consumer<ErrMessage> response){
+        return onFail(response, null);
+    }
+
+    public ResultConsumer<Req, Res> onFail(Consumer<ErrMessage> response, Consumer<Tuple2<Consumer<ErrMessage>,Consumer<ErrMessage>>> changes){
         if( response == null ) throw new IllegalArgumentException("response==null");
-        errConsumer = response;
+        if( errConsumer!=null ){
+            var eCons = errConsumer;
+            errConsumer = msg -> {
+                eCons.accept(msg);
+                response.accept(msg);
+            };
+            if( changes!=null ){
+                changes.accept( Tuple2.of(eCons, errConsumer) );
+            }
+        }else {
+            errConsumer = response;
+            if( changes!=null ){
+                changes.accept( Tuple2.of(null, errConsumer) );
+            }
+        }
         return this;
     }
 
@@ -65,19 +106,28 @@ public class ResultConsumer<Req extends Message, Res extends Message> {
         try{
             synchronized( sync ){
                 proto.send(req, msgId -> {
-                    responseConsumers.put(msgId, msg -> {
+                    Consumer<Res> succ = msg -> {
                         synchronized( sync ){
                             //noinspection unchecked
                             res.set((Res) msg);
                             sync.notifyAll();
                         }
-                    });
-                    errorConsumers.put(msgId, err0 -> {
+                    };
+
+                    AtomicReference<Consumer<Res>> succCons = new AtomicReference<>();
+                    onSuccess(succ, p -> succCons.set(p.b()));
+                    responseConsumers.put(msgId, succCons.get());
+
+                    Consumer<ErrMessage> fail =  err0 -> {
                         synchronized( sync ){
                             err.set(err0);
                             sync.notifyAll();
                         }
-                    });
+                    };
+
+                    AtomicReference<Consumer<ErrMessage>> failCons = new AtomicReference<>();
+                    onFail(fail, p -> failCons.set(p.b()));
+                    errorConsumers.put(msgId, failCons.get());
                 });
                 try{
                     sync.wait();
