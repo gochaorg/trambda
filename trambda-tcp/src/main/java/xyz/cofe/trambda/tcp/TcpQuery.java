@@ -3,17 +3,24 @@ package xyz.cofe.trambda.tcp;
 import java.io.Closeable;
 import java.io.IOError;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.LambdaDump;
 
 public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
+    private static final Logger log = LoggerFactory.getLogger(TcpQuery.class);
+
     protected final TcpClient client;
     public TcpClient getClient(){ return client; }
 
@@ -78,6 +85,7 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
                 exec.setCapturedArgs(null);
             }
         }).fetch();
+        //noinspection unchecked
         return (RES)execRes.getValue();
     }
 
@@ -86,14 +94,68 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
 
         Consumer<ServerEvent> subl =  serverEvent -> {
             var ev = serverEvent.getEvent();
+            //noinspection unchecked
             T tEv = (T)ev;
             consumer.accept(tEv);
         };
 
-        var sub = client.subscribe("defaultPublisher", subl).fetch();
+        var publisherName = "defaultPublisher";
+        var sub = client.subscribe(publisherName, subl).fetch();
 
         return ()->{
-            throw new UnsupportedOperationException("here must be unsubscribe");
+            client.unsubscribe(subl);
         };
+    }
+
+    private static final WeakHashMap<Publisher.Subscriber<?>, Consumer<ServerEvent>> subs =
+        new WeakHashMap<>();
+
+    public <T> T subscribe( Class<T> cls ){
+        if( cls==null )throw new IllegalArgumentException( "cls==null" );
+        var pub = new PubProxy(){
+            @SuppressWarnings("rawtypes")
+            @Override
+            protected Publisher<?> publisher(Method method){
+                log.info("create Publisher proxy for {}", method);
+                return new Publisher(){
+                    @Override
+                    public AutoCloseable listen(Subscriber subscriber){
+                        if( subscriber==null )throw new IllegalArgumentException( "subscriber==null" );
+
+                        Consumer<ServerEvent> subl =  serverEvent -> {
+                            var ev = serverEvent.getEvent();
+
+                            //noinspection unchecked
+                            subscriber.notification(ev);
+                        };
+
+                        subs.put(subscriber, subl);
+
+                        String publisherName = method.getName();
+                        client.subscribe(publisherName, subl).fetch();
+
+                        return () -> {
+                            client.unsubscribe(subl);
+                        };
+                    }
+
+                    @Override
+                    public void removeListener(Subscriber subscriber){
+                        var subl = subs.get(subscriber);
+                        if( subl!=null ){
+                            client.unsubscribe(subl);
+                        }
+                    }
+                };
+            }
+        };
+        return pub.proxy(cls);
+    }
+    public <T> TcpQuery<ENV> subscribe(Class<T> cls, Consumer<T> publishers ){
+        if( cls==null )throw new IllegalArgumentException( "cls==null" );
+        if( publishers==null )throw new IllegalArgumentException( "publishers==null" );
+        T pubs = subscribe(cls);
+        publishers.accept(pubs);
+        return this;
     }
 }

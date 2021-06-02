@@ -16,15 +16,15 @@ public class Publisher<T extends Serializable> {
     private final ListenersHelper<Subscriber<T>,T> listenersHelper =
         new ListenersHelper<>(Subscriber::notification);
 
-    public AutoCloseable addListen( Subscriber<T> subscriber ){
+    public AutoCloseable listen(Subscriber<T> subscriber ){
         if( subscriber==null )throw new IllegalArgumentException( "subscriber==null" );
         return listenersHelper.addListener(subscriber);
     }
 
-    public AutoCloseable addListen( boolean weak, Subscriber<T> subscriber ){
-        if( subscriber==null )throw new IllegalArgumentException( "subscriber==null" );
-        return listenersHelper.addListener(subscriber,weak);
-    }
+//    public AutoCloseable listen(boolean weak, Subscriber<T> subscriber ){
+//        if( subscriber==null )throw new IllegalArgumentException( "subscriber==null" );
+//        return listenersHelper.addListener(subscriber,weak);
+//    }
 
     public void removeListener( Subscriber<T> subscriber ){
         listenersHelper.removeListener(subscriber);

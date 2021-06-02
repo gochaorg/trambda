@@ -8,13 +8,13 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -447,26 +447,54 @@ public class TcpProtocol {
         }
     }
 
-    protected Set<Consumer<ServerEvent>> serverEventListeners = new CopyOnWriteArraySet<>();
-    public AutoCloseable listenServerEvent( Consumer<ServerEvent> listener ){
+    protected final Map<String,Set<Consumer<ServerEvent>>> serverEventListeners = new ConcurrentHashMap<>();
+    public AutoCloseable listenServerEvent( String publisher, Consumer<ServerEvent> listener ){
         if( listener==null )throw new IllegalArgumentException( "listener==null" );
-        serverEventListeners.add(listener);
+        if( publisher==null )throw new IllegalArgumentException( "publisher==null" );
+        synchronized( serverEventListeners ){
+            serverEventListeners.computeIfAbsent(publisher, x -> new CopyOnWriteArraySet<>()).add(listener);
+        }
         return () -> {
-            serverEventListeners.remove(listener);
+            //serverEventListeners.remove(listener);
+            synchronized( serverEventListeners ){
+                var ls = serverEventListeners.get(publisher);
+                if( ls != null ){
+                    ls.remove(listener);
+                    if( ls.isEmpty() ){
+                        serverEventListeners.remove(publisher);
+                    }
+                }
+            }
         };
     }
     public void removeServerEventListener( Consumer<ServerEvent> listener ){
         if( listener==null )throw new IllegalArgumentException( "listener==null" );
-        serverEventListeners.remove(listener);
+        synchronized( serverEventListeners ){
+            var removes = new HashSet<String>();
+            for( var pub : serverEventListeners.keySet() ){
+                var ls = serverEventListeners.get(pub);
+                ls.remove(listener);
+                if( ls.isEmpty() ){
+                    removes.add(pub);
+                }
+            }
+            removes.forEach(serverEventListeners::remove);
+        }
     }
 
     protected void process(ServerEvent sevent, TcpHeader header){
-        log().info("process ServerEvent {}",sevent);
-        var sevListeners = serverEventListeners;
-        if( sevListeners!=null ){
-            for( var ls : sevListeners ){
-                log().debug("ls.accept");
-                ls.accept(sevent);
+        log().debug("process server event {}",sevent);
+
+        var pub = sevent.getPublisher();
+        if( pub!=null ){
+            var sevListeners = serverEventListeners.get(pub);
+            if( sevListeners != null ){
+                for( var ls : sevListeners ){
+                    if( ls!=null ){
+                        log().debug("ls.accept");
+                        ls.accept(sevent);
+                    }
+                }
             }
         }
     }
@@ -500,7 +528,12 @@ public class TcpProtocol {
         //noinspection unchecked,rawtypes,rawtypes
         return new ResultConsumer(this, exec, errorConsumers, responseConsumers);
     }
-    public ResultConsumer<Subscribe,SubscribeResult> subscribe(Subscribe subscribe){
+    public ResultConsumer<Subscribe, SubscribeResult> subscribe(Subscribe subscribe){
+        if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
+        //noinspection unchecked,rawtypes,rawtypes
+        return new ResultConsumer(this, subscribe, errorConsumers, responseConsumers);
+    }
+    public ResultConsumer<UnSubscribe, UnSubscribeResult> unsubscribe(UnSubscribe subscribe){
         if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
         //noinspection unchecked,rawtypes,rawtypes
         return new ResultConsumer(this, subscribe, errorConsumers, responseConsumers);

@@ -415,8 +415,10 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             process((Compile) msg, header);
         }else if(msg instanceof Execute){
             process((Execute) msg, header);
-        }else if(msg instanceof Subscribe ){
+        }else if(msg instanceof Subscribe){
             process((Subscribe) msg, header);
+        }else if(msg instanceof UnSubscribe){
+            process((UnSubscribe) msg, header);
         }
     }
     //endregion
@@ -642,7 +644,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     //endregion
 
     protected final Map<String,
-        Tuple3<Publisher.Subscriber<?>, Long, AutoCloseable>
+        Tuple3<Publisher.Subscriber<Serializable>, Long, AutoCloseable>
         > subscribers = new HashMap<>();
 
     protected void unsubscribeAll(){
@@ -690,11 +692,11 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 var t = subscribers.get(pubName);
                 res.setSubscribeTime(t.b());
             } else {
-                Publisher.Subscriber<Serializable> subscriber = subscriber();
+                Publisher.Subscriber<Serializable> subscriber = subscriber(pubName);
                 long t = System.currentTimeMillis();
                 res.setSubscribeTime(t);
 
-                var cl = pub.addListen(subscriber);
+                var cl = pub.listen(subscriber);
                 subscribers.put(pubName, Tuple3.of(subscriber, t, cl));
             }
 
@@ -710,8 +712,65 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             }
         }
     }
+    protected void process(UnSubscribe msg, TcpHeader header){
+        var sid = header.getSid();
+        var pubName = msg.getPublisher();
 
-    protected Publisher.Subscriber<Serializable> subscriber(){
+        log.info("unsubscribe, pubName={}, sid={}", pubName, sid.map(Objects::toString).orElse("?"));
+
+        if( pubName==null ){
+            log.error("pubName is null");
+
+            try{
+                var errmsg = new ErrMessage().message("pubName is null");
+                if( sid.isPresent() ){
+                    proto.send( errmsg, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send( errmsg );
+                }
+
+                proto.send( new ErrMessage().message("pubName is null") );
+            } catch( IOException e ) {
+                log.error("fail send response", e);
+            }
+            return;
+        }
+
+        var pub = getServer().publisher(pubName);
+
+        synchronized( subscribers ){
+            var res = new UnSubscribeResult();
+
+            if( subscribers.containsKey(pubName) ){
+                var t = subscribers.get(pubName);
+                res.setSubscribeTime(t.b());
+
+                try{
+                    t.c().close();
+                } catch( Exception e ) {
+                    log.error("unsubscribe close error",e);
+                    pub.removeListener(t.a());
+                }
+
+                subscribers.remove(pubName);
+            } else {
+                res.setSubscribeTime(-1);
+            }
+
+            try{
+                if( sid.isPresent() ){
+                    proto.send(res, TcpHeader.referrer.create(sid.get()));
+                } else {
+                    proto.send(res);
+                }
+                log.debug("subscribed to {}",pubName);
+            } catch( IOException e ){
+                log.error("fail send response", e);
+            }
+        }
+    }
+
+    protected Publisher.Subscriber<Serializable> subscriber(String name){
         return new Publisher.Subscriber<Serializable>() {
             @Override
             public void notification(Serializable ev){
@@ -719,6 +778,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
 
                 ServerEvent sev = new ServerEvent();
                 sev.setEvent(ev);
+                sev.setPublisher(name);
 
                 try{
                     proto.send(sev);

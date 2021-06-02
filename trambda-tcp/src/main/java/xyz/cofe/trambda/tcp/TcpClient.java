@@ -3,12 +3,19 @@ package xyz.cofe.trambda.tcp;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
+import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.LambdaDump;
 
 public class TcpClient implements AutoCloseable {
@@ -198,20 +205,92 @@ public class TcpClient implements AutoCloseable {
     }
     //endregion
     //region subscribe()
-    public ResultConsumer<Subscribe,SubscribeResult> subscribe(Subscribe subscribe,Consumer<ServerEvent> listener){
+    protected final Map<String, List<Tuple2<Consumer<ServerEvent>,AutoCloseable>>> subscribers = new ConcurrentHashMap<>();
+    public ResultConsumer<Subscribe, SubscribeResult> subscribe(Subscribe subscribe, Consumer<ServerEvent> listener){
         if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
+
+        var pubName = subscribe.getPublisher();
+        if( pubName==null )throw new IllegalArgumentException( "subscribe.pubName==null" );
+
         if( listener==null )throw new IllegalArgumentException( "listener==null" );
         return proto.subscribe(subscribe).onSuccess( m -> {
+            log.info("subscribe publisher={}",pubName);
             log.debug("proto.listenServerEvent");
-            proto.listenServerEvent(listener);
+            var cl = proto.listenServerEvent(pubName, listener);
+            synchronized( subscribers ){
+                subscribers.computeIfAbsent(pubName, x -> new CopyOnWriteArrayList<>()).add(
+                    Tuple2.of(listener,cl)
+                );
+            }
         });
     }
-    public ResultConsumer<Subscribe,SubscribeResult> subscribe(String publisher,Consumer<ServerEvent> listener){
+    public ResultConsumer<Subscribe, SubscribeResult> subscribe(String publisher, Consumer<ServerEvent> listener){
         if( publisher==null )throw new IllegalArgumentException( "publisher==null" );
         if( listener==null )throw new IllegalArgumentException( "listener==null" );
         Subscribe subscribe = new Subscribe();
         subscribe.setPublisher(publisher);
         return subscribe(subscribe,listener);
+    }
+    public ResultConsumer<UnSubscribe, UnSubscribeResult> unsubscribe(UnSubscribe subscribe){
+        if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
+
+        var pubName = subscribe.getPublisher();
+        if( pubName==null )throw new IllegalArgumentException( "subscribe.pubName==null" );
+
+        return proto.unsubscribe(subscribe).onSuccess( m -> {
+            log.info("unsubscribed publisher={}",pubName);
+            log.debug("proto.listenServerEvent.close all");
+            synchronized( subscribers ){
+                var l = subscribers.get(pubName);
+                if( l != null ){
+                    for( var c : l ){
+                        if( c != null ){
+                            try{
+                                c.b().close();
+                            } catch( Exception e ) {
+                                log.error("remove listener proto.listenServerEvent error", e);
+                            }
+                        }
+                    }
+                    l.clear();
+                }
+                subscribers.remove(pubName);
+            }
+        });
+    }
+    public ResultConsumer<UnSubscribe, UnSubscribeResult> unsubscribe(String publisher){
+        if( publisher==null )throw new IllegalArgumentException( "publisher==null" );
+        var subscribe = new UnSubscribe();
+        subscribe.setPublisher(publisher);
+        return unsubscribe(subscribe);
+    }
+    public void unsubscribe( Consumer<? super ServerEvent> listener ){
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        synchronized( subscribers ){
+            var unsubPubs = new HashSet<String>();
+            for( var pub : subscribers.keySet() ){
+                var ls = subscribers.get(pub);
+                var lsRemItems = new ArrayList<>();
+                for( var e : ls ){
+                    if( e.a()==listener ){
+                        try{
+                            e.b().close();
+                        } catch( Exception exception ) {
+                            log.error("unsubscribe {}", listener);
+                        }
+                        lsRemItems.add(e);
+                    }
+                }
+                //noinspection SuspiciousMethodCalls
+                lsRemItems.forEach(ls::remove);
+                if( ls.isEmpty() ){
+                    unsubPubs.add(pub);
+                }
+            }
+            for( var unsubPub : unsubPubs ){
+                unsubscribe(unsubPub).fetch();
+            }
+        }
     }
     //endregion
     //region ping()

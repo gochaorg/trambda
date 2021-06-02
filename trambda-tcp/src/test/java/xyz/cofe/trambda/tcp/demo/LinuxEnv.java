@@ -16,7 +16,15 @@ public class LinuxEnv implements IEnv {
         this.defaultPublisher = defaultPublisher;
     }
 
+    public LinuxEnv(Events publishers){
+        if( publishers!=null ){
+            this.defaultPublisher = publishers.defaultPublisher();
+            this.timedPublisher = publishers.timedEvents();
+        }
+    }
+
     private Publisher<ServerDemoEvent> defaultPublisher;
+    private Publisher<ServerDemoEvent2> timedPublisher;
 
     @Override
     public List<OsProc> processes(){
@@ -29,18 +37,35 @@ public class LinuxEnv implements IEnv {
         return procs;
     }
 
-    public void notifyMe( int count, int delay ){
-        var pub = defaultPublisher;
-        if( count>0 && pub!=null ){
-            for( int i=0; i<count; i++ ){
-                if( i>0 && delay>0 ){
-                    try{
-                        Thread.sleep(delay);
-                    } catch( InterruptedException e ) {
-                        break;
+    public void notifyMe( int count, int delay, boolean timed ){
+        if( count<=0 )return;
+        if( timed ){
+            var pub = timedPublisher;
+            if( pub!=null ){
+                for( int i=0; i<count; i++ ){
+                    if( i>0 && delay>0 ){
+                        try{
+                            Thread.sleep(delay);
+                        } catch( InterruptedException e ) {
+                            break;
+                        }
                     }
+                    pub.publish( new ServerDemoEvent2("message#"+i) );
                 }
-                pub.publish( new ServerDemoEvent("message#"+i) );
+            }
+        }else {
+            var pub = defaultPublisher;
+            if( pub!=null ){
+                for( int i=0; i<count; i++ ){
+                    if( i>0 && delay>0 ){
+                        try{
+                            Thread.sleep(delay);
+                        } catch( InterruptedException e ) {
+                            break;
+                        }
+                    }
+                    pub.publish( new ServerDemoEvent("message#"+i) );
+                }
             }
         }
     }

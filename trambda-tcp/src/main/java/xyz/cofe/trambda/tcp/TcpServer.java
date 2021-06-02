@@ -2,6 +2,7 @@ package xyz.cofe.trambda.tcp;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -484,5 +485,25 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     protected Publisher<?> createPublisher(String name){
         log.info("create publisher {}",name);
         return new Publisher<>();
+    }
+
+    private final Map<Class<?>,Object> proxyPublishers = new ConcurrentHashMap<>();
+
+    public <T> T publishers(Class<T> cls){
+        if( cls==null )throw new IllegalArgumentException( "cls==null" );
+        //noinspection unchecked
+        return (T)proxyPublishers.computeIfAbsent(cls, this::createProxyPublisher);
+    }
+
+    protected <T> T createProxyPublisher(Class<T> cls){
+        if( cls==null )throw new IllegalArgumentException( "cls==null" );
+        var pub = new PubProxy(){
+            @Override
+            protected Publisher<?> publisher(Method method){
+                String publisherName = method.getName();
+                return TcpServer.this.publisher(publisherName);
+            }
+        };
+        return pub.proxy(cls);
     }
 }

@@ -1,6 +1,6 @@
 package xyz.cofe.trambda.tcp;
 
-public class SubscribeResult implements Message {
+public class UnSubscribeResult implements Message {
     protected long subscribeTime;
     public long getSubscribeTime(){
         return subscribeTime;
