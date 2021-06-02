@@ -93,7 +93,7 @@ public class AsmQuery<ENV> implements Query<ENV> {
      * @param <RES> результат вызова
      * @return результат вызова
      */
-    protected <RES> RES call( Fn<ENV, RES> fn, SerializedLambda sl, MethodDef mdef ){
+    protected <RES> RES call( Fn<ENV, RES> fn, SerializedLambda sl, LambdaDump mdef ){
         return null;
     }
     ...
@@ -101,18 +101,18 @@ public class AsmQuery<ENV> implements Query<ENV> {
 ```
 
 Это клас по сути является абстрактным, и для реализации конечной функциональности 
-требуется переопределить метод `call(Fn, SerializedLambda, MethodDef)`
+требуется переопределить метод `call(Fn, SerializedLambda, LambdaDump)`
 
 Данный класс по сути выполняет следующие функции:
 
 - Метода `apply(Fn)` - получает байт код fn
-- Полученный байт код передает в `call(Fn, SerializedLambda, MethodDef)`
+- Полученный байт код передает в `call(Fn, SerializedLambda, LambdaDump)`
 
 ```java
-AtomicReference<MethodDef> mdefRef = new AtomicReference<>();
+AtomicReference<LambdaDump> mdefRef = new AtomicReference<>();
 var res = new AsmQuery<IEnv>(){
     @Override
-    protected   RES call(Fn<IEnv, RES> fn, SerializedLambda sl, MethodDef mdef){
+    protected   RES call(Fn<IEnv, RES> fn, SerializedLambda sl, LambdaDump mdef){
         // Сохранение представления байт кода
         mdefRef.set(mdef);
         // ...
@@ -125,67 +125,22 @@ var res = new AsmQuery<IEnv>(){
 );
 ```
 
-### MethodDef
+### LambdaDump
 
-`xyz.cofe.trambda.bc.MethodDef` - Это сериализованное представление байт-кода.
+`xyz.cofe.trambda.LambdaDump` - Это сериализованное представление байт-кода.
 
 
 Генерация класса JVM для сериализованного представления
 ----------------------------------------------------------
 
 Для восстановления байт-кода из сериализованного представления используется
-класс `xyz.cofe.trambda.MethodDefRestore`
+класс `xyz.cofe.trambda.LambdaDump`
+
+Данный класс умеет восстанавливать как байт код, 
+так и возвращает ссылку на целевой метод ([Method](https://docs.oracle.com/javase/7/docs/api/java/lang/reflect/Method.html)) 
 
 ```java
-var byteCode = new MethodRestore()
-     // Имя целевого класса
-    .className("xyz.cofe.trambda.buildMethodTest.Build1")
-    // Имя целевого метода
-    .methodName("lambda1")
-    // Сериализованная лямбда
-    .methodDef(mdef)
-    // Генерация байт кода
-    .generate();
-```
-
-Затем можно для этого байткода, через собственный загрузчик классов, 
-получить ссылку 
-([java.lang.reflect.Method](https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html)) 
-на лямбду:
-
-```java
-// Создаем свой Classloader, 
-// через который будем загружать наш сгененированый класс
-ClassLoader cl = new ClassLoader(ClassLoader.getSystemClassLoader()) {
-    @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException{
-        if( name!=null && 
-            name.equals("xyz.cofe.trambda.buildMethodTest.Build1") 
-        ){
-            // Передача байт-кода в JVM
-            return defineClass(name,byteCode,0,byteCode.length);
-        }
-        return super.findClass(name);
-    }
-};
-
-Class c = null;
-try{
-    // Загрузка класса из Classloader
-    c = Class.forName("xyz.cofe.trambda.buildMethodTest.Build1",true,cl);
-} catch( ClassNotFoundException e ) {
-    e.printStackTrace();
-    return;
-}
-
-// Ищем целевой метод, он по умолчанию должен быть static
-Method m = null;
-for( var delMeth : c.getDeclaredMethods() ){
-    if( delMeth.getName().equals("lambda1") ){
-        // Найден метод который реализует лямбду
-        m = delMeth;
-    }
-}
+Method method = dump.restore().method();
 ```
 
 Функции проверки безопасности байт-кода
@@ -201,7 +156,7 @@ import xyz.cofe.trambda.sec.SecurityFilters;
 import xyz.cofe.trambda.sec.SecurityFilter;
 import xyz.cofe.trambda.sec.SecurAccess;
 
-var secAcc = SecurAccess.inspect(mdef);
+var secAcc = SecurAccess.inspect(dump);
 
 var sfilters = SecurityFilters.create()
     // Разрешаем вызовы
