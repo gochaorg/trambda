@@ -5,13 +5,14 @@
     <parent>
         <artifactId>trambda</artifactId>
         <groupId>xyz.cofe</groupId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>trambda-tcp-serv-cli</artifactId>
 
     <name>${project.artifactId}</name>
+    <version>2.0</version>
 
     <description>Сервер trambda - пакет для запуска из command line interface (CLI)</description>
 
@@ -25,7 +26,7 @@
         <dependency>
             <groupId>xyz.cofe</groupId>
             <artifactId>trambda-tcp</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <version>[2.0,3.0)</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -36,13 +37,13 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>3.0.7</version>
+            <version>[3.0.7,4.0)</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-groovysh -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-groovysh</artifactId>
-            <version>3.0.7</version>
+            <version>[3.0.7,4.0)</version>
         </dependency>
 
     </dependencies>

@@ -6,7 +6,7 @@
 
     <groupId>xyz.cofe</groupId>
     <artifactId>trambda</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <modules>
         <module>trambda-core</module>
         <module>trambda-tcp</module>
