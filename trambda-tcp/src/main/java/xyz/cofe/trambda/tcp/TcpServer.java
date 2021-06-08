@@ -42,6 +42,14 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     protected final Set<TcpSession<ENV>> sessions;
 
     /**
+     * Возвращает сессии
+     * @return Сессии клиентов
+     */
+    public Set<TcpSession<ENV>> getSessions(){
+        return sessions;
+    }
+
+    /**
      * Информация когда было уведомление о закрытии сессии: ses.id / System.currentTimeMillis()
      *
      * <p>
@@ -114,7 +122,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
             try{
                 sessions.add(create(socket.accept()));
             } catch( SocketTimeoutException e ){
-                log.warn("SocketTimeoutException");
+                log.trace("SocketTimeoutException");
                 if( Thread.currentThread().isInterrupted() ){
                     log.info("interrupted");
                     break;

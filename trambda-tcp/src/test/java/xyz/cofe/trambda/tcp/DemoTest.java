@@ -79,69 +79,69 @@ public class DemoTest {
         closeables.close();
     }
 
-    @Test
-    public void demo02(){
-        System.out.println("demo02");
-        System.out.println("=".repeat(80));
-
-        level(Level.INFO, TcpProtocol.class);
-
-        Closeables closeables = new Closeables();
-
-        log.info("create server");
-
-        ServerSocket ssocket = null;
-        TcpServer<IEnv> server = null;
-        try{
-            ssocket = new ServerSocket(port+1);
-            ssocket.setSoTimeout(1000*5);
-
-            server = new TcpServer<IEnv>(ssocket,
-                s -> new LinuxEnv(
-                    s.getServer().publisher("defaultPublisher")
-                )
-            );
-            server.setDaemon(true);
-            server.start();
-            server.setName("server");
-            server.addListener(System.out::println);
-            closeables.add((AutoCloseable) server);
-        } catch( IOException e ) {
-            e.printStackTrace();
-            return;
-        }
-
-        log.info("subscribe");
-
-        var query = TcpQuery.create(IEnv.class).host("localhost").port(port+1).build();
-        query.<ServerDemoEvent>subscribe(msg -> {
-            System.out.println("message "+msg.message);
-        });
-
-        closeables.add(query);
-
-        log.info("send notify");
-        query.apply( env -> {
-            env.notifyMe(10,100);
-            return List.of();
-        });
-        log.info("sent notify");
-
-        try{
-            log.info("close query");
-            query.close();
-        } catch( Exception e ) {
-            e.printStackTrace();
-        }
-
-        server.shutdown();
-
-        try{
-            server.join(1000L * 5L);
-        } catch( InterruptedException e ) {
-            log.error("serv join");
-        }
-    }
+//    @Test
+//    public void demo02(){
+//        System.out.println("demo02");
+//        System.out.println("=".repeat(80));
+//
+//        level(Level.INFO, TcpProtocol.class);
+//
+//        Closeables closeables = new Closeables();
+//
+//        log.info("create server");
+//
+//        ServerSocket ssocket = null;
+//        TcpServer<IEnv> server = null;
+//        try{
+//            ssocket = new ServerSocket(port+1);
+//            ssocket.setSoTimeout(1000*5);
+//
+//            server = new TcpServer<IEnv>(ssocket,
+//                s -> new LinuxEnv(
+//                    s.getServer().publisher("defaultPublisher")
+//                )
+//            );
+//            server.setDaemon(true);
+//            server.start();
+//            server.setName("server");
+//            server.addListener(System.out::println);
+//            closeables.add((AutoCloseable) server);
+//        } catch( IOException e ) {
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        log.info("subscribe");
+//
+//        var query = TcpQuery.create(IEnv.class).host("localhost").port(port+1).build();
+//        query.<ServerDemoEvent>subscribe(msg -> {
+//            System.out.println("message "+msg.message);
+//        });
+//
+//        closeables.add(query);
+//
+//        log.info("send notify");
+//        query.apply( env -> {
+//            env.notifyMe(10,100);
+//            return List.of();
+//        });
+//        log.info("sent notify");
+//
+//        try{
+//            log.info("close query");
+//            query.close();
+//        } catch( Exception e ) {
+//            e.printStackTrace();
+//        }
+//
+//        server.shutdown();
+//
+//        try{
+//            server.join(1000L * 5L);
+//        } catch( InterruptedException e ) {
+//            log.error("serv join");
+//        }
+//    }
 
     @Test
     public void demo03(){

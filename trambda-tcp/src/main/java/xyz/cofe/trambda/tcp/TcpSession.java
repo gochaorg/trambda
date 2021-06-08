@@ -9,6 +9,7 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         this.securityFilter = Objects.requireNonNullElseGet(securityFilter, () -> x -> List.of());
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
-        this.env = envBuilder.apply(this);
+        this.service = envBuilder.apply(this);
     }
 
     //region server : TcpServer<ENV>
@@ -110,13 +111,13 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     /**
      * Предоставляемый сервис клиенту
      */
-    protected final ENV env;
+    protected final ENV service;
 
     /**
      * Возвращает предоставляемый сервис клиенту
      * @return Предоставляемый сервис клиенту
      */
-    public ENV getEnv(){ return env; }
+    public ENV getService(){ return service; }
     //endregion
 
     //region listeners
@@ -351,13 +352,18 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     @Override
     public void run(){
         while( true ){
+//            sessionContext.set(new WeakReference<>(this));
+            Optional<BuffInputStream> prevStrm = Optional.empty();
+
             try{
-                var rpack = proto.receiveRaw();
+                var rpack = proto.receiveRaw(prevStrm);
                 if( rpack.isEmpty() ) break;
 
-                received(rpack.get().toReadonly());
+                prevStrm = rpack.get().b();
+
+                received(rpack.get().a().toReadonly());
             } catch( SocketTimeoutException e ) {
-                log.debug("io err, session={} {}", sid, e);
+                log.trace("io err, session={} {}", sid, e);
                 System.out.println("try repeat read");
             } catch( SocketException e ){
                 if( e.getMessage()!=null && e.getMessage().matches("(?i).*socket\\s+closed.*") ){
@@ -586,14 +592,16 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 log.debug("execute args {}",cargs);
                 largs.addAll(cargs);
             }
-            largs.add(env);
+            largs.add(service);
 
             Object[] args = largs.toArray();
 
             long t0 = System.currentTimeMillis();
             long t0n = System.nanoTime();
 
+            log.info("m.invoke args {}", Arrays.toString(args));
             Object value = m.invoke(null,args);
+            log.info("m.invoke return {}",value);
 
             long t1 = System.nanoTime();
             long t1n = System.currentTimeMillis();
@@ -607,8 +615,10 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
 
             try{
                 if( sid.isPresent() ){
+                    log.debug("send execute result, referrer {}",sid.get());
                     proto.send(execRes, TcpHeader.referrer.create(sid.get()));
                 } else {
+                    log.debug("send execute result");
                     proto.send(execRes);
                 }
             } catch( IOException e ) {

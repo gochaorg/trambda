@@ -89,23 +89,23 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
         return (RES)execRes.getValue();
     }
 
-    public <T> AutoCloseable subscribe(Consumer<T> consumer){
-        if( consumer==null )throw new IllegalArgumentException( "consumer==null" );
-
-        Consumer<ServerEvent> subl =  serverEvent -> {
-            var ev = serverEvent.getEvent();
-            //noinspection unchecked
-            T tEv = (T)ev;
-            consumer.accept(tEv);
-        };
-
-        var publisherName = "defaultPublisher";
-        var sub = client.subscribe(publisherName, subl).fetch();
-
-        return ()->{
-            client.unsubscribe(subl);
-        };
-    }
+//    public <T> AutoCloseable subscribe(Consumer<T> consumer){
+//        if( consumer==null )throw new IllegalArgumentException( "consumer==null" );
+//
+//        Consumer<ServerEvent> subl =  serverEvent -> {
+//            var ev = serverEvent.getEvent();
+//            //noinspection unchecked
+//            T tEv = (T)ev;
+//            consumer.accept(tEv);
+//        };
+//
+//        var publisherName = "defaultPublisher";
+//        var sub = client.subscribe(publisherName, subl).fetch();
+//
+//        return ()->{
+//            client.unsubscribe(subl);
+//        };
+//    }
 
     private static final WeakHashMap<Publisher.Subscriber<?>, Consumer<ServerEvent>> subs =
         new WeakHashMap<>();

@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.cofe.fn.Tuple;
+import xyz.cofe.fn.Tuple2;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.LambdaDump;
 
@@ -207,19 +209,21 @@ public class TcpProtocol {
     //region process input
     /**
      * Получение сообщения из сети
+     * @param prevStream предыдущая часть сообщения
      * @return сообщение или входящий поток закрыт
      * @throws IOException ошибка сети
      */
-    public Optional<RawPack> receiveRaw() throws IOException {
+    public Optional<Tuple2<RawPack,Optional<BuffInputStream>>> receiveRaw(Optional<BuffInputStream> prevStream) throws IOException {
+        if( prevStream==null )throw new IllegalArgumentException( "prevStream==null" );
         log().debug("receiveRaw()");
 
         int buffSize = 1024 * 8;
-        var bufStrm = new BuffInputStream(intput(),buffSize);
+        var bufStrm = prevStream.orElse( new BuffInputStream(intput(),buffSize) );
         byte[] buff = new byte[buffSize];
         log().trace("buffer size {}",buffSize);
 
         while( true ){
-            log().debug("mark {}",buffSize);
+            log().trace("mark {}",buffSize);
             bufStrm.mark(buffSize);
 
             int readed = -1;
@@ -235,7 +239,7 @@ public class TcpProtocol {
                     log().info("socket closed");
                     return Optional.empty();
                 }else {
-                    log().error("read fail", ex);
+                    //log().error("read fail", ex);
                     throw ex;
                 }
             }
@@ -296,14 +300,20 @@ public class TcpProtocol {
 
             RawPack rpack = new RawPack( header, ba.toByteArray() );
 
-            log().trace("received h.size {} method {} h.payload {} d.payload {}",
+            log().debug("received h.size {} method {} h.payload {} d.payload {}",
                 header.getHeaderSize(),
                 header.getMethodName(),
                 header.getPayloadSize(),
                 rpack.getPayload().length
             );
 
-            return Optional.of(rpack);
+            log().debug("bufStrm: pos={} count={} markpos={} available={}", bufStrm.pos(), bufStrm.count(), bufStrm.markpos(), bufStrm.available());
+
+            if( bufStrm.available()>0 ){
+                return Optional.of(Tuple2.of(rpack, Optional.of(bufStrm)));
+            }else{
+                return Optional.of(Tuple2.of(rpack, Optional.empty()));
+            }
         }
     }
 
@@ -351,11 +361,17 @@ public class TcpProtocol {
     }
     //endregion
 
+    private volatile Optional<BuffInputStream> prevStream = Optional.empty();
+
     public boolean readNow() throws IOException {
-        var raw = receiveRaw();
+        log().info("readNow ");
+
+        var raw = receiveRaw(prevStream);
         if( raw.isEmpty() )return false;
 
-        var rw = raw.get().toReadonly();
+        prevStream = raw.get().b();
+
+        var rw = raw.get().a().toReadonly();
         if( !rw.isPayloadChecksumMatched() ){
             log().warn("checksum fail");
             return true;

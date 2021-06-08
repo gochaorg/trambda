@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.cofe.fn.Tuple;
 import xyz.cofe.fn.Tuple2;
 
 public class ResultConsumer<Req extends Message, Res extends Message> {
+    private static final Logger log = LoggerFactory.getLogger(ResultConsumer.class);
+
     private final TcpProtocol proto;
     private final Req req;
     private final Map<Integer,Consumer<ErrMessage>> errorConsumers;
@@ -99,15 +103,24 @@ public class ResultConsumer<Req extends Message, Res extends Message> {
     }
 
     public Res fetch(){
+        log.info("fetch()");
+
         AtomicReference<Res> res = new AtomicReference<>(null);
         AtomicReference<ErrMessage> err = new AtomicReference<>(null);
         final Object sync = ResultConsumer.this;
 
         try{
+            log.debug("synchronized( sync )");
             synchronized( sync ){
+                log.debug("proto.send");
+
                 proto.send(req, msgId -> {
+                    log.debug("consumer message.id {}",msgId);
+
                     Consumer<Res> succ = msg -> {
+                        log.debug("succ consumer synchronized( sync )");
                         synchronized( sync ){
+                            log.debug("succ consumer synchronized( sync ) - enter ok");
                             //noinspection unchecked
                             res.set((Res) msg);
                             sync.notifyAll();
@@ -115,21 +128,33 @@ public class ResultConsumer<Req extends Message, Res extends Message> {
                     };
 
                     AtomicReference<Consumer<Res>> succCons = new AtomicReference<>();
+
+                    log.debug("onSuccess");
                     onSuccess(succ, p -> succCons.set(p.b()));
+
+                    log.debug("responseConsumers.put");
                     responseConsumers.put(msgId, succCons.get());
 
                     Consumer<ErrMessage> fail =  err0 -> {
+                        log.debug("fail consumer synchronized( sync )");
                         synchronized( sync ){
+                            log.debug("fail consumer synchronized( sync ) - enter ok");
                             err.set(err0);
                             sync.notifyAll();
                         }
                     };
 
                     AtomicReference<Consumer<ErrMessage>> failCons = new AtomicReference<>();
+
+                    log.debug("onFail");
                     onFail(fail, p -> failCons.set(p.b()));
+
+                    log.debug("errorConsumers.put");
                     errorConsumers.put(msgId, failCons.get());
                 });
+
                 try{
+                    log.debug("sync.wait");
                     sync.wait();
                 } catch( InterruptedException e ) {
                     throw new IOError(e);
