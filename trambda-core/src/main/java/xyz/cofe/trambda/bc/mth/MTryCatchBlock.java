@@ -30,7 +30,7 @@ public class MTryCatchBlock extends MAbstractBC
 
     @SuppressWarnings("MethodDoesntCallSuperMethod") public MTryCatchBlock clone(){ return new MTryCatchBlock(this); }
 
-    //region start
+    //region labelStart : String
     private String labelStart;
 
     /**
@@ -45,7 +45,7 @@ public class MTryCatchBlock extends MAbstractBC
         this.labelStart = labelStart;
     }
     //endregion
-    //region end
+    //region labelEnd : String
     private String labelEnd;
 
     /**
@@ -59,7 +59,7 @@ public class MTryCatchBlock extends MAbstractBC
         this.labelEnd = labelEnd;
     }
     //endregion
-    //region handler
+    //region labelHandler : String
     private String labelHandler;
 
     /**
@@ -74,7 +74,7 @@ public class MTryCatchBlock extends MAbstractBC
         this.labelHandler = labelHandler;
     }
     //endregion
-    //region type
+    //region type : String
     private String type;
 
     /**

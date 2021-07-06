@@ -1,7 +1,9 @@
 package xyz.cofe.trambda.bc.ann;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import org.objectweb.asm.AnnotationVisitor;
+import static xyz.cofe.trambda.bc.StringLiteral.toStringLiteral;
 
 public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
     private static final long serialVersionUID = 1;
@@ -14,7 +16,7 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
     //region name : String
     protected String name;
     public String getName(){ return name; }
-    protected void setName(String s){ this.name = s; }
+    public void setName(String s){ this.name = s; }
     //endregion
     //region value : V
     protected V value;
@@ -140,6 +142,14 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
         public APair<int[]> clone(){
             return new APairIntArr1D(getName(), getValue());
         }
+
+        @Override
+        public String toString(){
+            return APairIntArr1D.class.getSimpleName()+" name="+
+                toStringLiteral(getName())+
+                " value="+
+                Arrays.toString(getValue());
+        }
     }
     public static class APairFloatArr1D extends APair<float[]> {
         public APairFloatArr1D(String name, float[] value){
@@ -197,6 +207,13 @@ public abstract class APair<V> extends AAbstractBC implements AnnotationWriter {
         @SuppressWarnings("MethodDoesntCallSuperMethod")
         public APairString clone(){
             return new APairString(getName(),getValue());
+        }
+
+        @Override
+        public String toString(){
+            return APairString.class.getSimpleName()+
+                " name="+toStringLiteral(getName())+
+                " value="+toStringLiteral(getValue());
         }
     }
     public static class APairByte extends APair<Byte> {

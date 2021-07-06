@@ -20,6 +20,9 @@ public class AccFlags {
     public int value(){ return flags; }
 
     private static Map<String,Integer> flagName = new TreeMap<>();
+    public static Map<String,Integer> flagName(){
+        return Collections.unmodifiableMap(flagName);
+    }
 
     private boolean has(int flag){
         return (flags & flag) == flag;

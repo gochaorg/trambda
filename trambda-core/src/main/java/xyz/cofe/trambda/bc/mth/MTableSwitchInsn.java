@@ -75,7 +75,7 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
 
     @SuppressWarnings("MethodDoesntCallSuperMethod") public MTableSwitchInsn clone(){ return new MTableSwitchInsn(this); }
 
-    //region min
+    //region min : int
     private int min;
 
     public int getMin(){
@@ -86,7 +86,7 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
         this.min = min;
     }
     //endregion
-    //region max
+    //region max : int
     private int max;
 
     public int getMax(){
@@ -97,7 +97,7 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
         this.max = max;
     }
     //endregion
-    //region defaultLabel
+    //region defaultLabel : String
     private String defaultLabel;
 
     public String getDefaultLabel(){
@@ -108,7 +108,7 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
         this.defaultLabel = defaultLabel;
     }
     //endregion
-    //region labels
+    //region labels : String[]
     private String[] labels;
 
     public String[] getLabels(){
