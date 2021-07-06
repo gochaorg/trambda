@@ -1,0 +1,718 @@
+<CBegin version="55" access="33" accessDecode="[Open, Public, Super, Syncronized, Transitive]" name="xyz/cofe/trambda/JavaClassName" superName="java/lang/Object" interface="false">
+    <CSource order="0" source="JavaClassName.java"/>
+    <CInnerClass order="1" name="java/lang/invoke/MethodHandles$Lookup" outerName="java/lang/invoke/MethodHandles" innerName="Lookup" access="25" accessDecode="[Final, Public, Static]"/>
+    <CField order="2" name="name" access="17" accessDecode="[Final, Public]" descriptor="Ljava/lang/String;" deprecated="false" final="true" enum="false" mandated="false" private="false" protected="false" public="true" static="false" synthetic="false" transient="false" volatile="false"/>
+    <CField order="3" name="simpleName" access="17" accessDecode="[Final, Public]" descriptor="Ljava/lang/String;" deprecated="false" final="true" enum="false" mandated="false" private="false" protected="false" public="true" static="false" synthetic="false" transient="false" volatile="false"/>
+    <CField order="4" name="packageName" access="17" accessDecode="[Final, Public]" descriptor="Ljava/lang/String;" deprecated="false" final="true" enum="false" mandated="false" private="false" protected="false" public="true" static="false" synthetic="false" transient="false" volatile="false"/>
+    <CField order="5" name="validId" access="25" accessDecode="[Final, Public, Static]" descriptor="Ljava/util/regex/Pattern;" deprecated="false" final="true" enum="false" mandated="false" private="false" protected="false" public="true" static="true" synthetic="false" transient="false" volatile="false"/>
+    <CMethod order="6" name="&lt;init&gt;" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="(Ljava/lang/String;)V">
+        <MCode/>
+        <MLabel name="L1803669141"/>
+        <MLineNumber label="L1803669141" line="7"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/Object" name="&lt;init&gt;" descriptor="()V" iface="false"/>
+        <MLabel name="L934275857"/>
+        <MLineNumber label="L934275857" line="8"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L232307208"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="rawName==null" encode="hex">ACED000574000D7261774E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L232307208"/>
+        <MLineNumber label="L232307208" line="9"/>
+        <MFrame type="0" numLocal="2" numStack="0" typeDecode="F_FULL">
+            <frameLocal isnull="false" class="java.lang.String" toString="xyz/cofe/trambda/JavaClassName" encode="hex">ACED000574001E78797A2F636F66652F7472616D6264612F4A617661436C6173734E616D65</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="/" encode="hex">ACED00057400012F</value>
+        </MLdcInsn>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="." encode="hex">ACED00057400012E</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/String" name="replace" descriptor="(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" iface="false"/>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L1499136125"/>
+        <MLineNumber label="L1499136125" line="11"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="\." encode="hex">ACED00057400025C2E</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/String" name="split" descriptor="(Ljava/lang/String;)[Ljava/lang/String;" iface="false"/>
+        <MVarInsn variable="2" opcode="58" opcodeName="ASTORE"/>
+        <MLabel name="L1926343982"/>
+        <MLineNumber label="L1926343982" line="12"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MInsn opcode="190" opcodeName="ARRAYLENGTH"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MInsn opcode="100" opcodeName="ISUB"/>
+        <MInsn opcode="50" opcodeName="AALOAD"/>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="simpleName" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L762476028"/>
+        <MLineNumber label="L762476028" line="14"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MInsn opcode="190" opcodeName="ARRAYLENGTH"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MJumpInsn opcode="164" opcodeName="IF_ICMPLE" label="L966739377"/>
+        <MLabel name="L952562199"/>
+        <MLineNumber label="L952562199" line="15"/>
+        <MTypeInsn type="java/lang/StringBuilder" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/StringBuilder" name="&lt;init&gt;" descriptor="()V" iface="false"/>
+        <MVarInsn variable="3" opcode="58" opcodeName="ASTORE"/>
+        <MLabel name="L1199673596"/>
+        <MLineNumber label="L1199673596" line="16"/>
+        <MInsn opcode="3" opcodeName="ICONST_0"/>
+        <MVarInsn variable="4" opcode="54" opcodeName="ISTORE"/>
+        <MLabel name="L2044903525"/>
+        <MFrame type="1" numLocal="3" numStack="0" typeDecode="F_APPEND">
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/StringBuilder" encode="hex">ACED00057400176A6176612F6C616E672F537472696E674275696C646572</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="4" opcode="21" opcodeName="ILOAD"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MInsn opcode="190" opcodeName="ARRAYLENGTH"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MInsn opcode="100" opcodeName="ISUB"/>
+        <MJumpInsn opcode="162" opcodeName="IF_ICMPGE" label="L982757413"/>
+        <MLabel name="L902478634"/>
+        <MLineNumber label="L902478634" line="17"/>
+        <MVarInsn variable="4" opcode="21" opcodeName="ILOAD"/>
+        <MJumpInsn opcode="158" opcodeName="IFLE" label="L2114444063"/>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="." encode="hex">ACED00057400012E</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/StringBuilder" name="append" descriptor="(Ljava/lang/String;)Ljava/lang/StringBuilder;" iface="false"/>
+        <MInsn opcode="87" opcodeName="POP"/>
+        <MLabel name="L2114444063"/>
+        <MLineNumber label="L2114444063" line="18"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/StringBuilder" encode="hex">ACED00057400176A6176612F6C616E672F537472696E674275696C646572</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="4" opcode="21" opcodeName="ILOAD"/>
+        <MInsn opcode="50" opcodeName="AALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/StringBuilder" name="append" descriptor="(Ljava/lang/String;)Ljava/lang/StringBuilder;" iface="false"/>
+        <MInsn opcode="87" opcodeName="POP"/>
+        <MLabel name="L294247762"/>
+        <MLineNumber label="L294247762" line="16"/>
+        <MIincInsn variable="4" increment="1"/>
+        <MJumpInsn opcode="167" opcodeName="GOTO" label="L2044903525"/>
+        <MLabel name="L982757413"/>
+        <MLineNumber label="L982757413" line="20"/>
+        <MFrame type="2" numLocal="1" numStack="0" typeDecode="F_CHOP">
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/StringBuilder" encode="hex">ACED00057400176A6176612F6C616E672F537472696E674275696C646572</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/StringBuilder" name="toString" descriptor="()Ljava/lang/String;" iface="false"/>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="packageName" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L1448061896"/>
+        <MLineNumber label="L1448061896" line="21"/>
+        <MJumpInsn opcode="167" opcodeName="GOTO" label="L382750013"/>
+        <MLabel name="L966739377"/>
+        <MLineNumber label="L966739377" line="22"/>
+        <MFrame type="2" numLocal="1" numStack="0" typeDecode="F_CHOP">
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/StringBuilder" encode="hex">ACED00057400176A6176612F6C616E672F537472696E674275696C646572</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="" encode="hex">ACED0005740000</value>
+        </MLdcInsn>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="packageName" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L382750013"/>
+        <MLineNumber label="L382750013" line="24"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/StringBuilder" encode="hex">ACED00057400176A6176612F6C616E672F537472696E674275696C646572</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MInsn opcode="177" opcodeName="RETURN"/>
+        <MLabel name="L1240232440"/>
+        <MLocalVariable name="i" descriptor="I" labelStart="L2044903525" labelEnd="L982757413" index="4"/>
+        <MLocalVariable name="sb" descriptor="Ljava/lang/StringBuilder;" labelStart="L1199673596" labelEnd="L1448061896" index="3"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L1803669141" labelEnd="L1240232440" index="0"/>
+        <MLocalVariable name="rawName" descriptor="Ljava/lang/String;" labelStart="L1803669141" labelEnd="L1240232440" index="1"/>
+        <MLocalVariable name="names" descriptor="[Ljava/lang/String;" labelStart="L1926343982" labelEnd="L1240232440" index="2"/>
+        <MMaxs maxLocals="5" maxStack="4"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="7" name="&lt;init&gt;" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V">
+        <MCode/>
+        <MLabel name="L1130894323"/>
+        <MLineNumber label="L1130894323" line="26"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/Object" name="&lt;init&gt;" descriptor="()V" iface="false"/>
+        <MLabel name="L1962826816"/>
+        <MLineNumber label="L1962826816" line="27"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L1072410641"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="name==null" encode="hex">ACED000574000A6E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L1072410641"/>
+        <MLineNumber label="L1072410641" line="28"/>
+        <MFrame type="0" numLocal="4" numStack="0" typeDecode="F_FULL">
+            <frameLocal isnull="false" class="java.lang.String" toString="xyz/cofe/trambda/JavaClassName" encode="hex">ACED000574001E78797A2F636F66652F7472616D6264612F4A617661436C6173734E616D65</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L283318938"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="simpleName==null" encode="hex">ACED000574001073696D706C654E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L283318938"/>
+        <MLineNumber label="L283318938" line="29"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="false" class="java.lang.String" toString="xyz/cofe/trambda/JavaClassName" encode="hex">ACED000574001E78797A2F636F66652F7472616D6264612F4A617661436C6173734E616D65</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L320304382"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="packageName==null" encode="hex">ACED00057400117061636B6167654E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L320304382"/>
+        <MLineNumber label="L320304382" line="30"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="false" class="java.lang.String" toString="xyz/cofe/trambda/JavaClassName" encode="hex">ACED000574001E78797A2F636F66652F7472616D6264612F4A617661436C6173734E616D65</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L361571968"/>
+        <MLineNumber label="L361571968" line="31"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="simpleName" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L2005169944"/>
+        <MLineNumber label="L2005169944" line="32"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="181" opcodeName="PUTFIELD" owner="xyz/cofe/trambda/JavaClassName" name="packageName" descriptor="Ljava/lang/String;"/>
+        <MLabel name="L2134607032"/>
+        <MLineNumber label="L2134607032" line="33"/>
+        <MInsn opcode="177" opcodeName="RETURN"/>
+        <MLabel name="L1470344997"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L1130894323" labelEnd="L1470344997" index="0"/>
+        <MLocalVariable name="name" descriptor="Ljava/lang/String;" labelStart="L1130894323" labelEnd="L1470344997" index="1"/>
+        <MLocalVariable name="simpleName" descriptor="Ljava/lang/String;" labelStart="L1130894323" labelEnd="L1470344997" index="2"/>
+        <MLocalVariable name="packageName" descriptor="Ljava/lang/String;" labelStart="L1130894323" labelEnd="L1470344997" index="3"/>
+        <MMaxs maxLocals="4" maxStack="3"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="8" name="rawName" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="()Ljava/lang/String;">
+        <MCode/>
+        <MLabel name="L2131670196"/>
+        <MLineNumber label="L2131670196" line="39"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="." encode="hex">ACED00057400012E</value>
+        </MLdcInsn>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="/" encode="hex">ACED00057400012F</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/String" name="replace" descriptor="(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" iface="false"/>
+        <MInsn opcode="176" opcodeName="ARETURN"/>
+        <MLabel name="L1546908073"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L2131670196" labelEnd="L1546908073" index="0"/>
+        <MMaxs maxLocals="1" maxStack="3"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="9" name="withName" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="(Ljava/lang/String;)Lxyz/cofe/trambda/JavaClassName;">
+        <MCode/>
+        <MLabel name="L210506412"/>
+        <MLineNumber label="L210506412" line="42"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L112049309"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="name==null" encode="hex">ACED000574000A6E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L112049309"/>
+        <MLineNumber label="L112049309" line="43"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MTypeInsn type="xyz/cofe/trambda/JavaClassName" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="xyz/cofe/trambda/JavaClassName" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="176" opcodeName="ARETURN"/>
+        <MLabel name="L1162918744"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L210506412" labelEnd="L1162918744" index="0"/>
+        <MLocalVariable name="name" descriptor="Ljava/lang/String;" labelStart="L210506412" labelEnd="L1162918744" index="1"/>
+        <MMaxs maxLocals="2" maxStack="3"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="10" name="withSimpleName" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="(Ljava/lang/String;)Lxyz/cofe/trambda/JavaClassName;">
+        <MCode/>
+        <MLabel name="L573673894"/>
+        <MLineNumber label="L573673894" line="47"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L1226020905"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="name==null" encode="hex">ACED000574000A6E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L1226020905"/>
+        <MLineNumber label="L1226020905" line="48"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MFieldInsn opcode="178" opcodeName="GETSTATIC" owner="xyz/cofe/trambda/JavaClassName" name="validId" descriptor="Ljava/util/regex/Pattern;"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/util/regex/Pattern" name="matcher" descriptor="(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;" iface="false"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/util/regex/Matcher" name="matches" descriptor="()Z" iface="false"/>
+        <MJumpInsn opcode="154" opcodeName="IFNE" label="L156856360"/>
+        <MLabel name="L1617550160"/>
+        <MLineNumber label="L1617550160" line="49"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MFieldInsn opcode="178" opcodeName="GETSTATIC" owner="xyz/cofe/trambda/JavaClassName" name="validId" descriptor="Ljava/util/regex/Pattern;"/>
+        <MInvokeDynamicInsn name="makeConcatWithConstants" descriptor="(Ljava/util/regex/Pattern;)Ljava/lang/String;">
+            <bootstrapHandle name="makeConcatWithConstants" owner="java/lang/invoke/StringConcatFactory" desc="(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;" tag="6" iface="false"/>
+            <BootstrapMethArg isnull="false">
+                <StringArg encode="hex">ACED00057400106E616D65206E6F74206D617463682001<!--name not match {{0001}}--></StringArg>
+            </BootstrapMethArg>
+        </MInvokeDynamicInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L156856360"/>
+        <MLineNumber label="L156856360" line="51"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MTypeInsn type="xyz/cofe/trambda/JavaClassName" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="packageName" descriptor="Ljava/lang/String;"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="xyz/cofe/trambda/JavaClassName" name="&lt;init&gt;" descriptor="(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="176" opcodeName="ARETURN"/>
+        <MLabel name="L1536031937"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L573673894" labelEnd="L1536031937" index="0"/>
+        <MLocalVariable name="name" descriptor="Ljava/lang/String;" labelStart="L573673894" labelEnd="L1536031937" index="1"/>
+        <MMaxs maxLocals="2" maxStack="5"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="11" name="withPackage" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="(Ljava/lang/String;)Lxyz/cofe/trambda/JavaClassName;">
+        <MCode/>
+        <MLabel name="L1954406292"/>
+        <MLineNumber label="L1954406292" line="54"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="199" opcodeName="IFNONNULL" label="L904058452"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="pkgName==null" encode="hex">ACED000574000D706B674E616D653D3D6E756C6C</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L904058452"/>
+        <MLineNumber label="L904058452" line="55"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/String" name="length" descriptor="()I" iface="false"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MJumpInsn opcode="162" opcodeName="IF_ICMPGE" label="L29183965"/>
+        <MLabel name="L1427651360"/>
+        <MLineNumber label="L1427651360" line="56"/>
+        <MTypeInsn type="xyz/cofe/trambda/JavaClassName" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="simpleName" descriptor="Ljava/lang/String;"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="simpleName" descriptor="Ljava/lang/String;"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="packageName" descriptor="Ljava/lang/String;"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="xyz/cofe/trambda/JavaClassName" name="&lt;init&gt;" descriptor="(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="176" opcodeName="ARETURN"/>
+        <MLabel name="L29183965"/>
+        <MLineNumber label="L29183965" line="59"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="\." encode="hex">ACED00057400025C2E</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/String" name="split" descriptor="(Ljava/lang/String;)[Ljava/lang/String;" iface="false"/>
+        <MVarInsn variable="2" opcode="58" opcodeName="ASTORE"/>
+        <MLabel name="L1334042472"/>
+        <MLineNumber label="L1334042472" line="60"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="3" opcode="58" opcodeName="ASTORE"/>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MInsn opcode="190" opcodeName="ARRAYLENGTH"/>
+        <MVarInsn variable="4" opcode="54" opcodeName="ISTORE"/>
+        <MInsn opcode="3" opcodeName="ICONST_0"/>
+        <MVarInsn variable="5" opcode="54" opcodeName="ISTORE"/>
+        <MLabel name="L1827725498"/>
+        <MFrame type="0" numLocal="6" numStack="0" typeDecode="F_FULL">
+            <frameLocal isnull="false" class="java.lang.String" toString="xyz/cofe/trambda/JavaClassName" encode="hex">ACED000574001E78797A2F636F66652F7472616D6264612F4A617661436C6173734E616D65</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="5" opcode="21" opcodeName="ILOAD"/>
+        <MVarInsn variable="4" opcode="21" opcodeName="ILOAD"/>
+        <MJumpInsn opcode="162" opcodeName="IF_ICMPGE" label="L131635550"/>
+        <MVarInsn variable="3" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="5" opcode="21" opcodeName="ILOAD"/>
+        <MInsn opcode="50" opcodeName="AALOAD"/>
+        <MVarInsn variable="6" opcode="58" opcodeName="ASTORE"/>
+        <MLabel name="L319644606"/>
+        <MLineNumber label="L319644606" line="61"/>
+        <MVarInsn variable="6" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/String" name="length" descriptor="()I" iface="false"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MJumpInsn opcode="162" opcodeName="IF_ICMPGE" label="L1118078504"/>
+        <MLabel name="L691690486"/>
+        <MLineNumber label="L691690486" line="62"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="pkgName part empty" encode="hex">ACED0005740012706B674E616D65207061727420656D707479</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L1118078504"/>
+        <MLineNumber label="L1118078504" line="64"/>
+        <MFrame type="1" numLocal="1" numStack="0" typeDecode="F_APPEND">
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MFieldInsn opcode="178" opcodeName="GETSTATIC" owner="xyz/cofe/trambda/JavaClassName" name="validId" descriptor="Ljava/util/regex/Pattern;"/>
+        <MVarInsn variable="6" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/util/regex/Pattern" name="matcher" descriptor="(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;" iface="false"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/util/regex/Matcher" name="matches" descriptor="()Z" iface="false"/>
+        <MJumpInsn opcode="154" opcodeName="IFNE" label="L1793799654"/>
+        <MLabel name="L310623126"/>
+        <MLineNumber label="L310623126" line="65"/>
+        <MTypeInsn type="java/lang/IllegalArgumentException" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MVarInsn variable="6" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="178" opcodeName="GETSTATIC" owner="xyz/cofe/trambda/JavaClassName" name="validId" descriptor="Ljava/util/regex/Pattern;"/>
+        <MInvokeDynamicInsn name="makeConcatWithConstants" descriptor="(Ljava/lang/String;Ljava/util/regex/Pattern;)Ljava/lang/String;">
+            <bootstrapHandle name="makeConcatWithConstants" owner="java/lang/invoke/StringConcatFactory" desc="(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;" tag="6" iface="false"/>
+            <BootstrapMethArg isnull="false">
+                <StringArg encode="hex">ACED000574001A706B674E616D6520706172742001206E6F74206D617463682001<!--pkgName part {{0001}} not match {{0001}}--></StringArg>
+            </BootstrapMethArg>
+        </MInvokeDynamicInsn>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="java/lang/IllegalArgumentException" name="&lt;init&gt;" descriptor="(Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="191" opcodeName="ATHROW"/>
+        <MLabel name="L1793799654"/>
+        <MLineNumber label="L1793799654" line="60"/>
+        <MFrame type="2" numLocal="1" numStack="0" typeDecode="F_CHOP">
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MIincInsn variable="5" increment="1"/>
+        <MJumpInsn opcode="167" opcodeName="GOTO" label="L1827725498"/>
+        <MLabel name="L131635550"/>
+        <MLineNumber label="L131635550" line="68"/>
+        <MFrame type="2" numLocal="3" numStack="0" typeDecode="F_CHOP">
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="java/lang/String" encode="hex">ACED00057400106A6176612F6C616E672F537472696E67</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.String" toString="[Ljava/lang/String;" encode="hex">ACED00057400135B4C6A6176612F6C616E672F537472696E673B</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="false" class="java.lang.Integer" toString="1" encode="hex">ACED0005737200116A6176612E6C616E672E496E746567657212E2A0A4F781873802000149000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000001</frameLocal>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MTypeInsn type="xyz/cofe/trambda/JavaClassName" opcode="187" opcodeName="NEW"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="simpleName" descriptor="Ljava/lang/String;"/>
+        <MInvokeDynamicInsn name="makeConcatWithConstants" descriptor="(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;">
+            <bootstrapHandle name="makeConcatWithConstants" owner="java/lang/invoke/StringConcatFactory" desc="(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;" tag="6" iface="false"/>
+            <BootstrapMethArg isnull="false">
+                <StringArg encode="hex">ACED0005740003012E01<!--{{0001}}.{{0001}}--></StringArg>
+            </BootstrapMethArg>
+        </MInvokeDynamicInsn>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="simpleName" descriptor="Ljava/lang/String;"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="packageName" descriptor="Ljava/lang/String;"/>
+        <MMethodInsn opcode="183" opcodeName="INVOKESPECIAL" owner="xyz/cofe/trambda/JavaClassName" name="&lt;init&gt;" descriptor="(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V" iface="false"/>
+        <MInsn opcode="176" opcodeName="ARETURN"/>
+        <MLabel name="L1961945640"/>
+        <MLocalVariable name="pname" descriptor="Ljava/lang/String;" labelStart="L319644606" labelEnd="L1793799654" index="6"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L1954406292" labelEnd="L1961945640" index="0"/>
+        <MLocalVariable name="pkgName" descriptor="Ljava/lang/String;" labelStart="L1954406292" labelEnd="L1961945640" index="1"/>
+        <MLocalVariable name="pnames" descriptor="[Ljava/lang/String;" labelStart="L1334042472" labelEnd="L1961945640" index="2"/>
+        <MMaxs maxLocals="7" maxStack="5"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="12" name="equals" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="(Ljava/lang/Object;)Z">
+        <MCode/>
+        <MLabel name="L1008315045"/>
+        <MLineNumber label="L1008315045" line="73"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="166" opcodeName="IF_ACMPNE" label="L860481979"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MInsn opcode="172" opcodeName="IRETURN"/>
+        <MLabel name="L860481979"/>
+        <MLineNumber label="L860481979" line="74"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MJumpInsn opcode="198" opcodeName="IFNULL" label="L1083962448"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/Object" name="getClass" descriptor="()Ljava/lang/Class;" iface="false"/>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MMethodInsn opcode="182" opcodeName="INVOKEVIRTUAL" owner="java/lang/Object" name="getClass" descriptor="()Ljava/lang/Class;" iface="false"/>
+        <MJumpInsn opcode="165" opcodeName="IF_ACMPEQ" label="L953742666"/>
+        <MLabel name="L1083962448"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MInsn opcode="3" opcodeName="ICONST_0"/>
+        <MInsn opcode="172" opcodeName="IRETURN"/>
+        <MLabel name="L953742666"/>
+        <MLineNumber label="L953742666" line="75"/>
+        <MFrame type="3" numLocal="0" numStack="0" typeDecode="F_SAME">
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameLocal isnull="true"/>
+            <frameStack isnull="true"/>
+            <frameStack isnull="true"/>
+        </MFrame>
+        <MVarInsn variable="1" opcode="25" opcodeName="ALOAD"/>
+        <MTypeInsn type="xyz/cofe/trambda/JavaClassName" opcode="192" opcodeName="CHECKCAST"/>
+        <MVarInsn variable="2" opcode="58" opcodeName="ASTORE"/>
+        <MLabel name="L1239759990"/>
+        <MLineNumber label="L1239759990" line="76"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MVarInsn variable="2" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MMethodInsn opcode="184" opcodeName="INVOKESTATIC" owner="java/util/Objects" name="equals" descriptor="(Ljava/lang/Object;Ljava/lang/Object;)Z" iface="false"/>
+        <MInsn opcode="172" opcodeName="IRETURN"/>
+        <MLabel name="L891093184"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L1008315045" labelEnd="L891093184" index="0"/>
+        <MLocalVariable name="o" descriptor="Ljava/lang/Object;" labelStart="L1008315045" labelEnd="L891093184" index="1"/>
+        <MLocalVariable name="javaClassName" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L1239759990" labelEnd="L891093184" index="2"/>
+        <MMaxs maxLocals="3" maxStack="2"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="13" name="hashCode" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="()I">
+        <MCode/>
+        <MLabel name="L1438030319"/>
+        <MLineNumber label="L1438030319" line="81"/>
+        <MInsn opcode="4" opcodeName="ICONST_1"/>
+        <MTypeInsn type="java/lang/Object" opcode="189" opcodeName="ANEWARRAY"/>
+        <MInsn opcode="89" opcodeName="DUP"/>
+        <MInsn opcode="3" opcodeName="ICONST_0"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MInsn opcode="83" opcodeName="AASTORE"/>
+        <MMethodInsn opcode="184" opcodeName="INVOKESTATIC" owner="java/util/Objects" name="hash" descriptor="([Ljava/lang/Object;)I" iface="false"/>
+        <MInsn opcode="172" opcodeName="IRETURN"/>
+        <MLabel name="L902830499"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L1438030319" labelEnd="L902830499" index="0"/>
+        <MMaxs maxLocals="1" maxStack="4"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="14" name="toString" access="1" accessDecode="[Public]" deprecated="false" public="true" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="false" synthetic="false" varArgs="false" descriptor="()Ljava/lang/String;">
+        <MCode/>
+        <MLabel name="L403147759"/>
+        <MLineNumber label="L403147759" line="84"/>
+        <MVarInsn variable="0" opcode="25" opcodeName="ALOAD"/>
+        <MFieldInsn opcode="180" opcodeName="GETFIELD" owner="xyz/cofe/trambda/JavaClassName" name="name" descriptor="Ljava/lang/String;"/>
+        <MInsn opcode="176" opcodeName="ARETURN"/>
+        <MLabel name="L2040467681"/>
+        <MLocalVariable name="this" descriptor="Lxyz/cofe/trambda/JavaClassName;" labelStart="L403147759" labelEnd="L2040467681" index="0"/>
+        <MMaxs maxLocals="1" maxStack="1"/>
+        <MEnd/>
+    </CMethod>
+    <CMethod order="15" name="&lt;clinit&gt;" access="8" accessDecode="[Static]" deprecated="false" public="false" protected="false" private="false" final="false" abstract="false" bridge="false" native="false" strict="false" synchronized="false" mandated="false" static="true" synthetic="false" varArgs="false" descriptor="()V">
+        <MCode/>
+        <MLabel name="L341796579"/>
+        <MLineNumber label="L341796579" line="45"/>
+        <MLdcInsn type="String">
+            <value class="java.lang.String" toString="(?is)[\w$_][\w\d$_]*" encode="hex">ACED0005740014283F6973295B5C77245F5D5B5C775C64245F5D2A</value>
+        </MLdcInsn>
+        <MMethodInsn opcode="184" opcodeName="INVOKESTATIC" owner="java/util/regex/Pattern" name="compile" descriptor="(Ljava/lang/String;)Ljava/util/regex/Pattern;" iface="false"/>
+        <MFieldInsn opcode="179" opcodeName="PUTSTATIC" owner="xyz/cofe/trambda/JavaClassName" name="validId" descriptor="Ljava/util/regex/Pattern;"/>
+        <MInsn opcode="177" opcodeName="RETURN"/>
+        <MMaxs maxLocals="0" maxStack="1"/>
+        <MEnd/>
+    </CMethod>
+</CBegin>

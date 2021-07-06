@@ -12,7 +12,8 @@
         <module>trambda-tcp</module>
         <!-- <module>trambda-json</module> -->
         <module>trambda-tcp-serv-cli</module>
-<!--        <module>jasm</module>-->
+        <module>bytecode-xml</module>
+        <!--        <module>jasm</module>-->
         <!-- <module>trambda-demo</module> -->
     </modules>
     <packaging>pom</packaging>
