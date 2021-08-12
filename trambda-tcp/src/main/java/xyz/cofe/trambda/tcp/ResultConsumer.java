@@ -5,13 +5,11 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import xyz.cofe.fn.Tuple;
 import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.log.api.Logger;
 
 public class ResultConsumer<Req extends Message, Res extends Message> {
-    private static final Logger log = LoggerFactory.getLogger(ResultConsumer.class);
+    private static final Logger log = Logger.of(ResultConsumer.class);
 
     private final TcpProtocol proto;
     private final Req req;

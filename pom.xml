@@ -13,6 +13,9 @@
         <!-- <module>trambda-json</module> -->
         <module>trambda-tcp-serv-cli</module>
         <module>bytecode-xml</module>
+        <module>trambda-log-api</module>
+        <module>trambda-log-slf</module>
+        <module>trambda-log-nop</module>
         <module>basic</module>
         <!--        <module>jasm</module>-->
         <!-- <module>trambda-demo</module> -->

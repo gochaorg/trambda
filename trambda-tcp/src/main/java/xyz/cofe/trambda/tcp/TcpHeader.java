@@ -12,13 +12,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.text.Text;
+import xyz.cofe.trambda.log.api.Logger;
+
 import static xyz.cofe.trambda.tcp.Hash.md5;
 
 public class TcpHeader {
-    private static final Logger log = LoggerFactory.getLogger(TcpHeader.class);
+    private static final Logger log = Logger.of(TcpHeader.class);
 
     private final int headerSize;
     private final String method;

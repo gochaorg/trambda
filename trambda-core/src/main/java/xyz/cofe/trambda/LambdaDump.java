@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import org.objectweb.asm.Opcodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.fn.Fn1;
 import xyz.cofe.fn.Tuple;
 import xyz.cofe.fn.Tuple2;
@@ -29,6 +27,7 @@ import xyz.cofe.trambda.bc.cls.CBegin;
 import xyz.cofe.trambda.bc.cls.CField;
 import xyz.cofe.trambda.bc.cls.CMethod;
 import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
+import xyz.cofe.trambda.log.api.Logger;
 
 /**
  * Дамп лямбды
@@ -293,7 +292,8 @@ public class LambdaDump implements Serializable {
      * Восстановление класса
      */
     public static class Restore {
-        private static final Logger rlog = LoggerFactory.getLogger(Restore.class);
+        //private static final Logger rlog = LoggerFactory.getLogger(Restore.class);
+        private static final Logger rlog = Logger.of(Restore.class);
         protected final LambdaDump dump;
 
         public Restore(LambdaDump dump){

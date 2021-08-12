@@ -12,14 +12,13 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.fn.Fn1;
 import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.log.api.Logger;
 
 public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
-    private static final Logger log = LoggerFactory.getLogger(TcpQuery.class);
+    private static final Logger log = Logger.of(TcpQuery.class);
 
     protected final TcpClient client;
     public TcpClient getClient(){ return client; }

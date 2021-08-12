@@ -4,12 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.text.Text;
+import xyz.cofe.trambda.log.api.Logger;
 
 public class RawPackReadonly extends RawPack {
-    private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
+    private static final Logger log = Logger.of(TcpSession.class);
 
     public RawPackReadonly(TcpHeader header, byte[] payload){
         super(header, payload);

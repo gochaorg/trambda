@@ -1,13 +1,13 @@
 package xyz.cofe.trambda.tcp;
 
+import xyz.cofe.trambda.log.api.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PubProxy {
-    private static final Logger log = LoggerFactory.getLogger(PubProxy.class);
+    private static final Logger log = Logger.of(PubProxy.class);
 
     public <T> T proxy( Class<T> cls ){
         InvocationHandler handler = new InvocationHandler() {
