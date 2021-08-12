@@ -20,12 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.fn.Tuple;
 import xyz.cofe.fn.Tuple2;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.log.api.Logger;
 
 import static xyz.cofe.trambda.tcp.TcpHeader.encode;
 
@@ -43,7 +42,7 @@ public class TcpProtocol {
 
         getOutput = null;
         getInput = null;
-        var l = LoggerFactory.getLogger(TcpProtocol.class);
+        var l = Logger.of(TcpProtocol.class);
         getLogger = ()->l;
     }
 

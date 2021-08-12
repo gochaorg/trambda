@@ -20,14 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.fn.Tuple2;
 import xyz.cofe.fn.Tuple3;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.LambdaNode;
+import xyz.cofe.trambda.log.api.Logger;
 import xyz.cofe.trambda.sec.SecurAccess;
 import xyz.cofe.trambda.sec.SecurityFilter;
 
@@ -37,7 +36,7 @@ import xyz.cofe.trambda.sec.SecurityFilter;
  */
 @SuppressWarnings("unused")
 public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV>> {
-    private static final Logger log = LoggerFactory.getLogger(TcpSession.class);
+    private static final Logger log = Logger.of(TcpSession.class);
 
     /**
      * Последовательность для генерации id
@@ -494,7 +493,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 @Override
                 protected void finalize() throws Throwable{
                     try {
-                        LoggerFactory.getLogger(TcpSession.class).info("ClassLoader finalize()");
+                        Logger.of(TcpSession.class).info("ClassLoader finalize()");
                     } finally {
                         super.finalize();
                     }
@@ -504,7 +503,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
                 protected Class<?> findClass(String name) throws ClassNotFoundException{
                     if( name!=null && name.equals(cb.javaName().getName()) ){
                         var bytes = cb.toByteCode();
-                        LoggerFactory.getLogger(TcpSession.class).info("ClassLoader defineClass {}",name);
+                        Logger.of(TcpSession.class).info("ClassLoader defineClass {}",name);
                         return defineClass(name,bytes,0,bytes.length);
                     }
                     return super.findClass(name);

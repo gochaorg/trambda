@@ -12,14 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.LambdaDump;
+import xyz.cofe.trambda.log.api.Logger;
 
 public class TcpClient implements AutoCloseable {
-    private static final Logger log = LoggerFactory.getLogger(TcpClient.class);
+    private static final Logger log = Logger.of(TcpClient.class);
     protected final Socket socket;
     protected final TcpProtocol proto;
     private final Thread socketReaderThread;

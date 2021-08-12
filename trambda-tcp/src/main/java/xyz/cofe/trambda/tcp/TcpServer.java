@@ -16,12 +16,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.LambdaNode;
+import xyz.cofe.trambda.log.api.Logger;
 import xyz.cofe.trambda.sec.SecurityFilter;
 
 /**
@@ -29,7 +28,7 @@ import xyz.cofe.trambda.sec.SecurityFilter;
  * @param <ENV> Класс сервиса
  */
 public class TcpServer<ENV> extends Thread implements AutoCloseable {
-    private static final Logger log = LoggerFactory.getLogger(TcpServer.class);
+    private static final Logger log = Logger.of(TcpServer.class);
 
     /**
      * Сокет через который осуществляется общение

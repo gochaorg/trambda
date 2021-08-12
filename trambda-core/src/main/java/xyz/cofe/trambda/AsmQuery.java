@@ -1,9 +1,8 @@
 package xyz.cofe.trambda;
 
 import java.lang.invoke.SerializedLambda;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.cofe.fn.Fn1;
+import xyz.cofe.trambda.log.api.Logger;
 
 /**
  * Сериализация Java лямбды.
@@ -38,7 +37,7 @@ import xyz.cofe.fn.Fn1;
  * @see MethodDump
  */
 public class AsmQuery<ENV> implements Query<ENV> {
-    private static final Logger log = LoggerFactory.getLogger(AsmQuery.class);
+    private static final Logger log = Logger.of(AsmQuery.class);
     private static void log(String message,Object ... args){
         if( message==null )return;
         if( args==null || args.length==0 ){
