@@ -24,12 +24,12 @@ public interface BasicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitUnaryOp(BasicParser.UnaryOpContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code LiteralValue}
+	 * Visit a parse tree produced by the {@code AtomValue}
 	 * labeled alternative in {@link BasicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLiteralValue(BasicParser.LiteralValueContext ctx);
+	T visitAtomValue(BasicParser.AtomValueContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code BinOp}
 	 * labeled alternative in {@link BasicParser#expr}.
@@ -44,6 +44,18 @@ public interface BasicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitParentheses(BasicParser.ParenthesesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtom(BasicParser.AtomContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#varRef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarRef(BasicParser.VarRefContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link BasicParser#literal}.
 	 * @param ctx the parse tree

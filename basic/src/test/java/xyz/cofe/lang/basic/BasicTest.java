@@ -35,4 +35,17 @@ public class BasicTest {
 
         System.out.println(new Interpetator().eval(r));
     }
+
+    @Test
+    public void vars01(){
+        var lex = new BasicLexer(CharStreams.fromString("a + b"));
+        var parser = new BasicParser(new CommonTokenStream(lex));
+
+        var r = parser.r();
+        var iterpretator = new Interpetator();
+        iterpretator.getVariables().put("a", 10);
+        iterpretator.getVariables().put("b", 5.0);
+
+        System.out.println(iterpretator.eval(r));
+    }
 }

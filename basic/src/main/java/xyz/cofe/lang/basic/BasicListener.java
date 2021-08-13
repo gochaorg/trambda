@@ -30,17 +30,17 @@ public interface BasicListener extends ParseTreeListener {
 	 */
 	void exitUnaryOp(BasicParser.UnaryOpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code LiteralValue}
+	 * Enter a parse tree produced by the {@code AtomValue}
 	 * labeled alternative in {@link BasicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterLiteralValue(BasicParser.LiteralValueContext ctx);
+	void enterAtomValue(BasicParser.AtomValueContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code LiteralValue}
+	 * Exit a parse tree produced by the {@code AtomValue}
 	 * labeled alternative in {@link BasicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitLiteralValue(BasicParser.LiteralValueContext ctx);
+	void exitAtomValue(BasicParser.AtomValueContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code BinOp}
 	 * labeled alternative in {@link BasicParser#expr}.
@@ -65,6 +65,26 @@ public interface BasicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParentheses(BasicParser.ParenthesesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtom(BasicParser.AtomContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtom(BasicParser.AtomContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#varRef}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarRef(BasicParser.VarRefContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#varRef}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarRef(BasicParser.VarRefContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link BasicParser#literal}.
 	 * @param ctx the parse tree

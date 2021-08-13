@@ -4,6 +4,10 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import xyz.cofe.lang.basic.BasicParser.*;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Простой интерпретатор
  */
@@ -11,11 +15,19 @@ public class Interpetator {
     public Object eval(RuleNode node){
         if( node==null )throw new IllegalArgumentException("node==null");
         if( node instanceof LiteralContext ) return eval((LiteralContext) node);
-        if( node instanceof LiteralValueContext ) return eval( ((LiteralValueContext)node).literal() );
+        if( node instanceof AtomContext ) return eval( ((AtomContext)node) );
+        if( node instanceof AtomValueContext ) return eval( ((AtomValueContext)node).atom() );
         if( node instanceof ParenthesesContext ) return eval( ((ParenthesesContext)node).expr() );
         if( node instanceof UnaryOpContext ) return eval( (UnaryOpContext)node );
         if( node instanceof BinOpContext ) return eval( (BinOpContext)node );
         if( node instanceof RContext ) return eval( ((RContext)node).expr() );
+        if( node instanceof VarRefContext ) return eval( ((VarRefContext)node) );
+        return null;
+    }
+
+    public Object eval( AtomContext atom ){
+        if( atom.literal()!=null )return eval(atom.literal());
+        if( atom.varRef()!=null )return eval(atom.varRef());
         return null;
     }
 
@@ -122,66 +134,51 @@ public class Interpetator {
     public Boolean negative(Boolean value){ return value!=null ? !value : null; }
     public Double negative(Double value){ return value!=null ? -value : null; }
 
+    protected Map<String,Object> variables = new LinkedHashMap<>();
+    public Map<String,Object> getVariables(){ return variables; }
+    public void setVariables(Map<String,Object> vars){
+        this.variables = vars;
+    }
+
+    public Object eval( VarRefContext varRef ){
+        var vars = getVariables();
+        if( vars==null )return null;
+        return vars.get(varRef.ID().getText());
+    }
+
     public Object eval( BinOpContext node ){
         if( node==null )throw new IllegalArgumentException( "node==null" );
         var op = node.op!=null ? node.op.getText() : "";
         var left = eval(node.left);
         var right = eval(node.right);
         switch (op){
-            case "+": return add(left,right);
-            case "-": return sub(left,right);
-            case "*": return mul(left,right);
-            case "/": return div(left,right);
+            case "+": return binOp("add", left,right);
+            case "-": return binOp("sub", left,right);
+            case "*": return binOp("mul", left,right);
+            case "/": return binOp("div", left,right);
         }
         return null;
     }
 
-    public Object add( Object left, Object right ){
-        if( left==null && right==null )return addNullNull();
+    protected Operators operators = new Operators();
+    protected Map<String,Operators.Target> binOpCache = new HashMap<>();
+    protected Object binOp( String name, Object left, Object right ){
+        Class leftType = left==null ? NullRef.class : left.getClass();
+        Class rightType = right==null ? NullRef.class : right.getClass();
+        String id = name+":"+leftType+":"+rightType;
+        Operators.Target trgt = binOpCache.get(id);
+        if( trgt!=null ){
+            return trgt.invoke(left,right);
+        }
 
-        if( left instanceof String && right==null )return addStringNull((String) left);
-        if( right instanceof String && left==null )return addNullString((String) right);
-        if( left instanceof String && right instanceof String )return addStringString((String) left,(String) right);
+        var fnd = operators.find("add",leftType,rightType).preffered();
+        if( fnd.isEmpty() ){
+            throw new Error("can't add left="+leftType+" right="+rightType+" implementation not found");
+        }
 
-        if( left instanceof Double && right==null )return addDoubleNull((Double) left);
-        if( right instanceof Double && left==null )return addNullDouble((Double) right);
-        if( left instanceof Double && right instanceof Double )return addDoubleDouble((Double) left,(Double) right);
+        trgt = fnd.get();
+        binOpCache.put(id,trgt);
 
-        throw new Error("can't add left="+left+" right="+right);
-    }
-    public Object addNullNull(){ return null; }
-    public Object addStringNull(String str){ return str+null; }
-    public Object addNullString(String str){ return null+str; }
-    public Object addStringString(String a,String b){ return a+b; }
-    public Object addDoubleNull(Double d){ return null; }
-    public Object addNullDouble(Double d){ return null; }
-    public Object addDoubleDouble(Double a,Double b){ return a+b; }
-
-    public Object sub( Object left, Object right ){
-        if( left==null && right==null )return subNullNull();
-
-        if( left instanceof String && right==null )return subStringNull((String) left);
-        if( right instanceof String && left==null )return subNullString((String) right);
-        if( left instanceof String && right instanceof String )return subStringString((String) left,(String) right);
-
-        if( left instanceof Double && right==null )return subDoubleNull((Double) left);
-        if( right instanceof Double && left==null )return subNullDouble((Double) right);
-        if( left instanceof Double && right instanceof Double )return subDoubleDouble((Double) left,(Double) right);
-
-        throw new Error("can't sub left="+left+" right="+right);
-    }
-    public Object subNullNull(){ return null; }
-    public Object subStringNull(String str){ throw new Error("can't string - null"); }
-    public Object subNullString(String str){ return new Error("can't string - null"); }
-    public Object subStringString(String a,String b){ return a.replace(b,""); }
-    public Object subDoubleNull(Double d){ return null; }
-    public Object subNullDouble(Double d){ return null; }
-    public Object subDoubleDouble(Double a,Double b){ return a-b; }
-
-    public Object mul( Object left, Object right ){
-        return null;
-    }
-    public Object div( Object left, Object right ){
-        return null;
+        return trgt.invoke(left,right);
     }
 }

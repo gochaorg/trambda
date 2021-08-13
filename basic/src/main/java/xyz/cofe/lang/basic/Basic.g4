@@ -17,10 +17,16 @@ r   : expr;         // match keyword hello followed by an identifier
 expr
      : left=expr op=('*'|'/') right=expr # BinOp
      | left=expr op=('+'|'-') right=expr # BinOp
-     | literal              # LiteralValue
+     | atom                 # AtomValue
      | '(' expr ')'         # Parentheses
      | op=('-'|'+'|'!') expr   # UnaryOp
      ;
+
+atom : literal
+     | varRef
+     ;
+
+varRef : ID;
 
 // Литеральное значение
 literal : NUMBER | STRING;

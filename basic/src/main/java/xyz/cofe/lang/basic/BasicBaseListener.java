@@ -40,13 +40,13 @@ public class BasicBaseListener implements BasicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLiteralValue(BasicParser.LiteralValueContext ctx) { }
+	@Override public void enterAtomValue(BasicParser.AtomValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLiteralValue(BasicParser.LiteralValueContext ctx) { }
+	@Override public void exitAtomValue(BasicParser.AtomValueContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -71,6 +71,30 @@ public class BasicBaseListener implements BasicListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitParentheses(BasicParser.ParenthesesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAtom(BasicParser.AtomContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAtom(BasicParser.AtomContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVarRef(BasicParser.VarRefContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarRef(BasicParser.VarRefContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
