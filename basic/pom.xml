@@ -23,7 +23,28 @@
             <artifactId>antlr4-runtime</artifactId>
             <version>4.9</version>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>xyz.cofe</groupId>
+            <artifactId>bytecode-xml</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.cofe</groupId>
+            <artifactId>stsl-type</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.cofe</groupId>
+            <artifactId>stsl-parser</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library-all</artifactId>
+            <version>2.12.12</version>
+            <type>pom</type>
+        </dependency>
+        <!--        <dependency>-->
 <!--            <groupId>org.graalvm.truffle</groupId>-->
 <!--            <artifactId>truffle-api</artifactId>-->
 <!--            <version>${graalvm.version}</version>-->
