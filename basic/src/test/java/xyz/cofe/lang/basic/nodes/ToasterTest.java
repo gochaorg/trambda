@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("SimplifiableAssertion")
 public class ToasterTest {
-    public FunAST funAST(String source){
+    public static FunAST funAST(String source){
         if( source==null )throw new IllegalArgumentException( "source==null" );
         return AST.wrap(
             new BasicParser(new CommonTokenStream(
@@ -20,14 +20,14 @@ public class ToasterTest {
         );
     }
 
-    public void dump(AST<?,?> ast){
+    public static void dump(AST<?,?> ast){
         ast.tree().forEach( ts -> {
             System.out.print(".|".repeat(ts.getLevel()+1));
             System.out.println(" "+ts.getNode());
         });
     }
 
-    public void dump(String src,AST<?,?> ast){
+    public static void dump(String src,AST<?,?> ast){
         System.out.println(src);
         dump(ast);
     }

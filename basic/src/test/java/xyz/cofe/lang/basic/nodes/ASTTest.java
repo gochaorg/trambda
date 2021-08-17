@@ -1,11 +1,13 @@
-package xyz.cofe.lang.basic;
+package xyz.cofe.lang.basic.nodes;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Test;
+import xyz.cofe.lang.basic.BasicLexer;
+import xyz.cofe.lang.basic.BasicParser;
 import xyz.cofe.lang.basic.nodes.AST;
 
-public class CompileTest {
+public class ASTTest {
     @Test
     public void test01(){
         var src = "fn add( a:int, b:int ):int { return a+b }";

@@ -54,4 +54,15 @@ public class Sample1Test {
         dump("sum3() byte code", cbegin, m -> m.getName().equals("sum3") );
         dump("cycle1() byte code", cbegin, m -> m.getName().equals("cycle1") );
     }
+
+    @Test
+    public void defaultClass(){
+        System.out.println("defaultClass");
+        System.out.println("=".repeat(80));
+
+        var cbegin = CBegin.parseByteCode(Sample1Test.class);
+        System.out.println(cbegin);
+
+        cbegin.getMethods().forEach(System.out::println);
+    }
 }
