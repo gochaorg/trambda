@@ -18,6 +18,66 @@ public interface BasicListener extends ParseTreeListener {
 	 */
 	void exitR(BasicParser.RContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link BasicParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction(BasicParser.FunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction(BasicParser.FunctionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#args}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgs(BasicParser.ArgsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#args}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgs(BasicParser.ArgsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#arg}.
+	 * @param ctx the parse tree
+	 */
+	void enterArg(BasicParser.ArgContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#arg}.
+	 * @param ctx the parse tree
+	 */
+	void exitArg(BasicParser.ArgContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#fnReturn}.
+	 * @param ctx the parse tree
+	 */
+	void enterFnReturn(BasicParser.FnReturnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#fnReturn}.
+	 * @param ctx the parse tree
+	 */
+	void exitFnReturn(BasicParser.FnReturnContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatement(BasicParser.StatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatement(BasicParser.StatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link BasicParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(BasicParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link BasicParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(BasicParser.ReturnStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code UnaryOp}
 	 * labeled alternative in {@link BasicParser#expr}.
 	 * @param ctx the parse tree

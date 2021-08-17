@@ -1,4 +1,4 @@
-package xyz.cofe.lang.basic;
+package xyz.cofe.lang.basic.inter;
 
 import org.junit.jupiter.api.Test;
 

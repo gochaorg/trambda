@@ -17,6 +17,42 @@ public interface BasicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitR(BasicParser.RContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link BasicParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(BasicParser.FunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#args}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArgs(BasicParser.ArgsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#arg}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArg(BasicParser.ArgContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#fnReturn}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFnReturn(BasicParser.FnReturnContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement(BasicParser.StatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link BasicParser#returnStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturnStatement(BasicParser.ReturnStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code UnaryOp}
 	 * labeled alternative in {@link BasicParser#expr}.
 	 * @param ctx the parse tree

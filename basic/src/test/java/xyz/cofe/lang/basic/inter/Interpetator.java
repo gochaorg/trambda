@@ -1,4 +1,4 @@
-package xyz.cofe.lang.basic;
+package xyz.cofe.lang.basic.inter;
 
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -145,7 +145,6 @@ public class Interpetator {
         if( vars==null )return null;
         return vars.get(varRef.ID().getText());
     }
-
     public Object eval( BinOpContext node ){
         if( node==null )throw new IllegalArgumentException( "node==null" );
         var op = node.op!=null ? node.op.getText() : "";

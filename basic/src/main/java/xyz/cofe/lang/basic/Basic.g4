@@ -12,8 +12,38 @@ grammar Basic;
 //private NodeFactory factory = new NodeFactory();
 //}
 
-r   : expr;         // match keyword hello followed by an identifier
+r   : expr;
 
+// Определение функции
+function
+    : 'fn' name=ID args fnReturn
+    '{' statement* '}'
+    ;
+
+// аргументы функции
+args
+    : '(' arg ( ',' arg )* ')'
+    ;
+
+// аргумент
+arg : name=ID ':' type=ID ;
+
+// возвращаемый тип из функции
+fnReturn
+    : ':' type=ID
+    ;
+
+// утверждение - кусок кода
+statement
+    :   returnStatement
+    ;
+
+// возврат из функции
+returnStatement
+    : RETURN expr
+    ;
+
+// выражение
 expr
      : left=expr op=('*'|'/') right=expr # BinOp
      | left=expr op=('+'|'-') right=expr # BinOp
@@ -22,10 +52,12 @@ expr
      | op=('-'|'+'|'!') expr   # UnaryOp
      ;
 
+// атомарное значение
 atom : literal
      | varRef
      ;
 
+// ссылка на переменну.
 varRef : ID;
 
 // Литеральное значение
@@ -56,6 +88,8 @@ NameStartChar
    | '\uF900'..'\uFDCF'
    | '\uFDF0'..'\uFFFD'
    ;
+
+RETURN : 'return' ;
 
 // Идентификатор
 ID : NameStartChar NameChar* ;
