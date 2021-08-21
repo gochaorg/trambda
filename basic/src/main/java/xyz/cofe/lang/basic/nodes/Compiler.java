@@ -1,17 +1,24 @@
 package xyz.cofe.lang.basic.nodes;
 
-import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.cls.CBegin;
+import xyz.cofe.stsl.types.Type;
 import xyz.cofe.trambda.bc.cls.CMethod;
 import xyz.cofe.trambda.bc.mth.*;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Compiler {
-    protected String descriptor( FunAST fun ){
+    /**
+     * Имя типа используемый в байт-коде (description)
+     * @param type тип
+     * @return имя (description)
+     */
+    protected String description( Type type ){
+        if( type==null )throw new IllegalArgumentException( "type==null" );
+        return null;
+    }
+
+    public String descriptor( FunAST fun ){
         if( fun==null )throw new IllegalArgumentException( "fun==null" );
         StringBuilder sb = new StringBuilder();
         sb.append("(");
@@ -37,17 +44,26 @@ public class Compiler {
     }
 
     protected long labelIdSeq = 0;
-    protected String nextLabel(String suff){
+    public String nextLabel(String suff){
         labelIdSeq++;
         long id = labelIdSeq;
         return "L"+id+(suff!=null ? "_"+suff : "");
     }
-    protected String nextLabel(){ return nextLabel(null); }
+    public String nextLabel(){ return nextLabel(null); }
 
     protected CMethod method;
+    public CMethod method(){ return method; }
+
     protected String methodBeginLabel;
     protected String methodEndLabel;
+
     protected Map<String,Integer> varIndex;
+    public Integer varIndex( String name ){
+        if( name==null )return null;
+        if( varIndex!=null )return varIndex.get(name);
+        return null;
+    }
+
     public CMethod compile( FunAST funAst ){
         if( funAst==null )throw new IllegalArgumentException( "funAst==null" );
 
@@ -100,13 +116,29 @@ public class Compiler {
     }
 
     protected void compile( StatementAST st ){
-        var ret = st.getReturn();
-        if( ret!=null ){
-            compile(ret);
-        }
-    }
+        if( st==null )throw new IllegalArgumentException( "st==null" );
 
+        boolean astCompilerWrited = false;
+        if( st instanceof ASTCompiler ){
+            astCompilerWrited = ((ASTCompiler) st).compile( st,this);
+        }
+        if( astCompilerWrited )return;
+
+        var ret = st.getReturn();
+        if( ret != null ){
+            compile(ret);
+            return;
+        }
+
+        throw new Error("can't compile "+st);
+    }
     protected void compile( ReturnAST ast ){
+        if( ast==null )throw new IllegalArgumentException( "ast==null" );
+
+        if( ast instanceof ASTCompiler ){
+            if( ((ASTCompiler) ast).compile(ast, this) )return;
+        }
+
         var retType = ast.getType();
         if( retType==null )throw new Error("return type undefined");
 
@@ -123,9 +155,13 @@ public class Compiler {
 
         throw new UnsupportedOperationException("not implemented return type "+retType);
     }
-
-    protected void compile( AST<?,?> tast ){
+    public void compile( AST<?,?> tast ){
         if( tast==null )throw new IllegalArgumentException( "tast==null" );
+
+        if( tast instanceof ASTCompiler ){
+            if( ((ASTCompiler) tast).compile(tast, this) )return;
+        }
+
         if( tast instanceof BinOpAST ){
             compile( (BinOpAST)tast );
         }else if( tast instanceof UnaryOpAST ){
@@ -144,13 +180,15 @@ public class Compiler {
             throw new UnsupportedOperationException("not implemented compile "+tast.getClass());
         }
     }
-
     protected void compile( LiteralAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
 
+        if( ast instanceof ASTCompiler ){
+            if( ((ASTCompiler) ast).compile(ast,this) )return;
+        }
+
         throw new UnsupportedOperationException("not implemented compile "+ast.getClass());
     }
-
     protected void compile( VarRefAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
 
@@ -165,16 +203,30 @@ public class Compiler {
             return;
         }
 
+        if( type==BaseTypes.instance.STRING ){
+            method.getMethodByteCodes().add(new MVarInsn(OpCode.ALOAD.code, idx));
+            return;
+        }
+
         throw new UnsupportedOperationException("not implemented compile "+ast.getClass()+" for "+type);
     }
-
     protected void compile( UnaryOpAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
+
+        var opImpl = ast.getOperatorImpl();
+        if( opImpl instanceof ASTCompiler ){
+            if( ((ASTCompiler) opImpl).compile(ast, this) )return;
+        }
+
         throw new UnsupportedOperationException("not implemented compile "+ast.getClass());
     }
-
     protected void compile( BinOpAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
+
+        var opImpl = ast.getOperatorImpl();
+        if( opImpl instanceof ASTCompiler ){
+            if( ((ASTCompiler) opImpl).compile(ast, this) )return;
+        }
 
         var type = ast.getType();
         if( type==null )throw new Error("for operator "+ast+" type not defined");

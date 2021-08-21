@@ -24,7 +24,7 @@ public class TContextTest {
 
             if( opImpl==null )continue;
 
-            System.out.println( "["+i+"] "+opImpl.name );
+            //System.out.println( "["+i+"] "+opImpl.name );
         }
     }
 

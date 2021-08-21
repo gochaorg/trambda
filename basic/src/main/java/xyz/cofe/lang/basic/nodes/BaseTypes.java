@@ -2,69 +2,126 @@ package xyz.cofe.lang.basic.nodes;
 
 import xyz.cofe.stsl.types.TObject;
 import xyz.cofe.stsl.types.Type;
+import xyz.cofe.trambda.bc.mth.MInsn;
+import xyz.cofe.trambda.bc.mth.MMethodInsn;
+import xyz.cofe.trambda.bc.mth.OpCode;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static xyz.cofe.lang.basic.nodes.OperatorImpl.*;
+
 /**
- * Базовые типы
+ * Базовые типы которые представлены в языке
+ *
+ * <br>
+ * Включают в себя примитивы JVM и некоторые типы из JVM
  */
 public class BaseTypes {
+    /**
+     * Экземпляр
+     */
     public static final BaseTypes instance = new BaseTypes();
 
+    /**
+     * Цело число, со знаком, 32 бит
+     */
     public final TObject INT = TObject.create("int")
         .methods( meths -> {
             meths.method( mb -> {mb
                 .name("+")
                 .params( p -> p.param("this", Type.THIS()).param("num", Type.THIS()) )
                 .result( Type.THIS() )
-                .setCall( new OperatorImpl("add(int,int)->int") );
+                .setCall( compiler((BinOpAST ast,Compiler compiler)->{
+                    compiler.compile(ast.getLeft());
+                    compiler.compile(ast.getRight());
+                    compiler.method().getMethodByteCodes().add(new MInsn(OpCode.IADD.code));
+                }));
                 mb.add();
             });
             meths.method( mb -> {mb
                 .name("-")
                 .params( p -> p.param("this", Type.THIS()).param("num", Type.THIS()) )
                 .result( Type.THIS() )
-                .setCall( new OperatorImpl("sub(int,int)->int") );
+                //.setCall( new OperatorImpl() );
+                .setCall( compiler((BinOpAST ast,Compiler compiler)->{
+                    compiler.compile(ast.getLeft());
+                    compiler.compile(ast.getRight());
+                    compiler.method().getMethodByteCodes().add(new MInsn(OpCode.ISUB.code));
+                }));
                 mb.add();
             });
             meths.method( mb -> {mb
                 .name("*")
                 .params( p -> p.param("this", Type.THIS()).param("num", Type.THIS()) )
                 .result( Type.THIS() )
-                .setCall( new OperatorImpl("mul(int,int)->int") );
+                //.setCall( new OperatorImpl() );
+                .setCall( compiler((BinOpAST ast,Compiler compiler)->{
+                    compiler.compile(ast.getLeft());
+                    compiler.compile(ast.getRight());
+                    compiler.method().getMethodByteCodes().add(new MInsn(OpCode.IMUL.code));
+                }));
                 mb.add();
             });
             meths.method( mb -> {mb
                 .name("/")
                 .params( p -> p.param("this", Type.THIS()).param("num", Type.THIS()) )
                 .result( Type.THIS() )
-                .setCall( new OperatorImpl("div(int,int)->int") );
+                //.setCall( new OperatorImpl() );
+                .setCall( compiler((BinOpAST ast,Compiler compiler)->{
+                    compiler.compile(ast.getLeft());
+                    compiler.compile(ast.getRight());
+                    compiler.method().getMethodByteCodes().add(new MInsn(OpCode.IDIV.code));
+                }));
                 mb.add();
             });
         })
         .build();
 
+    /**
+     * Строка unicode, 16 бит на символ.
+     */
     public final TObject STRING = TObject.create("string")
         .fileds( fields -> {
-            fields.fileld("length", INT).add();
+            //fields.fileld("length", INT).add();
+            fields.field(
+                new FieldImpl("length", INT, (( ast, compiler ) -> {
+                    compiler.method().getMethodByteCodes().add(
+                        new MMethodInsn(
+                            OpCode.INVOKEVIRTUAL.code,
+                            "java/lang/String",
+                            "length",
+                            "()I",
+                            false
+                        )
+                    );
+                    return true;
+                })
+            )).add();
         })
         .methods( meths -> {
             meths.method( mb -> {mb
                 .name("+")
-                .params( p -> p.param("this", Type.THIS()).param("num", Type.THIS()) )
+                .params( p -> p.param("this", Type.THIS()).param("str", Type.THIS()) )
                 .result( Type.THIS() )
-                .setCall( new OperatorImpl("add(string,string)->string") );
+                .setCall( new OperatorImpl() );
                 mb.add();
             });
         })
         .build();
 
-    public final Type[] types = new Type[] {
-        INT, STRING
-    };
+    /**
+     * Проверяет что тип относится к примитивному JVM типу
+     * @param type тип
+     * @return true - является примитивным
+     */
+    public boolean isJvmPrimitive( Type type ){
+        if( type==null )throw new IllegalArgumentException( "type==null" );
+        return primitiveName.get(type) != null;
+    }
 
+    //region primitiveName : Map<Type,String> -  примитивное название типа (jvm примитив)
     public final Map<Type,String> primitiveName;
     {
         /*
@@ -87,8 +144,17 @@ public class BaseTypes {
 
         Map<Type,String> names = new LinkedHashMap<>();
         names.put(INT,"I");
-        names.put(STRING,"L"+String.class.getName().replace(".","/")+";");
         names.put(Type.VOID(),"V");
         primitiveName = Collections.unmodifiableMap(names);
     }
+    //endregion
+
+    //region types : Type[] - Перечень базовых типов
+    /**
+     * Перечень базовых типов
+     */
+    public final Type[] types = new Type[] {
+        INT, STRING
+    };
+    //endregion
 }

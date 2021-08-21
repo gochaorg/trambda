@@ -33,7 +33,7 @@ public class Sample1Test {
         return r;
     }
 
-    public void dump(String title,CBegin cBegin, Predicate<CMethod> meth){
+    public static void dump(String title,CBegin cBegin, Predicate<CMethod> meth){
         var sumMethod = cBegin.getMethods().stream().filter(meth).findFirst();
         assertTrue(sumMethod.isPresent());
 
