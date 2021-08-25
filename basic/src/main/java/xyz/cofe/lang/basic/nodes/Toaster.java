@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import xyz.cofe.fn.Tuple2;
+import xyz.cofe.stsl.types.Field;
 
 public class Toaster {
     protected TContext context = new TContext();
@@ -75,11 +77,11 @@ public class Toaster {
         for( var ts : ast.tree() ){
             var node = ts.getNode();
             if( node instanceof LiteralAST ){
-                literalType((LiteralAST) node);
+                resolve((LiteralAST) node);
             }
         }
     }
-    protected Type literalType( LiteralAST ast ){
+    protected Type resolve( LiteralAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         if( ast.getType()!=null )return ast.getType();
         if( ast.getAntlrRule().NUMBER()!=null ){
@@ -127,28 +129,35 @@ public class Toaster {
         for( var ts : ast.tree() ){
             var node = ts.getNode();
             if( node instanceof VarRefAST ){
-                variableType((VarRefAST) node);
+                Toaster.this.resolve((VarRefAST) node);
             }
         }
     }
-    protected Type variableType( VarRefAST ast ){
+    protected Optional<Tuple2<AST<?,?>,Type>> resolveVarDefAndType( AST<?,?> varRef, String varName ){
+        var fun = varRef.find(FunAST.class);
+        if( fun.isEmpty())return Optional.empty();
+        
+        var args = fun.get().getArgs();
+        var arg = args.getChildren().stream().filter(a -> a.getName().equals(varName) ).findFirst();
+        if( arg.isEmpty() || arg.get().getType()==null )return Optional.empty();
+        
+        return Optional.of(Tuple2.of(arg.get(), arg.get().getType()));
+    }
+    protected Type resolve( VarRefAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         if( ast.getType()!=null )return ast.getType();
-
-        var fun = ast.find(FunAST.class);
-        if( fun.isPresent() ){
-            var args = fun.get().getArgs();
-            var arg = args.getChildren().stream().filter(a -> a.getName().equals(ast.getName()) ).findFirst();
-            if( arg.isPresent() && arg.get().getType()!=null ){
-                ast.setDefinition(arg.get());
-                ast.setType(arg.get().getType());
-                ok(ast,"type resolved");
-                return ast.getType();
-            }
+        
+        var varDefAndType = resolveVarDefAndType(ast, ast.getVarName());
+        if( varDefAndType.isEmpty() ){
+            error(ast,"can't resolve type");
+            return null;
         }
+        
+        ast.setDefinition(varDefAndType.get().a());
+        ast.setType(varDefAndType.get().b());
+        ok(ast,"type resolved");
 
-        error(ast,"can't resolve type");
-        return null;
+        return ast.getType();
     }
     //endregion
 
@@ -158,22 +167,19 @@ public class Toaster {
         for( var ts : ast.tree() ){
             var node = ts.getNode();
             if( node instanceof AtomValueAST ){
-                atomType((AtomValueAST) node);
-            }else if( node instanceof AtomAST ){
-                atomType((AtomAST) node);
+                Toaster.this.resolve((AtomValueAST) node);
             }
         }
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    protected Type atomType( AtomValueAST ast ){
+    protected Type resolve( AtomValueAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         if( ast.getType()!=null )return ast.getType();
 
         var exp = ast.getExpr();
-        if( exp instanceof AtomAST ){
-            var aa = (AtomAST)exp;
-            var t = atomType(aa);
+        if( exp instanceof TAST ){
+            var t = Toaster.this.resolve((TAST<?,?>)exp);
             if( t!=null ){
                 ast.setType(t);
                 ok(ast,"resolved type");
@@ -184,64 +190,112 @@ public class Toaster {
         error(ast,"can't resolve type");
         return null;
     }
-
-    protected Type atomType( AtomAST ast ){
+    
+    protected Type resolve( ObjAccessAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         if( ast.getType()!=null )return ast.getType();
-
-        var exp = ast.getExpr();
-        if( exp instanceof LiteralAST ){
-            var t = literalType((LiteralAST) exp);
-            if( t!=null ){
-                ast.setType(t);
-                ok(ast,"resolved type");
-                return t;
-            }
-        }else if( exp instanceof VarRefAST ){
-            var t = variableType((VarRefAST) exp);
-            if( t!=null ){
-                ast.setType(t);
-                ok(ast,"resolved type");
-                return t;
+        
+        var varName = ast.getVarName();
+        var varDefAndType = resolveVarDefAndType(ast, ast.getVarName());
+        if( varDefAndType.isEmpty() ){
+            error(ast,"unresolved variable type "+varName);
+            return null;
+        }
+        
+        var varDef = varDefAndType.get().a();
+        var varType = varDefAndType.get().b();
+        
+        if( ast.getAccessType()==ObjAccessType.FieldRead ){
+            return resolveFieldRead(ast,varType,ast.getMemberAccess().getMemberName());
+        }
+        
+        error(ast,"can't resolve type for "+ast.getMemberAccess());
+        return null;
+    }
+    
+    protected Type resolveFieldRead(ObjAccessAST ast, Type obj, String fieldName ){
+        if( !(obj instanceof TObject) ){
+            error(ast, "'this' is not instance of TObject");
+            return null;
+        }
+        
+        var tobj = (TObject)obj;
+        var fields = tobj.fields();
+        Field field = null;
+        for( int i=0; i<fields.size(); i++ ){
+            var fld = fields.apply(i);
+            if( fieldName!=null && fieldName.equals(fld.name()) ){
+                field = fld;
+                break;
             }
         }
-
-        error(ast,"can't resolve type");
-        return null;
+        
+        if( field==null ){
+            error(ast, "field "+fieldName+" not found in "+tobj+"");
+            return null;
+        }
+        
+        if( !(field instanceof ASTCompiler) ){
+            error(ast, "field "+fieldName+" not implement ASTCompiler in "+tobj+"");
+            return null;
+        }
+        
+        ASTCompiler astCompiler = (ASTCompiler)field;
+        ast.setAstCompiler(astCompiler);
+        ast.setType(field.tip());
+        ok(ast,"resolved type");
+        return ast.getType();
     }
     //endregion
 
     //region opTypes() - разрешение типов для операторов, вызывать после atomTypes()
-    protected Type expType( TAST<?,?> ast ){
+    protected Type resolve( TAST<?,?> ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
-        if( ast instanceof AtomAST ){
-            return atomType((AtomAST) ast);
-        }else if( ast instanceof AtomValueAST ){
-            return atomType((AtomValueAST) ast);
+        if( ast instanceof AtomValueAST ){
+            return Toaster.this.resolve((AtomValueAST) ast);
         }else if( ast instanceof LiteralAST ){
-            return literalType( (LiteralAST) ast);
+            return resolve( (LiteralAST) ast);
         }else if( ast instanceof VarRefAST ){
-            return variableType( (VarRefAST) ast);
+            return Toaster.this.resolve( (VarRefAST) ast);
         }else if( ast instanceof BinOpAST ){
-            return opType( (BinOpAST) ast );
+            return Toaster.this.resolve( (BinOpAST) ast );
         }else if( ast instanceof UnaryOpAST ){
-            return opType( (UnaryOpAST) ast );
+            return Toaster.this.resolve( (UnaryOpAST) ast );
+        }else if( ast instanceof ParenthesesAST ){
+            return Toaster.this.resolve( (ParenthesesAST)ast );
+        }else if( ast instanceof ObjAccessAST ){
+            return Toaster.this.resolve( (ObjAccessAST)ast );
         }
 
         return null;
     }
+    protected Type resolve( ParenthesesAST ast ){
+        if( ast==null )throw new IllegalArgumentException("ast==null");
+        var exp = ast.getExpr();
+        if( exp instanceof TAST ){
+            var t = Toaster.this.resolve((TAST<?,?>)exp);
+            if( t!=null ){
+                ok(ast,"resolved type");
+                ast.setType(t);
+                return t;
+            }
+        }
+        
+        error(ast,"can't resolve type");
+        return null;
+    }    
     protected void opTypes( AST<?,?> ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         for( var ts : ast.tree() ){
             var node = ts.getNode();
             if( node instanceof BinOpAST ){
-                opType((BinOpAST) node);
+                Toaster.this.resolve((BinOpAST) node);
             }else if( node instanceof UnaryOpAST ){
-                opType((UnaryOpAST) node);
+                Toaster.this.resolve((UnaryOpAST) node);
             }
         }
     }
-    protected Type opType( UnaryOpAST ast ){
+    protected Type resolve( UnaryOpAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         if( ast.getType()!=null )return ast.getType();
         var exp = ast.getExpr();
@@ -250,7 +304,7 @@ public class Toaster {
             return null;
         }
 
-        Type expt = expType((TAST<?, ?>) exp);
+        Type expt = Toaster.this.resolve((TAST<?, ?>) exp);
         if( expt==null ){
             error(ast,"can't resolve expression type");
             return null;
@@ -310,7 +364,7 @@ public class Toaster {
         ok(ast,"resolved type");
         return retType;
     }
-    protected Type opType( BinOpAST ast ){
+    protected Type resolve( BinOpAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
 
         if( ast.getType()!=null )return ast.getType();
@@ -327,7 +381,7 @@ public class Toaster {
             return null;
         }
 
-        Type leftt = expType((TAST<?, ?>) left);
+        Type leftt = Toaster.this.resolve((TAST<?, ?>) left);
         if( leftt==null ){
             error(ast,"can't resolve left expression type");
             return null;
@@ -339,7 +393,7 @@ public class Toaster {
         }
         var tobj = (TObject)leftt;
 
-        Type rightt = expType((TAST<?, ?>) right);
+        Type rightt = Toaster.this.resolve((TAST<?, ?>) right);
 
         if( rightt==null ){
             error(ast,"can't resolve right expression type");
@@ -394,6 +448,16 @@ public class Toaster {
         ok(ast,"resolved type");
         return retType;
     }
+    protected Type resolve( LiteralObjAST ast ){
+        if( ast==null )throw new IllegalArgumentException("ast==null");
+        
+        if( ast.getAccessType()==ObjAccessType.FieldRead ){
+            //String
+        }
+        
+        error(ast,"can't resolve type");
+        return null;
+    }
     //endregion
 
     //region returnTypes() - проверка возвращаемого типа
@@ -402,12 +466,12 @@ public class Toaster {
         for( var ts : ast.tree() ){
             var node = ts.getNode();
             if( node instanceof ReturnAST ){
-                returnType((ReturnAST) node);
+                Toaster.this.resolve((ReturnAST) node);
             }
         }
 
     }
-    protected Type returnType( ReturnAST ast ){
+    protected Type resolve( ReturnAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
         if( ast.getType()!=null )return ast.getType();
 
@@ -429,7 +493,7 @@ public class Toaster {
             return null;
         }
 
-        var expt = expType((TAST<?, ?>) exp);
+        var expt = Toaster.this.resolve((TAST<?, ?>) exp);
         if( expt==null ){
             error(ast,"return expression undefined type");
             return null;

@@ -17,7 +17,7 @@ r   : expr;
 // Определение функции
 function
     : 'fn' name=ID args fnReturn
-    '{' statement* '}'
+    '{' statement ( ';' statement )* ';'? '}'
     ;
 
 // аргументы функции
@@ -45,20 +45,43 @@ returnStatement
 
 // выражение
 expr
-     : left=expr op=('*'|'/') right=expr # BinOp
+     : left=expr op='|'       right=expr # BinOp
+     | left=expr op='&'       right=expr # BinOp
+     | left=expr op=('<'|'>'|'=='|'!='|'<='|'>=') right=expr # BinOp
+     | left=expr op=('*'|'/') right=expr # BinOp
      | left=expr op=('+'|'-') right=expr # BinOp
-     | atom                 # AtomValue
-     | '(' expr ')'         # Parentheses
+     | atom                    # AtomValue
+     | '(' expr ')'            # Parentheses
      | op=('-'|'+'|'!') expr   # UnaryOp
      ;
 
 // атомарное значение
-atom : literal
-     | varRef
+// Может относится к следующим видам
+// 1. literal - литеральное значение
+// 2. literal objPostFix - чтение поля
+// 3. literal objPostFix callArgs - вызов метода объекта
+// 4. ID - ссылка на переменную
+// 5. ID callArgs - вызов метода
+// 6. ID objPostFix - чтение поля
+// 7. ID objPostFix  callArgs - вызов метода объекта
+//
+//atom : literal objPostFix ? // литерал / доступ к полю / вызов метода
+//     | ID ( callArgs | objPostFix )? // вызов функции / доступ к полю / вызов метода
+//     ;
+
+atom : literal objPostFix # LiteralObj
+     | literal            # LiteralValue
+     | ID callArgs        # CallFun
+     | ID objPostFix      # ObjAccess
+     | ID                 # VarRef
      ;
 
-// ссылка на переменну.
-varRef : ID;
+// доступ к полю / вызов метода
+objPostFix  : '.' ID callArgs?
+            ;
+
+// Методы аргумента
+callArgs : '(' ( expr (',' expr)* )? ')';
 
 // Литеральное значение
 literal : NUMBER | STRING;
@@ -97,7 +120,7 @@ ID : NameStartChar NameChar* ;
 // Число
 fragment HEX_DIGIT : [0-9a-fA-F];
 fragment DIGIT : [0-9] ;
-NUMBER : DIGIT+ ('.' DIGIT*)? ;
+NUMBER : DIGIT+ ('.' DIGIT+)? ;
 
 // Строка
 fragment ESC : '\\"' | '\\\\' | '\\\'' | '\\r' | '\\n' | '\\t' | '\\x' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;

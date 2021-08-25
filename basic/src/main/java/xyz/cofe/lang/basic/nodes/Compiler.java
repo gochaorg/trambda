@@ -1,5 +1,6 @@
 package xyz.cofe.lang.basic.nodes;
 
+import xyz.cofe.stsl.types.Named;
 import xyz.cofe.stsl.types.Type;
 import xyz.cofe.trambda.bc.cls.CMethod;
 import xyz.cofe.trambda.bc.mth.*;
@@ -13,9 +14,22 @@ public class Compiler {
      * @param type тип
      * @return имя (description)
      */
-    protected String description( Type type ){
+    protected String descriptor( Type type ){
         if( type==null )throw new IllegalArgumentException( "type==null" );
-        return null;
+
+        var tn = BaseTypes.instance.primitiveName.get(type);
+        if( tn!=null )return tn;
+
+        if( type==BaseTypes.instance.STRING ){
+            return "L"+String.class.getName().replace(".","/")+";";
+        }
+
+        if( type instanceof xyz.cofe.stsl.types.Named ){
+            String name = ((Named) type).name();
+            return "L"+name.replace(".","/")+";";
+        }
+
+        throw new Error("can't generate description for "+type);
     }
 
     public String descriptor( FunAST fun ){
@@ -23,23 +37,11 @@ public class Compiler {
         StringBuilder sb = new StringBuilder();
         sb.append("(");
         for( var arg : fun.getArgs().getChildren() ){
-            var t = arg.getType();
-            if( t==null )throw new Error("undefined type in "+fun);
-
-            var tn = BaseTypes.instance.primitiveName.get(t);
-            if( tn==null )throw new Error("primitive type undefined for "+t);
-
-            sb.append(tn);
+            var t = descriptor(arg.getType());
+            sb.append(t);
         }
         sb.append(")");
-
-        var t = fun.getReturns().getType();
-        if( t==null )throw new Error("undefined return type in "+fun);
-
-        var tn = BaseTypes.instance.primitiveName.get(t);
-        if( tn==null )throw new Error("primitive type undefined for "+t);
-
-        sb.append(tn);
+        sb.append(descriptor(fun.getReturns().getType()));
         return sb.toString();
     }
 
@@ -97,7 +99,7 @@ public class Compiler {
         int idx = -1;
         for( var arg : funAst.getArgs().getChildren() ){
             idx++;
-            String tn = BaseTypes.instance.primitiveName.get(arg.getType());
+            String tn = descriptor(arg.getType());
             var lvar = new MLocalVariable();
             lvar.setName(arg.getName());
             lvar.setDescriptor(tn);
@@ -114,7 +116,6 @@ public class Compiler {
         method.getMethodByteCodes().add(new MEnd());
         return method;
     }
-
     protected void compile( StatementAST st ){
         if( st==null )throw new IllegalArgumentException( "st==null" );
 
@@ -155,7 +156,7 @@ public class Compiler {
 
         throw new UnsupportedOperationException("not implemented return type "+retType);
     }
-    public void compile( AST<?,?> tast ){
+    protected void compile( AST<?,?> tast ){
         if( tast==null )throw new IllegalArgumentException( "tast==null" );
 
         if( tast instanceof ASTCompiler ){
@@ -168,14 +169,14 @@ public class Compiler {
             compile( (UnaryOpAST)tast );
         }else if( tast instanceof AtomValueAST ){
             compile( ((AtomValueAST) tast).getExpr() );
-        }else if( tast instanceof AtomAST ){
-            compile( ((AtomAST) tast).getExpr() );
         }else if( tast instanceof LiteralAST ){
             compile( (LiteralAST)tast );
         }else if( tast instanceof ParenthesesAST ){
             compile(((ParenthesesAST) tast).getExpr());
         }else if( tast instanceof VarRefAST ){
             compile( (VarRefAST)tast );
+        }else if( tast instanceof ObjAccessAST ){
+            compile( (ObjAccessAST)tast );
         }else{
             throw new UnsupportedOperationException("not implemented compile "+tast.getClass());
         }
@@ -192,11 +193,11 @@ public class Compiler {
     protected void compile( VarRefAST ast ){
         if( ast==null )throw new IllegalArgumentException( "ast==null" );
 
-        Integer idx = varIndex.get(ast.getName());
-        if( idx==null )throw new Error("for variable "+ast.getName()+" index not found");
+        Integer idx = varIndex.get(ast.getVarName());
+        if( idx==null )throw new Error("for variable "+ast.getVarName()+" index not found");
 
         var type = ast.getType();
-        if( type==null )throw new Error("for variable "+ast.getName()+" type not defined");
+        if( type==null )throw new Error("for variable "+ast.getVarName()+" type not defined");
 
         if( type==BaseTypes.instance.INT ){
             method.getMethodByteCodes().add(new MVarInsn(OpCode.ILOAD.code, idx));
@@ -262,5 +263,16 @@ public class Compiler {
             default:
                 throw new Error("operator "+op+" not implement");
         }
+    }
+    protected void compile( ObjAccessAST ast ){
+        if( ast==null )throw new IllegalArgumentException( "ast==null" );
+        
+        var astCompiler = ast.getAstCompiler();
+        if( astCompiler==null ){
+            throw new Error("ObjAccessAST not contains astCompiler");
+        }
+
+        if( astCompiler.compile(ast, this) )return;
+        throw new Error("ObjAccessAST.astCompiler not generated code");
     }
 }

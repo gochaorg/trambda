@@ -83,9 +83,14 @@ public abstract class AST<R extends ParserRuleContext,C extends AST<? extends Pa
         if( c==null )throw new IllegalArgumentException( "c==null" );
         return new ArgsAST(c);
     }
-    public static AtomAST wrap(AtomContext c){
+    public static AST<?,?> wrap(AtomContext c){
         if( c==null )throw new IllegalArgumentException( "c==null" );
-        return new AtomAST(c);
+        if( c instanceof VarRefContext )return wrap( (VarRefContext)c );
+        if( c instanceof ObjAccessContext )return wrap( (ObjAccessContext)c );
+        if( c instanceof CallFunContext )return wrap( (CallFunContext)c );
+        if( c instanceof LiteralValueContext )return wrap( (LiteralValueContext)c );
+        if( c instanceof LiteralObjContext )return wrap( (LiteralObjContext)c );
+        throw new IllegalArgumentException("unsupported "+c.getClass().getName());
     }
     public static AtomValueAST wrap(AtomValueContext c){
         if( c==null )throw new IllegalArgumentException( "c==null" );
@@ -119,6 +124,30 @@ public abstract class AST<R extends ParserRuleContext,C extends AST<? extends Pa
         if( c==null )throw new IllegalArgumentException( "c==null" );
         return new UnaryOpAST(c);
     }
+    public static CallArgsAST wrap(CallArgsContext c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        return new CallArgsAST(c);
+    }
+    public static ObjPostFixAST wrap(ObjPostFixContext c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        return new ObjPostFixAST(c);
+    }
+    public static CallFunAST wrap(CallFunContext c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        return new CallFunAST(c);
+    }
+    public static LiteralValueAST wrap(LiteralValueContext c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        return new LiteralValueAST(c);
+    }
+    public static ObjAccessAST wrap(ObjAccessContext c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        return new ObjAccessAST(c);
+    }
+    public static LiteralObjAST wrap(LiteralObjContext c){
+        if( c==null )throw new IllegalArgumentException( "c==null" );
+        return new LiteralObjAST(c);
+    }
     public static VarRefAST wrap(VarRefContext c){
         if( c==null )throw new IllegalArgumentException( "c==null" );
         return new VarRefAST(c);
@@ -137,6 +166,12 @@ public abstract class AST<R extends ParserRuleContext,C extends AST<? extends Pa
         if( c instanceof ReturnStatementContext )return wrap((ReturnStatementContext) c);
         if( c instanceof StatementContext )return wrap((StatementContext) c);
         if( c instanceof UnaryOpContext )return wrap((UnaryOpContext) c);
+        if( c instanceof CallArgsContext )return wrap((CallArgsContext) c);
+        if( c instanceof ObjPostFixContext )return wrap((ObjPostFixContext) c);
+        if( c instanceof CallFunContext )return wrap((CallFunContext) c);
+        if( c instanceof LiteralValueContext )return wrap((LiteralValueContext) c);
+        if( c instanceof ObjAccessContext )return wrap((ObjAccessContext) c);
+        if( c instanceof LiteralObjContext )return wrap((LiteralObjContext) c);
         if( c instanceof VarRefContext )return wrap((VarRefContext) c);
         throw new IllegalArgumentException("unsupported "+c.getClass().getName());
     }

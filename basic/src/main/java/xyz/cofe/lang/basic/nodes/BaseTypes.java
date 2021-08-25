@@ -4,6 +4,7 @@ import xyz.cofe.stsl.types.TObject;
 import xyz.cofe.stsl.types.Type;
 import xyz.cofe.trambda.bc.mth.MInsn;
 import xyz.cofe.trambda.bc.mth.MMethodInsn;
+import xyz.cofe.trambda.bc.mth.MVarInsn;
 import xyz.cofe.trambda.bc.mth.OpCode;
 
 import java.util.Collections;
@@ -87,6 +88,26 @@ public class BaseTypes {
             //fields.fileld("length", INT).add();
             fields.field(
                 new FieldImpl("length", INT, (( ast, compiler ) -> {
+//                    Integer idx = compiler.varIndex(ast.getV) //varIndex.get(ast.getVarName());
+//                    if( idx==null )throw new Error("for variable "+ast.getVarName()+" index not found");
+//
+//                    compiler.method().getMethodByteCodes().add(
+//                        new MVarInsn(OpCode.ALOAD.code, )
+//                    );
+                    if( ast instanceof ObjAccessAST ){
+                        var objacc = (ObjAccessAST)ast;
+                        var varname = objacc.getVarName();
+
+                        Integer idx = compiler.varIndex(varname); //varIndex.get(ast.getVarName());
+                        if( idx==null )throw new Error("for variable "+varname+" index not found");
+
+                        compiler.method().getMethodByteCodes().add(
+                            new MVarInsn(OpCode.ALOAD.code, idx)
+                        );
+                    }else{
+                        throw new Error("ast not instance of ObjAccessAST");
+                    }
+
                     compiler.method().getMethodByteCodes().add(
                         new MMethodInsn(
                             OpCode.INVOKEVIRTUAL.code,

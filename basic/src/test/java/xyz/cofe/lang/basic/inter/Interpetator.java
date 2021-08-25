@@ -15,19 +15,13 @@ public class Interpetator {
     public Object eval(RuleNode node){
         if( node==null )throw new IllegalArgumentException("node==null");
         if( node instanceof LiteralContext ) return eval((LiteralContext) node);
-        if( node instanceof AtomContext ) return eval( ((AtomContext)node) );
+        // if( node instanceof AtomContext ) return eval( ((AtomContext)node) );
         if( node instanceof AtomValueContext ) return eval( ((AtomValueContext)node).atom() );
         if( node instanceof ParenthesesContext ) return eval( ((ParenthesesContext)node).expr() );
         if( node instanceof UnaryOpContext ) return eval( (UnaryOpContext)node );
         if( node instanceof BinOpContext ) return eval( (BinOpContext)node );
         if( node instanceof RContext ) return eval( ((RContext)node).expr() );
         if( node instanceof VarRefContext ) return eval( ((VarRefContext)node) );
-        return null;
-    }
-
-    public Object eval( AtomContext atom ){
-        if( atom.literal()!=null )return eval(atom.literal());
-        if( atom.varRef()!=null )return eval(atom.varRef());
         return null;
     }
 

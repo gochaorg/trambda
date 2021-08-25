@@ -19,6 +19,15 @@ public class ToasterTest {
             ).function()
         );
     }
+    
+    public static Object exprAST(String source){
+        if( source==null )throw new IllegalArgumentException( "source==null" );
+        return AST.wrap(
+            new BasicParser(new CommonTokenStream(
+                new BasicLexer(CharStreams.fromString(source)))
+            ).expr()
+        );
+    }
 
     public static void dump(AST<?,?> ast){
         ast.tree().forEach( ts -> {
@@ -34,6 +43,9 @@ public class ToasterTest {
 
     @Test
     public void test01(){
+        System.out.println("test01");
+        System.out.println("=".repeat(80));
+        
         var src = "fn add( a:int, b:int ):int { return a+b }";
         var ast = funAST(src);
 
@@ -79,5 +91,23 @@ public class ToasterTest {
         dump(ast);
 
         Assertions.assertTrue(match.get()>0);
+    }
+    
+    @Test
+    public void field01(){
+        System.out.println("field01");
+        System.out.println("=".repeat(80));
+        
+        var src = "fn add( a:string ):int { return a.length }";
+        var ast = funAST(src);
+
+        // resolve fun types
+        System.out.println("before funTypes()");
+        dump(src,ast);
+        
+        var toaster = new Toaster();
+        toaster.resolve(ast);
+        System.out.println("after resolve()");
+        dump(ast);
     }
 }

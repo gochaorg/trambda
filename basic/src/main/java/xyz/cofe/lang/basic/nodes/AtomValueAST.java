@@ -25,5 +25,4 @@ public class AtomValueAST extends TAST<BasicParser.AtomValueContext, AST<?, ?>> 
     public String toString() {
         return AtomValueAST.class.getSimpleName()+" -> "+getType();
     }
-
 }
