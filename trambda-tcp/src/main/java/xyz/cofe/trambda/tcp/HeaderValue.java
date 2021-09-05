@@ -4,7 +4,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import xyz.cofe.text.Text;
 
+/**
+ * Значение заголовка TCP пакета, см {@link TcpHeader}
+ * @param <T> Тип значения
+ */
 public interface HeaderValue<T> {
+    /**
+     * Имя заголовка
+     * @return имя заголовка
+     */
     public String getName();
 
     public HeaderValue<T> create(T t);

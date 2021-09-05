@@ -29,7 +29,22 @@ import xyz.cofe.trambda.log.api.Logger;
 import static xyz.cofe.trambda.tcp.TcpHeader.encode;
 
 /**
- * Поддержка TCP протокола
+ * Поддержка TCP протокола.
+ *
+ * <br>
+ * Используется в клиенте {@link TcpClient}, взаимодействует с сессией {@link TcpSession}.
+ *
+ * <br>
+ * Умеет
+ * <ul>
+ *     <li>отправку сообщений {@link Message},
+ *          через методы {@link #send(Message, HeaderValue[])},
+ *          {@link #send(Message, Consumer, HeaderValue[])},
+ *          {@link #sendRaw(String, byte[], Consumer, HeaderValue[])}
+ *          </li>
+ *     <li>читает очередное сообщение {@link #readNow()}</li>
+ *     <li>обрабатывает входящие сообщения {@link #process(Message, TcpHeader)}</li>
+ * </ul>
  */
 public class TcpProtocol {
     /**
@@ -120,7 +135,7 @@ public class TcpProtocol {
      * @param payload полезная нагрузка
      * @param sendId идентификатор сообщения
      * @param headerValues дополнительные заголовки сообщения
-     * @return идентификатор сообщения
+     * @return идентификатор сообщения, см {@link TcpHeader#getSid()}
      * @throws IOException ошибка сети
      */
     @SuppressWarnings("TypeParameterExplicitlyExtendsObject")
@@ -168,7 +183,7 @@ public class TcpProtocol {
      * Отправка сообщения
      * @param message сообщение
      * @param headerValues дополнительные заголовки сообщения
-     * @return идентификатор сообщения
+     * @return идентификатор сообщения, см {@link TcpHeader#getSid()}
      * @throws IOException ошибка сети
      */
     @SuppressWarnings("TypeParameterExplicitlyExtendsObject")
@@ -189,7 +204,7 @@ public class TcpProtocol {
      * @param message сообщение
      * @param sid идентификатор сообщения
      * @param headerValues дополнительные заголовки сообщения
-     * @return идентификатор сообщения
+     * @return идентификатор сообщения, см {@link TcpHeader#getSid()}
      * @throws IOException ошибка сети
      */
     @SuppressWarnings({"UnusedReturnValue","TypeParameterExplicitlyExtendsObject"})
@@ -318,10 +333,20 @@ public class TcpProtocol {
 
     //region errorConsumers : Map<Integer,Consumer<ErrMessage>>
     private final Map<Integer,Consumer<ErrMessage>> errorConsumers = new ConcurrentHashMap<>();
+
+    /**
+     * Возвращает обработчики ошибок на конкретные запросы {@link TcpHeader#getSid()}
+     * @return Карта ключ - идентификатор сообщения {@link TcpHeader#getSid()} / обработчик
+     */
     public Map<Integer,Consumer<ErrMessage>> getErrorConsumers(){ return errorConsumers; }
     //endregion
     //region responseConsumers : Map<Integer,Consumer<? extends Message>>
     private final Map<Integer,Consumer<? extends Message>> responseConsumers = new ConcurrentHashMap<>();
+
+    /**
+     * Возвращает обработчики на конкретные запросы {@link TcpHeader#getSid()}
+     * @return Карта ключ - идентификатор сообщения {@link TcpHeader#getSid()} / обработчик
+     */
     public Map<Integer,Consumer<? extends Message>> getResponseConsumers(){ return responseConsumers; }
     //endregion
 
@@ -329,7 +354,18 @@ public class TcpProtocol {
     private volatile BiConsumer<ErrMessage,TcpHeader> unbindedErrorConsumer = (err, hdr) -> {
         log().error("accept unbinded error on request {} message: {}", hdr.getReferrer(), err.getMessage());
     };
+
+    /**
+     * Возвращает обработчик общих ошибок, см {@link #getErrorConsumers()}
+     * @return обработчик общих ошибок
+     */
     public BiConsumer<ErrMessage,TcpHeader> unbindedError(){ return unbindedErrorConsumer; }
+
+    /**
+     * Указывает обработчик общих ошибок, см {@link #getErrorConsumers()}
+     * @param cons обработчик общих ошибок
+     * @return SELF ссылка
+     */
     public TcpProtocol unbindedError(BiConsumer<ErrMessage,TcpHeader> cons){
         //noinspection ReplaceNullCheck
         if( cons==null ){
@@ -346,7 +382,18 @@ public class TcpProtocol {
     private volatile BiConsumer<Message,TcpHeader> unbindedMessageConsumer = (msg, hdr) -> {
         log().error("accept unbinded message on request {} detail: {}", hdr.getReferrer(), msg);
     };
+
+    /**
+     * Возвращает обработчик сообщений, см {@link #getResponseConsumers()}
+     * @return обработчик сообщений
+     */
     public BiConsumer<Message,TcpHeader> unbindedMessage(){ return unbindedMessageConsumer; }
+
+    /**
+     * Указывает обработчик сообщений, см {@link #getResponseConsumers()}
+     * @param cons обработчик сообщений
+     * @return SELF ссылка
+     */
     public TcpProtocol unbindedMessage(BiConsumer<Message,TcpHeader> cons){
         //noinspection ReplaceNullCheck
         if( cons==null ){
@@ -360,8 +407,24 @@ public class TcpProtocol {
     }
     //endregion
 
+    /**
+     * Состояние предыдущего входного потока
+     */
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private volatile Optional<BuffInputStream> prevStream = Optional.empty();
 
+    /**
+     * Читает сообщение {@link Message} из входного потока ({@link #getInput}).
+     *
+     * <ul>
+     *     <li>Делает попытку чтения данных из входящего потока {@link #receiveRaw(Optional)}</li>
+     *     <li>Проверяет контрольную сумму сообщения {@link RawPackReadonly#isPayloadChecksumMatched()}</li>
+     *     <li>Вычленяет из пакета байтов само сообщение {@link RawPackReadonly#payloadMessage()}</li>
+     *     <li>Отправляет сообщение на последующую обработку {@link #process(Message, TcpHeader)}</li>
+     * </ul>
+     * @return true - сообщение прочитано
+     * @throws IOException Ошибка чтения данных
+     */
     public boolean readNow() throws IOException {
         log().info("readNow ");
 
@@ -391,6 +454,36 @@ public class TcpProtocol {
         process(msg, rw.getHeader());
         return true;
     }
+
+    /**
+     * Обработка входящего сообщения.
+     * <ul>
+     *     <li>Отрабатывает сообщения {@link Ping} - вызывает {@link #process(Ping, TcpHeader)}</li>
+     *     <li>Отрабатывает сообщения {@link Pong} - вызывает {@link #process(Pong, TcpHeader)}</li>
+     *     <li>Отрабатывает сообщения {@link ErrMessage}
+     *     <ul>
+     *         <li>Если указан на какое сообщение {@link TcpHeader#getReferrer()} ответ
+     *         <ul>
+     *             <li>то вызывает обработчик конкретный {@link #getErrorConsumers()}</li>
+     *             <li>или общий обработчик {@link #unbindedError()}</li>
+     *         </ul>
+     *         </li>
+     *     </ul>
+     *     </li>
+     *     <li>
+     *         Обрабатывает сообщение {@link ServerEvent} и вызывает {@link #process(ServerEvent, TcpHeader)}
+     *     </li>
+     *     <li>
+     *         Для всех остальных сообщений
+     *         <ul>
+     *             <li>Если есть зарегистрированный обработчик {@link #getResponseConsumers()}, то вызывается он</li>
+     *             <li>Либо общий обработчик {@link #unbindedMessage()}</li>
+     *         </ul>
+     *     </li>
+     * </ul>
+     * @param msg входящие сообщение
+     * @param header заголовки сообщения
+     */
     protected void process( Message msg, TcpHeader header ){
         log().info("process {}, message.sid {}", msg.getClass(), header.getSid());
         if( msg instanceof Ping ){
@@ -442,6 +535,12 @@ public class TcpProtocol {
     }
 
     private final Queue<Consumer<Pong>> pongConsumers = new ConcurrentLinkedQueue<>();
+
+    /**
+     * При получении ответа {@link Pong} уведомляет подписанотов {@link #ping(Consumer)}, тех кто отправил запрос Ping
+     * @param pong Ответ
+     * @param header заголовки
+     */
     protected void process(Pong pong, TcpHeader header){
         while( true ){
             var cons = pongConsumers.poll();
@@ -449,6 +548,12 @@ public class TcpProtocol {
             cons.accept(pong);
         }
     }
+
+    /**
+     * При получении Ping сообщения, отсылает ответ {@link Pong}
+     * @param ping Входящий Ping
+     * @param header Заголовки
+     */
     protected void process(Ping ping, TcpHeader header){
         try{
             var sid = header.getSid();
@@ -462,7 +567,19 @@ public class TcpProtocol {
         }
     }
 
+    /**
+     * Подписчики на серверные события
+     */
     protected final Map<String,Set<Consumer<ServerEvent>>> serverEventListeners = new ConcurrentHashMap<>();
+
+    /**
+     * Добавляет подписчика на событие сервера.
+     * <br>
+     * Используйте возможности клиента {@link TcpClient#subscribe(String, Consumer)}
+     * @param publisher издатель события
+     * @param listener подписчик
+     * @return отписка от событий
+     */
     public AutoCloseable listenServerEvent( String publisher, Consumer<ServerEvent> listener ){
         if( listener==null )throw new IllegalArgumentException( "listener==null" );
         if( publisher==null )throw new IllegalArgumentException( "publisher==null" );
@@ -482,6 +599,11 @@ public class TcpProtocol {
             }
         };
     }
+
+    /**
+     * Отписка от событий сервера
+     * @param listener подписчик
+     */
     public void removeServerEventListener( Consumer<ServerEvent> listener ){
         if( listener==null )throw new IllegalArgumentException( "listener==null" );
         synchronized( serverEventListeners ){
@@ -497,6 +619,16 @@ public class TcpProtocol {
         }
     }
 
+    /**
+     * Обработка входящего серверного события
+     * <ul>
+     *     <li>
+     *         Уведомляет подписчиков {@link #listenServerEvent(String, Consumer)} о серверном событии
+     *     </li>
+     * </ul>
+     * @param sevent серверное событие
+     * @param header заголовки
+     */
     protected void process(ServerEvent sevent, TcpHeader header){
         log().debug("process server event {}",sevent);
 
@@ -515,6 +647,11 @@ public class TcpProtocol {
     }
     //endregion
 
+    /**
+     * Отправляет {@link Ping} запрос
+     * @param consumer приемник ответа
+     * @return Идентификатор {@link TcpHeader#getSid()}
+     */
     @SuppressWarnings("UnusedReturnValue")
     public int ping(Consumer<Pong> consumer){
         if( consumer==null )throw new IllegalArgumentException( "consumer==null" );
@@ -526,6 +663,11 @@ public class TcpProtocol {
         }
     }
 
+    /**
+     * Компиляция лямбды
+     * @param methodDef лямбда
+     * @return Отправка запроса
+     */
     public ResultConsumer<Compile,CompileResult> compile(LambdaDump methodDef){
         if( methodDef==null )throw new IllegalArgumentException( "methodDef==null" );
 
@@ -534,6 +676,12 @@ public class TcpProtocol {
         //noinspection unchecked,rawtypes,rawtypes
         return new ResultConsumer(this, cmpl, errorConsumers, responseConsumers);
     }
+
+    /**
+     * Выполнение ранее скомпилированной лямбды
+     * @param cres ранее скомпилированная лямбда {@link #compile(LambdaDump)}
+     * @return Результат выполнения
+     */
     public ResultConsumer<Execute,ExecuteResult> execute(CompileResult cres){
         if( cres==null )throw new IllegalArgumentException( "cres==null" );
 
@@ -543,11 +691,28 @@ public class TcpProtocol {
         //noinspection unchecked,rawtypes,rawtypes
         return new ResultConsumer(this, exec, errorConsumers, responseConsumers);
     }
+
+    /**
+     * Подписка на события сервера
+     * <br>
+     * Используйте возможности клиента {@link TcpClient#subscribe(String, Consumer)}
+     * @param subscribe имя издателя сервера
+     * @return Результат подписки
+     */
     public ResultConsumer<Subscribe, SubscribeResult> subscribe(Subscribe subscribe){
         if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
         //noinspection unchecked,rawtypes,rawtypes
         return new ResultConsumer(this, subscribe, errorConsumers, responseConsumers);
     }
+
+    /**
+     * Отписка от событий сервера
+     *
+     * <br>
+     * Используйте возможности клиента {@link TcpClient#unsubscribe(String)}, {@link TcpClient#unsubscribe(Consumer)}
+     * @param subscribe подписчик
+     * @return Результат отписки
+     */
     public ResultConsumer<UnSubscribe, UnSubscribeResult> unsubscribe(UnSubscribe subscribe){
         if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
         //noinspection unchecked,rawtypes,rawtypes

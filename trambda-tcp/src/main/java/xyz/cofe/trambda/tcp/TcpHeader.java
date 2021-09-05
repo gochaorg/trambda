@@ -17,6 +17,42 @@ import xyz.cofe.trambda.log.api.Logger;
 
 import static xyz.cofe.trambda.tcp.Hash.md5;
 
+/**
+ * Заголовок TCP пакета.
+ *
+ * <br>
+ * Структура заголовка:
+ *
+ * <ul>
+ *     <li>methodName = Имя метода : String, при том имя должно соответствовать:
+ *     <ul>
+ *         <li>Соответствовать регулярному выражению <code>(?i)[\w\d\-_.]+</code></li>
+ *         <li>Минимальная длина 1</li>
+ *         <li>Не содержать <code>\n \r \0</code></li>
+ *     </ul>
+ *     </li>
+ *     <li>append = Есть есть payload (полезная нагрузка), тогда
+ *     <ul>
+ *         <li>';payload-size='+(10ное число - payloadSize в байтах)</li>
+ *         <li>';payload-md5='+(hex значение MD5 хеша полезной нагрузки)</li>
+ *     </ul>
+ *     </li>
+ *     <li>extra = Если есть дополнительные {@link HeaderValue} то они кодируются:
+ *         <code>
+ *             headerValues.map { hv -> ';' + hv.getName() + '=' + hv.getValue() }
+ *         </code>
+ *     </li>
+ * </ul>
+ *
+ * Указанные значения формируются в виде длинной строки:
+ * <code>methodName + append + extra + '\n'</code>
+ *
+ * <br>
+ * Потом данная строка кодируется в байты, кодировка ISO_8859_1
+ *
+ * <br>
+ *
+ */
 public class TcpHeader {
     private static final Logger log = Logger.of(TcpHeader.class);
 
@@ -24,6 +60,12 @@ public class TcpHeader {
     private final String method;
     private final Map<String,String> values;
 
+    /**
+     * Конструктор
+     * @param hsize размер заголовка
+     * @param methName имя метода
+     * @param values карта ключ/значение
+     */
     public TcpHeader(int hsize, String methName, Map<String,String> values){
         if( methName==null )throw new IllegalArgumentException( "methName==null" );
         if( values==null )throw new IllegalArgumentException( "values==null" );
@@ -53,17 +95,49 @@ public class TcpHeader {
         }
     }
 
+    /**
+     * Возвращает размер заголовка
+     * @return размер заголовка
+     */
     public int getHeaderSize(){ return headerSize; }
+
+    /**
+     * Возвращает название метода
+     * @return название метода
+     */
     public String getMethodName(){ return method; }
+
+    /**
+     * Возвращает карту ключ/значение связанных с данным заголовком
+     * @return карта ключ/значение
+     */
     public Map<String,String> getValues(){ return values; }
+
+    /**
+     * Возвращает идентификатор сообщения
+     * @return идентификатор сообщения
+     */
     public Optional<Integer> getSid(){
         return sid.parse(this);
     }
+
+    /**
+     * Возвращает идентификатор исходного сообщения, ответ на исходное сообщение
+     * @return идентификатор на которое ссылается данное сообщение
+     */
     public Optional<Integer> getReferrer(){
         return referrer.parse(this);
     }
 
+    /**
+     * Заголовок - идентификатор сообщения
+     */
     public static final HeaderValue.IntValue sid = HeaderValue.IntValue.create("sid");
+
+    /**
+     * Заголовок - идентификатор исходного сообщения,
+     * ответ на исходное сообщение
+     */
     public static final HeaderValue.IntValue referrer = HeaderValue.IntValue.create("referrer");
 
     private final int payloadSize;
@@ -75,6 +149,13 @@ public class TcpHeader {
         return Optional.of(Arrays.copyOf(md5,md5.length));
     }
 
+    /**
+     * Сравнение полезной нагрузки с хеш значением указанным в заголовке
+     * @param buff полезная нагрузка
+     * @param off полезная нагрузка, смещение
+     * @param len полезная нагрузка, размер
+     * @return true - есть совпадение, false - нет совпадения
+     */
     public boolean matched(byte[] buff,int off,int len){
         if( buff==null )throw new IllegalArgumentException( "buff==null" );
         if( off<0 )throw new IllegalArgumentException( "off<0" );
@@ -124,10 +205,23 @@ public class TcpHeader {
     private static final Pattern methodNamePattern = Pattern.compile("(?i)[\\w\\d\\-_.]+");
     private static final Pattern valuePattern = Pattern.compile("(?i)[\\w\\d\\-_./+=]+");
 
+    /**
+     * Кодировка заголовка
+     * @param method метод
+     * @param payload полезная нагрузка
+     * @return байтовое представление
+     */
     public static byte[] encode(String method,byte[] payload){
         return encode(method,payload);
     }
 
+    /**
+     * Кодировка заголовка
+     * @param method метод
+     * @param payload полезная нагрузка
+     * @param values дополнительные опции заголовка
+     * @return байтовое представление
+     */
     @SafeVarargs
     public static byte[] encode(String method, byte[] payload, HeaderValue<? extends Object> ... values){
         LinkedHashMap<String,String> vals = new LinkedHashMap<>();
@@ -184,6 +278,13 @@ public class TcpHeader {
         return sb.toString().getBytes(StandardCharsets.ISO_8859_1);
     }
 
+    /**
+     * Парсинг заголовка
+     * @param buff байтовое представление заголовка
+     * @param off смещение
+     * @param len длина
+     * @return Распознанный заголовок
+     */
     public static Optional<TcpHeader> parse(byte[] buff, int off, int len){
         if( buff==null )throw new IllegalArgumentException( "buff==null" );
         if( off<0 )throw new IllegalArgumentException( "off<0" );
