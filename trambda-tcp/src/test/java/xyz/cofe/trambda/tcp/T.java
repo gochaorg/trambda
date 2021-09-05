@@ -6,4 +6,5 @@ package xyz.cofe.trambda.tcp;
 public interface T {
     final static String Manual = "Manual";
     final static String Auto = "Auto";
+    final static String SSL = "SSL";
 }
