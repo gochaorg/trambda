@@ -1,4 +1,4 @@
-package xyz.cofe.trambda.clss;
+package xyz.cofe.bc.xml.clss;
 
 import java.util.List;
 

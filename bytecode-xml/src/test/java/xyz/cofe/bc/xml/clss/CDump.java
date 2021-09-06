@@ -1,7 +1,6 @@
-package xyz.cofe.trambda.clss;
+package xyz.cofe.bc.xml.clss;
 
 import xyz.cofe.trambda.bc.ByteCode;
-import xyz.cofe.trambda.bc.cls.CBegin;
 import xyz.cofe.trambda.bc.cls.CField;
 import xyz.cofe.trambda.bc.cls.CMethod;
 
