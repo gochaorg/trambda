@@ -19,6 +19,11 @@ public class MLocalVariableAnnotation extends MAbstractBC
     private static final long serialVersionUID = 1;
 
     public MLocalVariableAnnotation(){}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MLocalVariableAnnotation(MLocalVariableAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         typeRef = sample.typeRef;

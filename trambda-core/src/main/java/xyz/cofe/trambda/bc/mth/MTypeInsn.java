@@ -17,6 +17,11 @@ public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
         this.opcode = op;
         this.type = type;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MTypeInsn(MTypeInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         opcode = sample.opcode;

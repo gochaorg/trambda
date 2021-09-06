@@ -33,6 +33,11 @@ public class MAnnotation
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MAnnotation(MAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         this.descriptor = sample.getDescriptor();

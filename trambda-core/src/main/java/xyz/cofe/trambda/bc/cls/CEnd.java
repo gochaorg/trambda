@@ -9,11 +9,21 @@ public class CEnd implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
     public CEnd(){}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CEnd(CEnd sample){
     }
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public CEnd clone(){ return new CEnd(this); }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CEnd configure(Consumer<CEnd> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

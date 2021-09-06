@@ -9,6 +9,11 @@ public class FieldEnd implements FieldByteCode {
     private static final long serialVersionUID = 1;
 
     public FieldEnd(){}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public FieldEnd(FieldEnd sample){}
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public FieldEnd clone(){

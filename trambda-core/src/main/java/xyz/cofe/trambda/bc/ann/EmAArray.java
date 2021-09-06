@@ -11,6 +11,10 @@ public class EmAArray extends EmbededAnnotation implements AnnotationWriter {
     public EmAArray(){
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public EmAArray(EmAArray sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         name = sample.getName();

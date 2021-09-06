@@ -4,6 +4,9 @@ import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
+/**
+ * Содержит имя исходного класса/файла отладки (debug)
+ */
 public class CSource implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
@@ -13,6 +16,11 @@ public class CSource implements ClsByteCode, ClazzWriter {
         this.source = source;
         this.debug = debug;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CSource(CSource sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         source = sample.source;
@@ -24,6 +32,11 @@ public class CSource implements ClsByteCode, ClazzWriter {
         return new CSource(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CSource configure(Consumer<CSource> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

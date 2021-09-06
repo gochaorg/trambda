@@ -690,6 +690,11 @@ public class MVarInsn extends MAbstractBC implements ByteCode, MethodWriter {
         opcode = op;
         variable = vi;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MVarInsn(MVarInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         opcode = sample.opcode;

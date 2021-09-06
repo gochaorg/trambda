@@ -20,6 +20,10 @@ public class MTryCatchBlock extends MAbstractBC
         this.type = type;
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MTryCatchBlock(MTryCatchBlock sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         labelStart = sample.labelStart;

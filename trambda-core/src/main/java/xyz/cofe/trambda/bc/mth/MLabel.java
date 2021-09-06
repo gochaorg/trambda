@@ -8,6 +8,11 @@ public class MLabel extends MAbstractBC implements MethodWriter {
 
     public MLabel(){}
     public MLabel(String name){this.name = name;}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MLabel(MLabel sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         name = sample.getName();

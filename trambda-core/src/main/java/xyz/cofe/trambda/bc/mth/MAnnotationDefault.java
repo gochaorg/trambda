@@ -23,6 +23,11 @@ public class MAnnotationDefault extends MAbstractBC
     private static final long serialVersionUID = 1;
 
     public MAnnotationDefault(){}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MAnnotationDefault(MAnnotationDefault sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         if( sample.annotationByteCodes!=null ){

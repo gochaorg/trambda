@@ -3,7 +3,15 @@ package xyz.cofe.trambda.bc;
 import java.util.Optional;
 import xyz.cofe.fn.Tuple2;
 
+/**
+ * Кодирование - декодирование строчных литералов
+ */
 public class StringLiteral {
+    /**
+     * Кодирование строки
+     * @param str строка, возможно null
+     * @return литерал
+     */
     public static String toStringLiteral( String str ){
         if( str==null )return "null";
 
@@ -55,7 +63,14 @@ public class StringLiteral {
         sb.append("\"");
         return sb.toString();
     }
-    public static Optional<Tuple2<String,Integer>> parse(String text, int offset ){
+
+    /**
+     * Декодирование литерала
+     * @param text текст
+     * @param offset смещение в тексте
+     * @return литерал и смещение - конец литерала
+     */
+    public static Optional<Tuple2<String,Integer>> parse( String text, int offset ){
         if( text==null )throw new IllegalArgumentException( "text==null" );
         if( offset<0 )throw new IllegalArgumentException( "offset<0" );
         if( offset>=text.length() ){

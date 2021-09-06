@@ -12,6 +12,11 @@ public class CNestHost implements ClsByteCode, ClazzWriter {
     public CNestHost(String nestHost){
         this.nestHost = nestHost;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CNestHost(CNestHost sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         nestHost = sample.nestHost;
@@ -20,6 +25,11 @@ public class CNestHost implements ClsByteCode, ClazzWriter {
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public CNestHost clone(){ return new CNestHost(this); }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CNestHost configure(Consumer<CNestHost> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

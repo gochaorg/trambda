@@ -56,6 +56,10 @@ public class MInvokeDynamicInsn extends MAbstractBC implements MethodWriter {
         }
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MInvokeDynamicInsn(MInvokeDynamicInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         name = sample.getName();

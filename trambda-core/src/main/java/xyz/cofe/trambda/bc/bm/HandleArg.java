@@ -12,6 +12,11 @@ public class HandleArg implements BootstrapMethArg {
     public HandleArg(MHandle handle){
         this.handle = handle;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public HandleArg(HandleArg sample){
         if( sample!=null )throw new IllegalArgumentException( "sample!=null" );
         var h = sample.handle;

@@ -12,6 +12,11 @@ public class DoubleArg implements BootstrapMethArg {
     public DoubleArg(Double v){
         value = v;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public DoubleArg(DoubleArg sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         value = sample.getValue();

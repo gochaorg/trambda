@@ -18,6 +18,11 @@ public class MParameter extends MAbstractBC implements MethodWriter, AccFlagsPro
         this.access = access;
         this.name = name;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MParameter(MParameter sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         access = sample.access;

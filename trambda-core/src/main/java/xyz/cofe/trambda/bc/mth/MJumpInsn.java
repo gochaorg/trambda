@@ -34,6 +34,11 @@ public class MJumpInsn extends MAbstractBC implements MethodWriter {
         this.opcode = op;
         this.label = label;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MJumpInsn(MJumpInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         opcode = sample.getOpcode();

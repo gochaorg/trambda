@@ -18,6 +18,10 @@ public class MLocalVariable extends MAbstractBC implements MethodWriter {
         this.index = index;
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MLocalVariable(MLocalVariable sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         name = sample.name;

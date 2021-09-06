@@ -61,6 +61,11 @@ public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
         this.keys = keys;
         this.labels = labels;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MLookupSwitchInsn(MLookupSwitchInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         defaultHandlerLabel = sample.defaultHandlerLabel;

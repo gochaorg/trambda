@@ -3,7 +3,15 @@ package xyz.cofe.trambda;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * Кодирование имени класса
+ */
 public class JavaClassName {
+    /**
+     * Конструктор для byte-code названия класса
+     * @param rawName байт-код название класса,
+     *                т.е. класс <code>java.lang.String</code> в данном случае будет <code>java/lang/String</code>
+     */
     public JavaClassName(String rawName){
         if( rawName==null )throw new IllegalArgumentException( "rawName==null" );
         name = rawName.replace("/",".");
@@ -23,6 +31,12 @@ public class JavaClassName {
         }
     }
 
+    /**
+     * Конструктор
+     * @param name полное имя класса, например <code>java.lang.String</code>
+     * @param simpleName простое имя класса (без имени пакета), например <code>String</code>
+     * @param packageName имя пакета содержащий класс <code>java.lang</code>
+     */
     public JavaClassName(String name, String simpleName, String packageName ){
         if( name==null )throw new IllegalArgumentException( "name==null" );
         if( simpleName==null )throw new IllegalArgumentException( "simpleName==null" );
@@ -32,25 +46,57 @@ public class JavaClassName {
         this.packageName = packageName;
     }
 
+    /**
+     * Полное имя класса, например <code>java.lang.String</code>
+     */
     public final String name;
+
+    /**
+     * Простое имя класса, например, например <code>String</code>
+     */
     public final String simpleName;
+
+    /**
+     * Имя пакета содержащий класс, например <code>java.lang</code>
+     */
     public final String packageName;
 
+    /**
+     * Возвращает byte-code названия класса
+     * @return т.е. класс <code>java.lang.String</code> в данном случае будет <code>java/lang/String</code>
+     */
     public String rawName(){ return name.replace(".","/"); }
 
-    public JavaClassName withName(String name ){
+    /**
+     * Клонирует и меняет имя класса
+     * @param name байт-код название
+     * @return клон копия
+     */
+    public JavaClassName withName( String name ){
         if( name==null )throw new IllegalArgumentException( "name==null" );
         return new JavaClassName( name );
     }
     public static final Pattern validId = Pattern.compile("(?is)[\\w$_][\\w\\d$_]*");
-    public JavaClassName withSimpleName(String name ){
+
+    /**
+     * Клонирует и меняет простое название класса, с сохранением имени пакета
+     * @param name простое название класса (без имени пакета)
+     * @return клон копия
+     */
+    public JavaClassName withSimpleName( String name ){
         if( name==null )throw new IllegalArgumentException( "name==null" );
         if( !validId.matcher(name).matches() ){
             throw new IllegalArgumentException( "name not match "+validId );
         }
         return new JavaClassName(name, name, packageName);
     }
-    public JavaClassName withPackage(String pkgName ){
+
+    /**
+     * Клонирует и меняет простое имя пакета, с сохранением имени простого имени
+     * @param pkgName имя пакета
+     * @return клон копия
+     */
+    public JavaClassName withPackage( String pkgName ){
         if( pkgName==null )throw new IllegalArgumentException( "pkgName==null" );
         if( pkgName.length()<1 ){
             return new JavaClassName(simpleName,simpleName,packageName);

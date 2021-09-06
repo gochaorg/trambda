@@ -11,6 +11,11 @@ public class MAnnotableParameterCount extends MAbstractBC implements ByteCode, M
         this.parameterCount = parameterCount;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MAnnotableParameterCount(MAnnotableParameterCount sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         parameterCount = sample.getParameterCount();

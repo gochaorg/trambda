@@ -204,6 +204,11 @@ public class MFieldInsn extends MAbstractBC implements MethodWriter {
         this.name = name;
         this.descriptor = descriptor;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MFieldInsn(MFieldInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         this.opcode = sample.getOpcode();

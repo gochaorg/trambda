@@ -12,9 +12,20 @@ public class AEnum extends AAbstractBC implements AnnotationWriter {
         this.value = value;
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
+    public AEnum(AEnum sample){
+        if( sample==null )throw new IllegalArgumentException( "sample==null" );
+        this.name = sample.getName();
+        this.descriptor = sample.getDescriptor();
+        this.value = sample.getValue();
+    }
+
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public AEnum clone(){
-        return new AEnum(getName(),getDescriptor(),getValue());
+        return new AEnum(this);
     }
 
     //region name : String

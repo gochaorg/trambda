@@ -18,6 +18,11 @@ public class MParameterAnnotation extends MAbstractBC
 
     public MParameterAnnotation(){
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MParameterAnnotation(MParameterAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
 

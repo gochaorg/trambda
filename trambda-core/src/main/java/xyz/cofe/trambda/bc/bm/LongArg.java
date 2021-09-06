@@ -12,6 +12,11 @@ public class LongArg implements BootstrapMethArg {
     public LongArg(Long v){
         value = v;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public LongArg(LongArg sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         value = sample.getValue();

@@ -41,6 +41,11 @@ public class MIincInsn extends MAbstractBC implements MethodWriter {
         this.variable = variable;
         this.increment = increment;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MIincInsn(MIincInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         variable = sample.getVariable();

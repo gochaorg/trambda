@@ -14,6 +14,11 @@ public class StringArg implements BootstrapMethArg {
     public StringArg(String v){
         value = v;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public StringArg(StringArg sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         value = sample.getValue();

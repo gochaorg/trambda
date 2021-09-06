@@ -17,6 +17,11 @@ public class FAnnotation implements FieldByteCode, AnnotationDef, GetAnnotationB
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public FAnnotation(FAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         descriptor = sample.getDescriptor();
