@@ -8,6 +8,9 @@ import org.objectweb.asm.Handle;
 public class HandleArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public HandleArg(){}
     public HandleArg(MHandle handle){
         this.handle = handle;

@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.bm.LdcType;
 import xyz.cofe.trambda.bc.bm.MHandle;
 
 public class MLdcInsn extends MAbstractBC implements MethodWriter {
+    /**
+     * Конструктор по умолчанию
+     */
     public MLdcInsn(){
     }
     public MLdcInsn(Object value, LdcType ldcType){

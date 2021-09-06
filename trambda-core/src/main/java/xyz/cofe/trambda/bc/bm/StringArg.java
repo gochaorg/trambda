@@ -10,6 +10,9 @@ import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
 public class StringArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public StringArg(){}
     public StringArg(String v){
         value = v;

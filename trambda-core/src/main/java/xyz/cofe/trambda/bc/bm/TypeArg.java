@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
 public class TypeArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public TypeArg(){}
     public TypeArg(String type){
         this.type = type;

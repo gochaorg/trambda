@@ -10,6 +10,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MMethodInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MMethodInsn(){}
     public MMethodInsn(int op, String owner, String name, String descriptor, boolean iface){
         this.opcode = op;

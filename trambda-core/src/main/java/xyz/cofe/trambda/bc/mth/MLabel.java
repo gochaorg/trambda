@@ -6,6 +6,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MLabel extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MLabel(){}
     public MLabel(String name){this.name = name;}
 

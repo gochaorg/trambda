@@ -20,6 +20,9 @@ public class MTypeAnnotation extends MAbstractBC
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MTypeAnnotation(){}
     public MTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible){
         this.typeRef = typeRef;

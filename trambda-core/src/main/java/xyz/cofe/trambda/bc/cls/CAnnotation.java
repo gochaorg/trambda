@@ -12,6 +12,56 @@ import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
 /**
  * Аннотация прикрепленная к классу
+ * <p>
+ *
+Есть такие классы
+<pre>
+public @interface Desc {
+  String value();
+}
+ 
+<b>&#64;Desc("sample User2")</b>
+public class User2 {
+    public User2(){}
+    public User2(String name1){
+        this.name = name1;
+    }
+
+    &#64;Desc("name of user")
+    private String name;
+
+    &#64;Desc("name of user")
+    public String getName(){ return name; }
+    public void setName( @Required @MaxLength(100) @MinLength(1) String name ){ this.name = name; }
+
+    private List<String> emails;
+    &#64;Desc("emails of user")
+    public List<String> getEmails(){ return emails; }
+    public void setEmails( List<String> emails ){ this.emails = emails; }
+}
+</pre>
+
+ В результате будет
+ 
+ <pre>
+ &lt;CBegin
+    version="55"
+    access="33"
+    name="xyz/cofe/bc/xml/clss/User2"
+    superName="java/lang/Object" interface="false"&gt;
+
+    &lt;CSource order="0" source="User2.java"/&gt;
+     &lt;CAnnotation
+           order="1"
+           visible="true"
+           descriptor="Lxyz/cofe/bc/xml/clss/Desc;"&gt;
+
+         &lt;APairString name="value"&gt;
+             &lt;APairStringValue&gt;sample User2&lt;/APairStringValue&gt;
+         &lt;/APairString&gt;
+         &lt;AEnd/&gt;
+     &lt;/CAnnotation&gt;
+ </pre>
  */
 public class CAnnotation implements
     ClsByteCode, AnnotationDef, GetAnnotationByteCodes,
@@ -27,7 +77,7 @@ public class CAnnotation implements
     /**
      * Конструктор
      * @param descriptor имя типа аннотации
-     * @param visible аннотация видна или нет программисту
+     * @param visible {@literal true} если аннотация видна в runtime
      */
     public CAnnotation(String descriptor, boolean visible){
         this.descriptor = descriptor;
@@ -69,20 +119,44 @@ public class CAnnotation implements
         return this;
     }
 
-    //region descriptor : String
+    //region descriptor : String - Имя типа аннотации (дескриптор)
+    /** Имя типа аннотации */
     protected String descriptor;
+
+    /**
+     * Возвращает имя типа аннотации
+     * @return имя типа аннотации
+     */
     public String getDescriptor(){
         return descriptor;
     }
+
+    /**
+     * Указывает имя типа аннотации
+     * @param descriptor имя типа аннотации
+     */
     public void setDescriptor(String descriptor){
         this.descriptor = descriptor;
     }
     //endregion
-    //region visible : boolean
+    //region visible : boolean - видна ли аннотация в runtime
+    /**
+     * true если аннотация видна в runtime
+     */
     protected boolean visible;
+
+    /**
+     * Возвращает видна ли аннотация в runtime
+     * @return true если аннотация видна в runtime
+     */
     public boolean isVisible(){
         return visible;
     }
+
+    /**
+     * Указывает видна ли аннотация в runtime
+     * @param visible true если аннотация видна в runtime
+     */
     public void setVisible(boolean visible){
         this.visible = visible;
     }
@@ -96,12 +170,25 @@ public class CAnnotation implements
     }
     //endregion
 
-    //region annotationByteCodes : List<AnnotationByteCode>
+    //region annotationByteCodes : List<AnnotationByteCode> - вложенные параметры аннотации
+    /**
+     * вложенные параметры аннотации
+     */
     protected List<AnnotationByteCode> annotationByteCodes;
+
+    /**
+     * Указывает вложенные параметры аннотации
+     * @return вложенные параметры аннотации
+     */
     public List<AnnotationByteCode> getAnnotationByteCodes(){
         if(annotationByteCodes==null)annotationByteCodes = new ArrayList<>();
         return annotationByteCodes;
     }
+
+    /**
+     * Возвращает вложенные параметры аннотации
+     * @param byteCodes вложенные параметры аннотации
+     */
     public void setAnnotationByteCodes(List<AnnotationByteCode> byteCodes){
         annotationByteCodes = byteCodes;
     }

@@ -11,6 +11,9 @@ import xyz.cofe.trambda.bc.InnerClassFlags;
 public class CInnerClass implements ClsByteCode, ClazzWriter, AccFlagsProperty, InnerClassFlags {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CInnerClass(){}
     public CInnerClass(String name, String outerName, String innerName, int access){
         this.name = name;

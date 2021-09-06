@@ -21,6 +21,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MIntInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MIntInsn(){}
     public MIntInsn(int op, int operand){
         this.opcode = op;

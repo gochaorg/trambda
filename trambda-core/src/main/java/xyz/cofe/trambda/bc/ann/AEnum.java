@@ -5,6 +5,9 @@ import org.objectweb.asm.AnnotationVisitor;
 public class AEnum extends AAbstractBC implements AnnotationWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public AEnum(){}
     public AEnum(String name, String descriptor, String value){
         this.name = name;

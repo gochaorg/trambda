@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class COuterClass implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public COuterClass(){}
     public COuterClass(String owner, String name, String descriptor){
         this.owner = owner;

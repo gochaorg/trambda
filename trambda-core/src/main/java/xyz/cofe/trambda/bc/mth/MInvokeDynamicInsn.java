@@ -17,6 +17,9 @@ import xyz.cofe.trambda.bc.bm.LongArg;
 public class MInvokeDynamicInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MInvokeDynamicInsn(){
     }
 

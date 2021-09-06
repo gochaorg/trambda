@@ -9,6 +9,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class EmANameDesc extends EmbededAnnotation implements AnnotationWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public EmANameDesc(){
     }
 

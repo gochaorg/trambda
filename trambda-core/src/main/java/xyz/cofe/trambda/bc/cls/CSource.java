@@ -10,6 +10,9 @@ import org.objectweb.asm.ClassWriter;
 public class CSource implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CSource(){
     }
     public CSource(String source, String debug){

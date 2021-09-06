@@ -12,6 +12,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MTypeInsn(){}
     public MTypeInsn(int op, String type){
         this.opcode = op;

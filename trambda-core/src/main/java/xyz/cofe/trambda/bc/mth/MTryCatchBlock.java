@@ -11,6 +11,9 @@ public class MTryCatchBlock extends MAbstractBC
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MTryCatchBlock(){}
 
     public MTryCatchBlock(String start, String end, String handler, String type){

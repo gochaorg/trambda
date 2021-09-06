@@ -17,6 +17,9 @@ public class MInsnAnnotation extends MAbstractBC
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MInsnAnnotation(){}
     public MInsnAnnotation(int typeRef, String typePath, String descriptor, boolean visible){
         this.typeRef = typeRef;

@@ -103,6 +103,9 @@ public class MFrame extends MAbstractBC implements MethodWriter {
 //    }
 //    //endregion
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MFrame(){}
     public MFrame(int type, int numLocal, List<Object> local, int numStack, List<Object> stack){
         this.type = type;

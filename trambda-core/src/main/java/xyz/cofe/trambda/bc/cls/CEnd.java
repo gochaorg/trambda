@@ -5,6 +5,12 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import xyz.cofe.trambda.bc.ByteCode;
 
+/**
+ * Маркер конца класса.
+ *
+ * <p>
+ * При использовании {@link CBegin#toByteCode()} использовать этот маркер нет необходимости
+ */
 public class CEnd implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 

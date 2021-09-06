@@ -13,6 +13,9 @@ import xyz.cofe.trambda.bc.ParameterFlags;
 public class MParameter extends MAbstractBC implements MethodWriter, AccFlagsProperty, ParameterFlags {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MParameter(){}
     public MParameter(String name, int access){
         this.access = access;

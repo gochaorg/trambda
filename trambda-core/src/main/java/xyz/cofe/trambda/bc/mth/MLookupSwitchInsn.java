@@ -55,6 +55,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MLookupSwitchInsn(){}
     public MLookupSwitchInsn(String defHdl, int[] keys, String[] labels){
         this.defaultHandlerLabel = defHdl;

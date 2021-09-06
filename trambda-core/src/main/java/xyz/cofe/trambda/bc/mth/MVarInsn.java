@@ -685,6 +685,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MVarInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MVarInsn(){}
     public MVarInsn(int op, int vi){
         opcode = op;

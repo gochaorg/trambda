@@ -8,6 +8,9 @@ import org.objectweb.asm.FieldVisitor;
 public class FieldEnd implements FieldByteCode {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public FieldEnd(){}
 
     /**
