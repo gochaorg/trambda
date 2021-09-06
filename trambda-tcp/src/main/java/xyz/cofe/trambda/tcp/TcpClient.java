@@ -17,11 +17,33 @@ import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.log.api.Logger;
 
+/**
+ * Клиент для {@link TcpSession}/{@link TcpServer}.
+ * Оперирует уже готовым байт-кодом для отправки.
+ *
+ * <br>
+ * Для работы с лямбдами используйте {@link TcpQuery}
+ *
+ * <br>
+ * Содержит в себе фоновый поток ос ({@link #socketReaderThread}) для чтения входящих сообщений
+ */
 public class TcpClient implements AutoCloseable {
     private static final Logger log = Logger.of(TcpClient.class);
+
+    /**
+     * Клиентский сокет
+     */
     protected final Socket socket;
+
+    /**
+     * Работа с клиентским сокетом
+     */
     protected final TcpProtocol proto;
-    private final Thread socketReaderThread;
+
+    /**
+     * Поток читающих входящие сообщения
+     */
+    protected final Thread socketReaderThread;
 
     //region listeners
     protected final ListenersHelper<TrListener,TrEvent> listeners = new ListenersHelper<>(TrListener::trEvent);
@@ -119,21 +141,50 @@ public class TcpClient implements AutoCloseable {
     //endregion
 
     //region construct() / close()
+
+    /**
+     * Конструктор
+     * <br>
+     * создает ({@link #createThread(Runnable, Socket)}) и запускает поток для чтения входящих сообщений {@link Message}.
+     * @param socket клиентский сокет
+     */
     public TcpClient(Socket socket){
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         this.socket = socket;
         this.proto = new TcpProtocol(socket);
-        socketReaderThread = new Thread(this::reader);
-        socketReaderThread.setDaemon(true);
-        socketReaderThread.setName("client "+socket.getRemoteSocketAddress());
+        var th = createThread(this::reader, socket);
+        if( th==null )throw new IllegalStateException("!bug createThread() return null");
+        socketReaderThread = th;
         socketReaderThread.start();
     }
 
+    /**
+     * Создание потока для чтения входящих сообщений
+     * @param code код читающий входящие сообщения
+     * @param socket сокет клиента
+     * @return поток ос
+     */
+    protected Thread createThread( Runnable code, Socket socket ){
+        var th = new Thread(this::reader);
+        th.setDaemon(true);
+        th.setName("client "+socket.getRemoteSocketAddress());
+        return th;
+    }
+
+    /**
+     * Завершение работы клиента, вызывает {@link #shutdown()}
+     */
     @Override
     public synchronized void close() {
         shutdown();
     }
 
+    /**
+     * Завершение работы клиента
+     *
+     * <br>
+     * Нельзя вызывать из того же потока, который осуществляет чтение входящих сообщений - {@link #socketReaderThread}
+     */
     public synchronized void shutdown() {
         if( socketReaderThread.getId()==Thread.currentThread().getId() ){
             throw new IllegalStateException("can't close from self");
@@ -192,19 +243,42 @@ public class TcpClient implements AutoCloseable {
 
     //region client api
     //region compile()
+
+    /**
+     * Компиляция лямбды
+     * @param methodDef лямбда
+     * @return выполнение запроса
+     */
     public ResultConsumer<Compile,CompileResult> compile(LambdaDump methodDef){
         if( methodDef==null )throw new IllegalArgumentException( "methodDef==null" );
         return proto.compile(methodDef);
     }
     //endregion
     //region execute()
+
+    /**
+     * Выполнение ранее скомпилированной лямбды ({@link #compile(LambdaDump)})
+     * @param cres результат компиляции
+     * @return выполнение запроса
+     */
     public ResultConsumer<Execute,ExecuteResult> execute(CompileResult cres){
         if( cres==null )throw new IllegalArgumentException( "cres==null" );
         return proto.execute(cres);
     }
     //endregion
     //region subscribe()
+
+    /**
+     * Список подписчиков на события сервера
+     */
     protected final Map<String, List<Tuple2<Consumer<ServerEvent>,AutoCloseable>>> subscribers = new ConcurrentHashMap<>();
+
+    /**
+     * Подписка на события сервера
+     * @param subscribe подписка (имя издателя)
+     * @param listener подписчик
+     * @return выполнение запроса
+     */
     public ResultConsumer<Subscribe, SubscribeResult> subscribe(Subscribe subscribe, Consumer<ServerEvent> listener){
         if( subscribe==null )throw new IllegalArgumentException( "subscribe==null" );
 

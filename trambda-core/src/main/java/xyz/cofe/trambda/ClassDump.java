@@ -31,7 +31,7 @@ import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.mth.MethodByteCode;
 
 /**
- * Дамп байт кода
+ * Дамп байт-кода класса
  *
  * <p>
  * order:
