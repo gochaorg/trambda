@@ -10,6 +10,10 @@ public class MCode extends MAbstractBC implements MethodWriter {
     public MCode(){
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MCode(MCode sample){
     }
 

@@ -12,6 +12,11 @@ public class CPermittedSubclass implements ClsByteCode, ClazzWriter {
     public CPermittedSubclass(String permittedSubclass){
         this.permittedSubclass = permittedSubclass;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CPermittedSubclass(CPermittedSubclass sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         permittedSubclass = sample.permittedSubclass;
@@ -22,6 +27,11 @@ public class CPermittedSubclass implements ClsByteCode, ClazzWriter {
         return new CPermittedSubclass(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CPermittedSubclass configure(Consumer<CPermittedSubclass> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

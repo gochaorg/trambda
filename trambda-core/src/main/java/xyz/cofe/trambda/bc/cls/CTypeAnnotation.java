@@ -26,6 +26,11 @@ public class CTypeAnnotation
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CTypeAnnotation(CTypeAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
 
@@ -51,6 +56,11 @@ public class CTypeAnnotation
         return new CTypeAnnotation(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CTypeAnnotation configure(Consumer<CTypeAnnotation> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

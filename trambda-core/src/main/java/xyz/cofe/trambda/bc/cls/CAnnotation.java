@@ -10,17 +10,34 @@ import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationDef;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
+/**
+ * Аннотация прикрепленная к классу
+ */
 public class CAnnotation implements
     ClsByteCode, AnnotationDef, GetAnnotationByteCodes,
     ClazzWriter
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CAnnotation(){}
+
+    /**
+     * Конструктор
+     * @param descriptor имя типа аннотации
+     * @param visible аннотация видна или нет программисту
+     */
     public CAnnotation(String descriptor, boolean visible){
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CAnnotation(CAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         descriptor = sample.descriptor;
@@ -41,6 +58,11 @@ public class CAnnotation implements
         return new CAnnotation(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CAnnotation configure(Consumer<CAnnotation> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

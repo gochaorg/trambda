@@ -24,6 +24,11 @@ public class MInsnAnnotation extends MAbstractBC
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MInsnAnnotation(MInsnAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
 

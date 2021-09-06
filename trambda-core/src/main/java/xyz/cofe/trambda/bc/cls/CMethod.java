@@ -27,6 +27,10 @@ public class CMethod implements ClsByteCode, ClazzWriter, AccFlagsProperty, Meth
         this.exceptions = exceptions;
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CMethod(CMethod sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         access = sample.getAccess();
@@ -47,6 +51,11 @@ public class CMethod implements ClsByteCode, ClazzWriter, AccFlagsProperty, Meth
         return new CMethod(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CMethod configure(Consumer<CMethod> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

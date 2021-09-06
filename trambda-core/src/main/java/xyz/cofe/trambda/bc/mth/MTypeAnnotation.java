@@ -27,6 +27,11 @@ public class MTypeAnnotation extends MAbstractBC
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MTypeAnnotation(MTypeAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         this.typeRef = sample.typeRef;

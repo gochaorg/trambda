@@ -14,6 +14,11 @@ public class COuterClass implements ClsByteCode, ClazzWriter {
         this.name = name;
         this.descriptor = descriptor;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public COuterClass(COuterClass sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         owner = sample.owner;
@@ -26,6 +31,11 @@ public class COuterClass implements ClsByteCode, ClazzWriter {
         return new COuterClass(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public COuterClass configure(Consumer<COuterClass> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

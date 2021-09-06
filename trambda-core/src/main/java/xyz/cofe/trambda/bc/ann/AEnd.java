@@ -7,9 +7,16 @@ public class AEnd extends AAbstractBC implements AnnotationWriter {
 
     public AEnd(){}
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
+    public AEnd(AEnd sample){
+    }
+
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public AEnd clone(){
-        return new AEnd();
+        return new AEnd(this);
     }
 
     public String toString(){

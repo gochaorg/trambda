@@ -14,6 +14,11 @@ public class MLdcInsn extends MAbstractBC implements MethodWriter {
         this.value = value;
         this.ldcType = ldcType;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MLdcInsn(MLdcInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         ldcType = sample.getLdcType();

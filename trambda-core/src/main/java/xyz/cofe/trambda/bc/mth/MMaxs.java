@@ -14,6 +14,10 @@ public class MMaxs extends MAbstractBC implements MethodWriter {
         this.maxStack = maxStack;
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MMaxs(MMaxs sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         maxLocals = sample.maxLocals;

@@ -64,6 +64,11 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
         this.defaultLabel = dflt;
         this.labels = labels;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MTableSwitchInsn(MTableSwitchInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
 

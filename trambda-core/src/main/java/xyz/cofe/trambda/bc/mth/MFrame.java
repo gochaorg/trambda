@@ -151,6 +151,11 @@ public class MFrame extends MAbstractBC implements MethodWriter {
         this.numStack = numStack;
         this.stack = init.apply(stack);
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MFrame(MFrame sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         type = sample.getType();

@@ -18,6 +18,11 @@ public class CInnerClass implements ClsByteCode, ClazzWriter, AccFlagsProperty, 
         this.innerName = innerName;
         this.access = access;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CInnerClass(CInnerClass sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         name = sample.name;
@@ -31,6 +36,11 @@ public class CInnerClass implements ClsByteCode, ClazzWriter, AccFlagsProperty, 
         return new CInnerClass(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CInnerClass configure(Consumer<CInnerClass> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

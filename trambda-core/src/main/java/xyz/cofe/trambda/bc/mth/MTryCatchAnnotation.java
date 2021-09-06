@@ -22,6 +22,11 @@ public class MTryCatchAnnotation extends MAbstractBC
         this.descriptor = descriptor;
         this.visible = visible;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MTryCatchAnnotation(MTryCatchAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         typePath = sample.typePath;

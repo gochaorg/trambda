@@ -11,6 +11,11 @@ public class MLineNumber extends MAbstractBC implements MethodWriter {
         this.line = line;
         this.label = label;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MLineNumber(MLineNumber sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         line = sample.line;

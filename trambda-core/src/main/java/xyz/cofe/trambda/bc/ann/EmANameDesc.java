@@ -11,6 +11,11 @@ public class EmANameDesc extends EmbededAnnotation implements AnnotationWriter {
 
     public EmANameDesc(){
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public EmANameDesc(EmANameDesc sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
 

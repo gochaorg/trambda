@@ -62,6 +62,11 @@ public class MMultiANewArrayInsn extends MAbstractBC implements MethodWriter {
         this.descriptor = descriptor;
         this.numDimensions = numDimensions;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MMultiANewArrayInsn(MMultiANewArrayInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         descriptor = sample.descriptor;

@@ -1,11 +1,15 @@
 package xyz.cofe.trambda.bc;
 
+/**
+ * Флаги которые применимы к классу / модулю
+ * <br>
+ * Возможно их состав будет уточнен
+ */
 public interface ClassFlags extends AccFlagsProperty {
     //region record : boolean
     default boolean isRecord(){
         return new AccFlags(getAccess()).isRecord();
     }
-
     default void setRecord(boolean v){
         setAccess( new AccFlags(getAccess()).withRecord(v).value() );
     }
@@ -18,18 +22,59 @@ public interface ClassFlags extends AccFlagsProperty {
         setAccess( new AccFlags(getAccess()).withDeprecated(v).value() );
     }
     //endregion
-    //region enum : boolean
+    //region enum : boolean - Объявлен как перечисляемый тип
+
+    /**
+     * Declared as an enum type.
+     * <p>
+     * Объявлен как перечисляемый тип.
+     *
+     * <p> Применимо к : class(?), field inner
+     * @return is enum
+     */
     default boolean isEnum(){
         return new AccFlags(getAccess()).isEnum();
     }
+
+    /**
+     * Declared as an enum type.
+     * <p>
+     * Объявлен как перечисляемый тип.
+     *
+     * <p> Применимо к : class(?), field inner
+     *
+     * @param v as enum
+     */
     default void setEnum(boolean v){
         setAccess( new AccFlags(getAccess()).withEnum(v).value() );
     }
     //endregion
-    //region abstract : boolean
+    //region abstract : boolean - Заявленная abstract; не должен быть создан
+
+    /**
+     * Declared abstract; must not be instantiated.
+     *
+     * <p>
+     * Заявленная abstract; не должен быть создан
+     *
+     * <p> Применимо к : class, method
+     *
+     * @return is abstract
+     */
     default boolean isAbstract(){
         return new AccFlags(getAccess()).isAbstract();
     }
+
+    /**
+     * set abstract
+     *
+     * <p>
+     * Заявленная abstract; не должен быть создан
+     *
+     * <p> Применимо к : class, method
+     *
+     * @param v Declared abstract; must not be instantiated.
+     */
     default void setAbstract(boolean v){
         setAccess( new AccFlags(getAccess()).withAbstract(v).value() );
     }

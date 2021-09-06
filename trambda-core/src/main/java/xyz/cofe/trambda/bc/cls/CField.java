@@ -21,6 +21,11 @@ public class CField implements ClsByteCode, ClazzWriter, AccFlagsProperty, Field
         this.signature = signature;
         this.value = value;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CField(CField sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         access = sample.getAccess();
@@ -35,6 +40,11 @@ public class CField implements ClsByteCode, ClazzWriter, AccFlagsProperty, Field
         return new CField(this);
     }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CField configure(Consumer<CField> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

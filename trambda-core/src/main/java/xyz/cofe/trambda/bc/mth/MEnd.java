@@ -8,6 +8,11 @@ import xyz.cofe.trambda.bc.ByteCode;
  */
 public class MEnd extends MAbstractBC implements MethodWriter {
     public MEnd(){}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MEnd(MEnd sample){
     }
 

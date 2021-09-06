@@ -12,6 +12,11 @@ public class TypeArg implements BootstrapMethArg {
     public TypeArg(String type){
         this.type = type;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public TypeArg(TypeArg sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         type = sample.getType();

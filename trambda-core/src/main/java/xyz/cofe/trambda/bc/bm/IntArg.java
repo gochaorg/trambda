@@ -12,6 +12,11 @@ public class IntArg implements BootstrapMethArg {
     public IntArg(Integer v){
         value = v;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public IntArg(IntArg sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         value = sample.getValue();

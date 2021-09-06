@@ -12,6 +12,11 @@ public class CNestMember implements ClsByteCode, ClazzWriter {
     public CNestMember(String nestMember){
         this.nestMember = nestMember;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public CNestMember(CNestMember sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         nestMember = sample.nestMember;
@@ -20,6 +25,11 @@ public class CNestMember implements ClsByteCode, ClazzWriter {
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public CNestMember clone(){ return new CNestMember(this); }
 
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public CNestMember configure(Consumer<CNestMember> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);

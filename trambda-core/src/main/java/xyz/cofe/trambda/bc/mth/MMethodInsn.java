@@ -18,6 +18,11 @@ public class MMethodInsn extends MAbstractBC implements MethodWriter {
         this.descriptor = descriptor;
         this.iface = iface;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MMethodInsn(MMethodInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         opcode = sample.opcode;

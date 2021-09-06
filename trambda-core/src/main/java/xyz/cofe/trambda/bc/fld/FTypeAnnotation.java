@@ -23,6 +23,10 @@ public class FTypeAnnotation implements FieldByteCode, AnnotationDef, GetAnnotat
         this.visible = visible;
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public FTypeAnnotation(FTypeAnnotation sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         typeRef = sample.getTypeRef();

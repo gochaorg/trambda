@@ -12,6 +12,11 @@ public class FloatArg implements BootstrapMethArg {
     public FloatArg(Float v){
         value = v;
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public FloatArg(FloatArg sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         value = sample.getValue();

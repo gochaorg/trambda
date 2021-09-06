@@ -17,6 +17,11 @@ public class MHandle implements Serializable, BootstrapMethArg {
         owner = sample.getOwner();
         iface = sample.isInterface();
     }
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MHandle(MHandle sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         tag = sample.getTag();

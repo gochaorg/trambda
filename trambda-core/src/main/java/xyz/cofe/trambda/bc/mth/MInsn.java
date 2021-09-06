@@ -146,6 +146,11 @@ public class MInsn extends MAbstractBC implements MethodWriter {
 
     public MInsn(){}
     public MInsn(int op){this.opcode = op;}
+
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public MInsn(MInsn sample){
         if( sample==null )throw new IllegalArgumentException( "sample==null" );
         this.opcode = sample.getOpcode();
