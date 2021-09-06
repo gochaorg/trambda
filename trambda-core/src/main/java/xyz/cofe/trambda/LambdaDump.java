@@ -30,11 +30,21 @@ import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 import xyz.cofe.trambda.log.api.Logger;
 
 /**
- * Дамп лямбды
+ * Дамп лямбды, со всеми зависимыми лямбдами.
+ * Для создания дампа смотрите {@link #dump(Fn1)}
  */
 public class LambdaDump implements Serializable {
+    /**
+     * Конструктор по умолчанию
+     */
     public LambdaDump(){
     }
+
+    /**
+     * Конфигурация экземпляра
+     * @param conf конфигурация
+     * @return SELF ссылка
+     */
     public LambdaDump configure(Consumer<LambdaDump> conf){
         if( conf==null )throw new IllegalArgumentException( "conf==null" );
         conf.accept(this);
@@ -42,30 +52,57 @@ public class LambdaDump implements Serializable {
     }
 
     //region capturedArgs : List<Object> - захваченные параметры
+    /**
+     * Захваченные переменные которые передаются в лямбду (замыкание)
+     */
     protected List<Object> capturedArgs;
+
+    /**
+     * Возвращает захваченные переменные которые передаются в лямбду (замыкание)
+     * @return захваченные переменные
+     */
     public List<Object> getCapturedArgs(){
         if( capturedArgs==null ){
             capturedArgs = new ArrayList<>();
         }
         return capturedArgs;
     }
+
+    /**
+     * Указывает захваченные переменные которые передаются в лямбду (замыкание)
+     * @param ls захваченные переменные
+     */
     public void setCapturedArgs(List<Object> ls){
         if( ls==null )throw new IllegalArgumentException( "ls==null" );
         capturedArgs = ls;
     }
     //endregion
     //region lambdaNode : LambdaNode
+
+    /**
+     * "Корневая" лямбда которая вызывается
+     */
     protected LambdaNode lambdaNode;
+
+    /**
+     * Возвращает корень дерева лямбд
+     * @return корень дерева лямбд
+     */
     public LambdaNode getLambdaNode(){
         return lambdaNode;
     }
+
+    /**
+     * Указывает корень дерева лямбд
+     * @param node корень дерева лямбд
+     */
     public void setLambdaNode(LambdaNode node){
         this.lambdaNode = node;
     }
     //endregion
     //region dump() - создание дампа
     /**
-     * Создание дампа лямбды
+     * Создание дампа лямбды, вызывет {@link #dumpSLambda(Serializable)}
      * @param fn лямбда
      * @return дамп
      */
@@ -95,9 +132,17 @@ public class LambdaDump implements Serializable {
     public transient final Map<SerializedLambda,LambdaNode> lambdaNodeCache
         = new LinkedHashMap<>();
 
+    /**
+     * Вызывается при нахождении сериализованного представления лямбды
+     * @param sl сриализованная лямбда
+     */
     protected void onSerializedLambda( SerializedLambda sl ){
     }
 
+    /**
+     * Вызывается при создании узла лямдды
+     * @param ln узел лямбды
+     */
     protected void onLambdaNode( LambdaNode ln ){
     }
 
@@ -110,7 +155,12 @@ public class LambdaDump implements Serializable {
     }
 
     /**
-     * создание дампа лямбды
+     * Создание дампа лямбды
+     * <ul>
+     *     <li>sl: Ищет в кеше {@link #serializableLambdaCache} интерфейс сериализованной лямбды {@link SerializedLambda}</li>
+     *     <li>Для найденного sl создает дерево - вызов {@link #lambdaNode(Class, String, String, String)}</li>
+     *     <li>Упаковывает в дамп, прикладывая захваченные параметры {@link SerializedLambda#getCapturedArg(int)}</li>
+     * </ul>
      * @param serializableLambda лямбда
      * @return дамп
      */
@@ -217,6 +267,21 @@ public class LambdaDump implements Serializable {
 
     /**
      * Создание узла для байт кода лямбды и связанных лямбд
+     * <br>
+     * <br>
+     * <p style="color:red">JAVA Специфичное поведение</p>
+     * Связанные лямбды находит <br>
+     * в инструкции {@link MInvokeDynamicInsn} <br>
+     * где среди аргументов {@link MInvokeDynamicInsn#getBootstrapMethodArguments()}
+     * есть аргумент типа {@link HandleArg}  <br>
+     * который ссылается на статичный вызов ({@link MHandle#getTag()} = {@link Opcodes#H_INVOKESTATIC}) лямбды
+     * (метода {@link MHandle#getName()} с префиксом "lambda$")
+     *
+     * <br>
+     * <br>
+     *
+     * Ранее найденные лямбды кеширует в {@link #refs}, кеш актуален в пределах вызова {@link #dumpSLambda(Serializable)}
+     *
      * @param baseClass класс для доступа к ресурсам (*.class)
      * @param implClass класс содержащий код лямбды
      * @param methName имя метода класса содержащий код лямбды
@@ -365,7 +430,7 @@ public class LambdaDump implements Serializable {
         //endregion
         //region generateClassBytecode()
         /**
-         * Генерирует класс
+         * Генерирует класс, вызывает {@link #classByteCode(Consumer)}
          * @return класс
          */
         public synchronized CBegin classByteCode(){
@@ -373,7 +438,22 @@ public class LambdaDump implements Serializable {
         }
 
         /**
-         * Генерирует класс
+         * Генерирует класс (байт-код).
+         *
+         * <ul>
+         *     <li>Создает класс с набором статичных методов которые представляют из себя лямбды</li>
+         *     <li>Имя класса задано через {@link #className()}, {@link #className(JavaClassName)}</li>
+         *     <li>Имя статического метода соответ. корневой лямбде задано как "_root_", см {@link #rootMethodName(String)}</li>
+         *     <li>Для зависимых лямбд:
+         *     <ul>
+         *         <li>Производится обход дерева {@link LambdaNode} и создается карта relinkMap</li>
+         *         <li>По байт коду методов находятся все вызовы
+         *         (случаи {@link MInvokeDynamicInsn})
+         *         на целевые (relinkMap)</li>
+         *         <li>Найденные вызовы заменяются в целевые вызовы</li>
+         *     </ul>
+         *     </li>
+         * </ul>
          * @param rootConsumer (возможно null) получает класс/метод
          * @return класс
          */
@@ -508,9 +588,20 @@ public class LambdaDump implements Serializable {
         };
 
         protected Fn1<CBegin,ClassLoader> classLoader = defaultClassLoader;
+
+        /**
+         * Возвращает функцию создания ClassLoader для класса
+         * @return создание classLoader
+         */
         public synchronized Fn1<CBegin,ClassLoader> classLoader(){
             return classLoader;
         }
+
+        /**
+         * Указывает функцию создания ClassLoader для класса
+         * @param cl создание classLoader
+         * @return SELF ссылка
+         */
         public synchronized Restore classLoader(Fn1<CBegin,ClassLoader> cl){
             if( cl==null )throw new IllegalArgumentException( "cl==null" );
             classLoader = cl;
@@ -518,6 +609,15 @@ public class LambdaDump implements Serializable {
         }
         //endregion
         //region restoreClass()
+
+        /**
+         * Генерация класса.
+         * <ul>
+         *     <li>Загружает класс из байт-кода {@link #classByteCode(Consumer)}</li>
+         * </ul>
+         * @param rootMethodConsumer (Может быть null), получает ссылку на корневую лямбду
+         * @return класс
+         */
         public synchronized Class<?> restoreClass( Consumer<CMethod> rootMethodConsumer ){
             CMethod[] rootMethArr = new CMethod[]{ null };
 
@@ -533,11 +633,21 @@ public class LambdaDump implements Serializable {
                 throw new Error(e);
             }
         }
+
+        /**
+         * Генерация класса, см {@link #restoreClass(Consumer)}
+         * @return класс
+         */
         public synchronized Class<?> restoreClass(){
             return restoreClass(null);
         }
         //endregion
         //region restoreMethod()
+
+        /**
+         * Возвращает метод соответствующий корневой лямбде
+         * @return метод
+         */
         public synchronized Method method(){
             CMethod[] rootm = new CMethod[]{ null };
             Class<?> cls = restoreClass( m -> rootm[0]=m );
@@ -562,6 +672,11 @@ public class LambdaDump implements Serializable {
         return new Restore(this);
     }
 
+    /**
+     * Получение текстового описания, для отладки
+     * @param log текстовое описание
+     * @param byteCode байт-код
+     */
     public static void dump(Consumer<String> log, ByteCode byteCode){
         if( log==null )throw new IllegalArgumentException( "log==null" );
         if( byteCode==null )throw new IllegalArgumentException( "byteCode==null" );

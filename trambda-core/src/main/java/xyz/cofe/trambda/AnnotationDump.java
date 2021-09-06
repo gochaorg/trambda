@@ -15,6 +15,9 @@ import xyz.cofe.trambda.bc.ann.EmAArray;
 import xyz.cofe.trambda.bc.ann.EmANameDesc;
 import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 
+/**
+ * Создание дампа байт-кода аннотаций
+ */
 public class AnnotationDump extends AnnotationVisitor {
     public static final AtomicInteger idSeq = new AtomicInteger(0);
 

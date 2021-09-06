@@ -15,6 +15,9 @@ import xyz.cofe.trambda.bc.fld.FieldEnd;
 import xyz.cofe.trambda.bc.fld.FieldByteCode;
 import xyz.cofe.trambda.bc.fld.FTypeAnnotation;
 
+/**
+ * Создание дампа поля класса
+ */
 public class FieldDump extends FieldVisitor {
     private void dump(String message,Object...args){
         if( message==null )return;
