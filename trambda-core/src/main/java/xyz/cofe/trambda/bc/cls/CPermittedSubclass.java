@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class CPermittedSubclass implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CPermittedSubclass(){}
     public CPermittedSubclass(String permittedSubclass){
         this.permittedSubclass = permittedSubclass;

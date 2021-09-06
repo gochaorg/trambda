@@ -6,6 +6,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MLineNumber extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MLineNumber(){}
     public MLineNumber(int line, String label){
         this.line = line;

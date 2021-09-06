@@ -15,6 +15,9 @@ public class MTryCatchAnnotation extends MAbstractBC
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MTryCatchAnnotation(){}
     public MTryCatchAnnotation(int typeRef, String typePath, String descriptor, boolean visible){
         this.typeRef = typeRef;

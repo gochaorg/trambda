@@ -12,6 +12,9 @@ import xyz.cofe.trambda.bc.ann.GetAnnotationByteCodes;
 public class FAnnotation implements FieldByteCode, AnnotationDef, GetAnnotationByteCodes {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public FAnnotation(){}
     public FAnnotation(String descriptor, boolean visible){
         this.descriptor = descriptor;

@@ -28,6 +28,9 @@ public class MAnnotation
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MAnnotation(){}
     public MAnnotation(String descriptor, boolean visible){
         this.descriptor = descriptor;

@@ -17,6 +17,9 @@ import xyz.cofe.trambda.bc.mth.MethodWriterCtx;
 public class CMethod implements ClsByteCode, ClazzWriter, AccFlagsProperty, MethodFlags {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CMethod(){}
 
     public CMethod(int access, String name, String descriptor, String signature, String[] exceptions){

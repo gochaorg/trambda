@@ -36,6 +36,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MIincInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MIincInsn(){}
     public MIincInsn(int variable, int increment){
         this.variable = variable;

@@ -7,6 +7,9 @@ import xyz.cofe.trambda.bc.ByteCode;
  * end of the method
  */
 public class MEnd extends MAbstractBC implements MethodWriter {
+    /**
+     * Конструктор по умолчанию
+     */
     public MEnd(){}
 
     /**

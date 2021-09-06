@@ -22,6 +22,9 @@ public class MAnnotationDefault extends MAbstractBC
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MAnnotationDefault(){}
 
     /**

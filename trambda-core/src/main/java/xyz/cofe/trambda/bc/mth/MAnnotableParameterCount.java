@@ -6,6 +6,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MAnnotableParameterCount extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MAnnotableParameterCount(){}
     public MAnnotableParameterCount(int parameterCount, boolean visible){
         this.parameterCount = parameterCount;

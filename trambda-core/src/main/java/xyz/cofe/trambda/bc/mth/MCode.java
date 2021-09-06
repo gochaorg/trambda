@@ -7,6 +7,9 @@ import xyz.cofe.trambda.bc.ByteCode;
  * Начала байт-кода метода
  */
 public class MCode extends MAbstractBC implements MethodWriter {
+    /**
+     * Конструктор по умолчанию
+     */
     public MCode(){
     }
 

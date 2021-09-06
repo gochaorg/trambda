@@ -196,6 +196,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MFieldInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MFieldInsn(){
     }
     public MFieldInsn(int opcode, String owner, String name, String descriptor){

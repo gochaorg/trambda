@@ -29,6 +29,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MJumpInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MJumpInsn(){}
     public MJumpInsn(int op, String label){
         this.opcode = op;

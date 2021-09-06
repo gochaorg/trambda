@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
 public class FloatArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public FloatArg(){}
     public FloatArg(Float v){
         value = v;

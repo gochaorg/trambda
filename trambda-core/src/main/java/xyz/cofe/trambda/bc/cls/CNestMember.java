@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class CNestMember implements ClsByteCode, ClazzWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CNestMember(){}
     public CNestMember(String nestMember){
         this.nestMember = nestMember;

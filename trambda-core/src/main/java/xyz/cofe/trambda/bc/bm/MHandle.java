@@ -7,6 +7,9 @@ import xyz.cofe.trambda.bc.mth.MAbstractBC;
 public class MHandle implements Serializable, BootstrapMethArg {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MHandle(){
     }
     public MHandle(org.objectweb.asm.Handle sample){

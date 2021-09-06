@@ -18,6 +18,9 @@ public class CTypeAnnotation
 {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public CTypeAnnotation(){
     }
     public CTypeAnnotation(int typeRef, String typePath, String descriptor, boolean visible){

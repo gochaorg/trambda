@@ -57,6 +57,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MTableSwitchInsn(){}
     public MTableSwitchInsn(int min, int max, String dflt, String... labels){
         this.min = min;

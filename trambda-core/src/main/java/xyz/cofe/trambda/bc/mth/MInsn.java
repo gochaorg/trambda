@@ -144,6 +144,9 @@ import xyz.cofe.trambda.bc.ByteCode;
 public class MInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public MInsn(){}
     public MInsn(int op){this.opcode = op;}
 

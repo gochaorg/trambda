@@ -8,6 +8,9 @@ import xyz.cofe.trambda.bc.bm.BootstrapMethArg;
 public class LongArg implements BootstrapMethArg {
     private static final long serialVersionUID = 1;
 
+    /**
+     * Конструктор по умолчанию
+     */
     public LongArg(){}
     public LongArg(Long v){
         value = v;
