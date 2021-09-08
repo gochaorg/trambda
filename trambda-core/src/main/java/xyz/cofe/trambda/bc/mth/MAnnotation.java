@@ -57,7 +57,6 @@ public class MAnnotation
         }
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public MAnnotation clone(){ return new MAnnotation(this); }
 
     //region descriptor : String

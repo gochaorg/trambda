@@ -20,7 +20,6 @@ public class MCode extends MAbstractBC implements MethodWriter {
     public MCode(MCode sample){
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public MCode clone(){ return new MCode(this); }
 
     private static final long serialVersionUID = 1;

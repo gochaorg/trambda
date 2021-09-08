@@ -45,7 +45,6 @@ public class MAnnotationDefault extends MAbstractBC
         }
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public MAnnotationDefault clone(){ return new MAnnotationDefault(this); }
 
     public String toString(){

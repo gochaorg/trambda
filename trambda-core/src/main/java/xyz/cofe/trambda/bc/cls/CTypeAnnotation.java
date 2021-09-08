@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.TypePath;
+import org.objectweb.asm.TypeReference;
 import xyz.cofe.iter.Eterable;
 import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.ann.AnnotationByteCode;
@@ -23,6 +24,7 @@ public class CTypeAnnotation
      */
     public CTypeAnnotation(){
     }
+
     public CTypeAnnotation(int typeRef, String typePath, String descriptor, boolean visible){
         this.typeRef = typeRef;
         this.typePath = typePath;
@@ -71,6 +73,13 @@ public class CTypeAnnotation
     }
 
     //region typeRef : int
+    /**
+     *  a reference to the annotated type. The sort of this type reference must be
+     * {@link TypeReference#CLASS_TYPE_PARAMETER},
+     * {@link TypeReference#CLASS_TYPE_PARAMETER_BOUND} or
+     * {@link TypeReference#CLASS_EXTENDS}
+     * See {@link TypeReference}.
+     */
     protected int typeRef;
     public int getTypeRef(){
         return typeRef;
@@ -80,6 +89,11 @@ public class CTypeAnnotation
     }
     //endregion
     //region typePath : String
+    /**
+     * the path to the annotated type argument, wildcard bound, array element type, or
+     * static inner type within 'typeRef'. May be {@literal null} if the annotation targets
+     * 'typeRef' as a whole.
+     */
     protected String typePath;
     public String getTypePath(){
         return typePath;

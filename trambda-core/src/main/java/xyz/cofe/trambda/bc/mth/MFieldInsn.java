@@ -4,6 +4,9 @@ import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
+ * Доступ к полю объекта
+ * <p>
+ *
  * the opcode of the type instruction to be visited. This opcode is either
  * GETSTATIC,
  * PUTSTATIC,
