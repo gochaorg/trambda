@@ -4,7 +4,7 @@ import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
 /**
- * end of the method
+ * Конец метода
  */
 public class MEnd extends MAbstractBC implements MethodWriter {
     /**
@@ -19,7 +19,6 @@ public class MEnd extends MAbstractBC implements MethodWriter {
     public MEnd(MEnd sample){
     }
 
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public MEnd clone(){ return new MEnd(this); }
 
     private static final long serialVersionUID = 1;
