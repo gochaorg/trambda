@@ -8,6 +8,8 @@ import xyz.cofe.trambda.bc.ByteCode;
  * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.anewarray">ANEWARRAY</a>,
  * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.checkcast">CHECKCAST</a> or
  * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.instanceof">INSTANCEOF</a>.
+ * 
+ * см {@link OpCode#ANEWARRAY}, {@link OpCode#CHECKCAST}, {@link OpCode#INSTANCEOF}
  */
 public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
@@ -16,6 +18,12 @@ public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
      * Конструктор по умолчанию
      */
     public MTypeInsn(){}
+    
+    /**
+     * Конструктор
+     * @param op код инструкции
+     * @param type тип
+     */
     public MTypeInsn(int op, String type){
         this.opcode = op;
         this.type = type;
@@ -36,10 +44,18 @@ public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
     //region opcode : int
     private int opcode;
 
+    /**
+     * Возвращает код инструкции
+     * @return Код инструкции
+     */
     public int getOpcode(){
         return opcode;
     }
 
+    /**
+     * Указывает код инструкции
+     * @param opcode Код инструкции
+     */
     public void setOpcode(int opcode){
         this.opcode = opcode;
     }
@@ -47,10 +63,18 @@ public class MTypeInsn extends MAbstractBC implements ByteCode, MethodWriter {
     //region type : String
     private String type;
 
+    /**
+     * Возвращает тип
+     * @return тип
+     */
     public String getType(){
         return type;
     }
 
+    /**
+     * Указывает тип
+     * @param type Тип
+     */
     public void setType(String type){
         this.type = type;
     }

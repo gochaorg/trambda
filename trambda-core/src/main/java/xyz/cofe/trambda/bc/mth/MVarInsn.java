@@ -19,7 +19,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  *
  * <hr>
  *
- * <h1>iload</h1>
+ * <h1>iload</h1>{@link OpCode#ILOAD}
  *
  * <h2 style="font-weight: bold">Operation</h2>
  * Load int from local variable
@@ -50,7 +50,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * <hr>
  *
  * lload
- * <h2 style="font-weight: bold">Operation</h2>
+ * <h2 style="font-weight: bold">Operation</h2> {@link OpCode#LLOAD}
  * Load long from local variable
  *
  * <h2 style="font-weight: bold">Format</h2>
@@ -80,7 +80,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * access a local variable using a two-byte unsigned index.
  *
  * <hr>
- * fload
+ * fload {@link OpCode#FLOAD}
  * <h2 style="font-weight: bold">Operation</h2>
  * Load float from local variable
  *
@@ -144,7 +144,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * except that the operand &lt;n> is implicit.
  *
  * <hr>
- * dload
+ * dload {@link OpCode#DLOAD}
  * <h2 style="font-weight:bold">Operation</h2>
  * Load double from local variable
  *
@@ -206,7 +206,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * aload
+ * aload {@link OpCode#ALOAD}
  * <h2 style="font-weight:bold">Operation</h2>
  * Load reference from local variable
  *
@@ -279,7 +279,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * the same as aload with an index of &lt;n&gt;, except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * istore
+ * istore {@link OpCode#ISTORE}
  * <h2 style="font-weight:bold">Operation</h2>
  *
  * Store int into local variable
@@ -348,7 +348,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * lstore
+ * lstore {@link OpCode#LSTORE}
  * <h2 style="font-weight:bold">Operation</h2>
  *
  * Store long into local variable
@@ -414,7 +414,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * Each of the lstore_&lt;n&gt; instructions is the same as lstore with an index of &lt;n&gt;, except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * fstore
+ * fstore {@link OpCode#FSTORE}
  * <h2 style="font-weight:bold">Operation</h2>
  *
  * Store float into local variable
@@ -485,7 +485,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * with an index of &lt;n&gt;, except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * dstore
+ * dstore {@link OpCode#DSTORE}
  * <h2 style="font-weight:bold">Operation</h2>
  *
  * Store double into local variable
@@ -556,7 +556,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * astore
+ * astore {@link OpCode#ASTORE}
  * <h2 style="font-weight:bold">Operation</h2>
  *
  * Store reference into local variable
@@ -641,7 +641,7 @@ import xyz.cofe.trambda.bc.ByteCode;
  * that the operand &lt;n&gt; is implicit.
  *
  * <hr>
- * ret
+ * ret {@link OpCode#RET}
  * <h2 style="font-weight:bold">Operation</h2>
  *
  * Return from subroutine
@@ -681,6 +681,12 @@ import xyz.cofe.trambda.bc.ByteCode;
  * <p>
  * The ret opcode can be used in conjunction with the wide instruction (§wide) to
  * access a local variable using a two-byte unsigned index.
+ * 
+ * <hr>
+ * Обратите внимание, что jsr (§jsr) помещает адрес в стек операндов, а ret получает его из локальной переменной. Эта асимметрия преднамеренная.
+ * <p> В реализации Oracle компилятора для языка программирования Java до Java SE 6 инструкция ret использовалась с инструкциями jsr и jsr_w (§jsr, §jsr_w) в реализации предложения finally (§3.13, §4.10.2.5) ).
+ * <p> Инструкцию ret не следует путать с инструкцией return (§return). Команда возврата возвращает управление от метода вызывающей стороне, не передавая никакого значения обратно вызывающей стороне.
+ * <p> Код операции ret может использоваться вместе с инструкцией wide (§wide) для доступа к локальной переменной с использованием двухбайтового беззнакового индекса.
  */
 public class MVarInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;

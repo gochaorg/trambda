@@ -53,6 +53,30 @@ import xyz.cofe.trambda.bc.ByteCode;
  * <h2 style="font-weight: bold">Notes</h2>
  *
  * The alignment required of the 4-byte operands of the tableswitch instruction guarantees 4-byte alignment of those operands if and only if the method that contains the tableswitch starts on a 4-byte boundary.
+ * 
+ * <hr>
+ * Tablewitch - это инструкция переменной длины. 
+ * Сразу после кода операции tablewitch от нуля до трех байтов должны действовать как заполнители, 
+ * так что defaultbyte1 начинается с адреса, кратного четырем байтам от начала текущего метода 
+ * (кода операции его первой инструкции). 
+ * Сразу после заполнения идут байты, составляющие три 32-битных значения со знаком: 
+ * по умолчанию, младший и высокий. Сразу после этого следуют байты, составляющие серию 
+ * 32-битных смещений со знаком старшего и младшего + 1 со знаком. 
+ * Значение low должно быть меньше или равно high. 
+ * 32-битные смещения со знаком + 1 (high-low + 1) обрабатываются как таблица переходов с отсчетом от 0. 
+ * Каждое из этих 32-битных значений со знаком строится 
+ * как (byte1 &lt;&lt; 24) | (byte2 &lt;&lt; 16) | (byte3 &lt;&lt; 8) | байт4.
+ * 
+ * <p> Индекс должен иметь тип int и извлекается из стека операндов. 
+ * Если index меньше low или index больше high, то целевой адрес вычисляется 
+ * путем добавления значения по умолчанию к адресу кода операции этой инструкции tablewitch. 
+ * В противном случае извлекается смещение в позиции index - low таблицы переходов. 
+ * Целевой адрес вычисляется путем добавления этого смещения к адресу кода операции этой инструкции tablewitch. 
+ * Затем выполнение продолжается по целевому адресу.
+ * 
+ * <p> Целевой адрес, который может быть вычислен из каждого смещения таблицы переходов, 
+ * а также адрес, который может быть вычислен по умолчанию, должен быть адресом кода 
+ * операции инструкции внутри метода, который содержит эту инструкцию tablewitch.
  */
 public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWriter {
     private static final long serialVersionUID = 1;
@@ -61,6 +85,15 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
      * Конструктор по умолчанию
      */
     public MTableSwitchInsn(){}
+    
+    /**
+     * Конструктор
+     * @param min the minimum key value.
+     * @param max the maximum key value.
+     * @param dflt beginning of the default handler block.
+     * @param labels beginnings of the handler blocks. {@code labels[i]} is the beginning of the
+     * handler block for the {@code min + i} key.
+     */
     public MTableSwitchInsn(int min, int max, String dflt, String... labels){
         this.min = min;
         this.max = max;
@@ -86,10 +119,18 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
     //region min : int
     private int min;
 
+    /**
+     * the minimum key value
+     * @return  the minimum key value
+     */
     public int getMin(){
         return min;
     }
 
+    /**
+     * the minimum key value
+     * @param min the minimum key value
+     */
     public void setMin(int min){
         this.min = min;
     }
@@ -97,10 +138,18 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
     //region max : int
     private int max;
 
+    /**
+     * the maximum key value.
+     * @return the maximum key value.
+     */
     public int getMax(){
         return max;
     }
 
+    /**
+     * the maximum key value.
+     * @param max the maximum key value.
+     */
     public void setMax(int max){
         this.max = max;
     }
@@ -108,10 +157,18 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
     //region defaultLabel : String
     private String defaultLabel;
 
+    /**
+     * beginning of the default handler block.
+     * @return beginning of the default handler block.
+     */
     public String getDefaultLabel(){
         return defaultLabel;
     }
 
+    /**
+     * beginning of the default handler block.
+     * @param defaultLabel beginning of the default handler block.
+     */
     public void setDefaultLabel(String defaultLabel){
         this.defaultLabel = defaultLabel;
     }
@@ -119,10 +176,20 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
     //region labels : String[]
     private String[] labels;
 
+    /**
+     * beginnings of the handler blocks. {@code labels[i]} is the beginning of the
+     * handler block for the {@code min + i} key.
+     * @return handler blocks
+     */
     public String[] getLabels(){
         return labels;
     }
 
+    /**
+     * beginnings of the handler blocks. {@code labels[i]} is the beginning of the
+     * handler block for the {@code min + i} key.
+     * @param labels handler blocks
+     */
     public void setLabels(String[] labels){
         this.labels = labels;
     }
