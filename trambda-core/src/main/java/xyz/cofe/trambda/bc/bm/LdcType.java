@@ -1,5 +1,8 @@
 package xyz.cofe.trambda.bc.bm;
 
+/**
+ * Тип константы
+ */
 public enum LdcType {
     Integer,
     Float,

@@ -51,6 +51,17 @@ import xyz.cofe.trambda.bc.ByteCode;
  *
  * <p>
  * The match-offset pairs are sorted to support lookup routines that are quicker than linear search.
+ * 
+ * <hr>
+ * Поисковый переключатель - это инструкция переменной длины. Сразу после кода операции lookupswitch от нуля до трех байтов должны действовать как заполнители, так что defaultbyte1 начинается с адреса, кратного четырем байтам от начала текущего метода (кода операции его первой инструкции). Сразу после заполнения следует ряд 32-битных значений со знаком: default, npairs, а затем npairs пары 32-битных значений со знаком. Число npairs должно быть больше или равно 0. Каждая из пар npairs состоит из соответствия int и 32-битного смещения со знаком. Каждое из этих 32-битных значений со знаком состоит из четырех байтов без знака как (byte1 & lt; & lt; 24) | (byte2 & lt; & lt; 16) | (byte3 & lt; & lt; 8) | байт4.
+ * 
+ * <p> Пары совпадения-смещения таблицы инструкции lookupswitch должны быть отсортированы в возрастающем числовом порядке по совпадению.
+ * <p> Ключ должен иметь тип int и извлекается из стека операндов. Ключ сравнивается со значениями соответствия. Если он равен одному из них, то целевой адрес вычисляется путем добавления соответствующего смещения к адресу кода операции этой инструкции lookupswitch. Если ключ не соответствует ни одному из значений соответствия, целевой адрес вычисляется путем добавления значения по умолчанию к адресу кода операции этой инструкции lookupswitch. Затем выполнение продолжается по целевому адресу.
+ * <p> Целевой адрес, который может быть вычислен по смещению каждой пары совпадение-смещение, а также адрес, вычисленный по умолчанию, должен быть адресом кода операции инструкции в методе, который содержит эту инструкцию переключателя поиска.
+ * 
+ * <h2 style = "font-weight: bold"> Примечания </h2>
+ * Выравнивание, необходимое для 4-байтовых операндов инструкции lookupwitch, гарантирует 4-байтовое выравнивание этих операндов тогда и только тогда, когда метод, который содержит lookupswitch, расположен на 4-байтовой границе.
+ * <p> Пары совпадения-смещения сортируются для поддержки процедур поиска, которые работают быстрее, чем линейный поиск.
  */
 public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
@@ -59,6 +70,14 @@ public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
      * Конструктор по умолчанию
      */
     public MLookupSwitchInsn(){}
+    
+    /**
+     * Конструктор
+     * @param defHdl начало блока обработчика по умолчанию.
+     * @param keys значения ключей
+     * @param labels начала блоков обработчика. {@code labels [i]} - начало
+     * блок-обработчик для ключа {@code keys [i]}.
+     */
     public MLookupSwitchInsn(String defHdl, int[] keys, String[] labels){
         this.defaultHandlerLabel = defHdl;
         this.keys = keys;
@@ -78,22 +97,40 @@ public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
 
     @SuppressWarnings("MethodDoesntCallSuperMethod") public MLookupSwitchInsn clone(){ return new MLookupSwitchInsn(this); }
 
-    //region defaultHandlerLabel
+    //region defaultHandlerLabel - начало блока обработчика по умолчанию.
     private String defaultHandlerLabel;
 
+    /**
+     * Возвращает начало блока обработчика по умолчанию.
+     * @return начало блока обработчика по умолчанию.
+     */
     public String getDefaultHandlerLabel(){
         return defaultHandlerLabel;
     }
+    
+    /**
+     * Указывает начало блока обработчика по умолчанию.
+     * @param defaultHandlerLabel начало блока обработчика по умолчанию.
+     */
     public void setDefaultHandlerLabel(String defaultHandlerLabel){
         this.defaultHandlerLabel = defaultHandlerLabel;
     }
     //endregion
     //region keys : int[]
     private int[] keys;
+    
+    /**
+     * Возвращает значения ключей
+     * @return значения ключей
+     */
     public int[] getKeys(){
         return keys;
     }
-
+    
+    /**
+     * Указывает значения ключей
+     * @param keys значения ключей
+     */
     public void setKeys(int[] keys){
         this.keys = keys;
     }
@@ -101,10 +138,20 @@ public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
     //region labels : String[]
     private String[] labels;
 
+    /**
+     * Возвращает начала блоков обработчика. {@code labels [i]} - начало
+     * блок-обработчик для ключа {@code keys [i]}.
+     * @return начала соответ блока
+     */
     public String[] getLabels(){
         return labels;
     }
 
+    /**
+     * Указывает  начала блоков обработчика. {@code labels [i]} - начало
+     * блок-обработчик для ключа {@code keys [i]}.
+     * @param labels начала соответ блока
+     */
     public void setLabels(String[] labels){
         this.labels = labels;
     }

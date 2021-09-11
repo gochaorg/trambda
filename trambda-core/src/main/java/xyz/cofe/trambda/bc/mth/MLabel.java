@@ -3,6 +3,9 @@ package xyz.cofe.trambda.bc.mth;
 import org.objectweb.asm.MethodVisitor;
 import xyz.cofe.trambda.bc.ByteCode;
 
+/**
+ * Метка в исходном коде/точка перехода
+ */
 public class MLabel extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
@@ -10,6 +13,11 @@ public class MLabel extends MAbstractBC implements MethodWriter {
      * Конструктор по умолчанию
      */
     public MLabel(){}
+    
+    /**
+     * Конструктор
+     * @param name имя метки
+     */
     public MLabel(String name){this.name = name;}
 
     /**
@@ -24,7 +32,17 @@ public class MLabel extends MAbstractBC implements MethodWriter {
     @SuppressWarnings("MethodDoesntCallSuperMethod") public MLabel clone(){ return new MLabel(this); }
 
     private String name;
+    
+    /**
+     * Возвращает название метки
+     * @return название метки
+     */
     public String getName(){ return name; }
+    
+    /**
+     * Указывает название метки
+     * @param name название метки
+     */
     public void setName(String name){ this.name = name; }
 
     @Override

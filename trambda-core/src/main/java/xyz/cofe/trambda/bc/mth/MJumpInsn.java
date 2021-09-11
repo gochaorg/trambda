@@ -1,30 +1,34 @@
 package xyz.cofe.trambda.bc.mth;
 
 import org.objectweb.asm.MethodVisitor;
-import xyz.cofe.trambda.bc.ByteCode;
 
 /**
- * the opcode of the type instruction to be visited. This opcode is either
- * IFEQ,
- * IFNE,
- * IFLT,
- * IFGE,
- * IFGT,
- * IFLE,
- * IF_ICMPEQ,
- * IF_ICMPNE,
- * IF_ICMPLT,
- * IF_ICMPGE,
- * IF_ICMPGT,
- * IF_ICMPLE,
- * IF_ACMPEQ,
- * IF_ACMPNE,
+ * Инструкция перехода
+ * 
+ * <p>
+ * Возможные OpCode:
+ * 
+ * {@link OpCode#IFEQ},
+ * {@link OpCode#IFNE},
+ * {@link OpCode#IFLT},
+ * {@link OpCode#IFGE},
+ * {@link OpCode#IFGT},
+ * {@link OpCode#IFLE},
+ * {@link OpCode#IF_ICMPEQ},
+ * {@link OpCode#IF_ICMPNE},
+ * {@link OpCode#IF_ICMPLT},
+ * {@link OpCode#IF_ICMPGE},
+ * {@link OpCode#IF_ICMPGT},
+ * {@link OpCode#IF_ICMPLE},
+ * {@link OpCode#IF_ACMPEQ},
+ * {@link OpCode#IF_ACMPNE},
  *
- * GOTO,
+ * {@link OpCode#GOTO},
  *
- * JSR,
+ * {@link OpCode#JSR},
  *
- * IFNULL or IFNONNULL.
+ * {@link OpCode#IFNULL} or 
+ * {@link OpCode#IFNONNULL}.
  */
 public class MJumpInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
@@ -52,19 +56,84 @@ public class MJumpInsn extends MAbstractBC implements MethodWriter {
 
     //region opcode : int
     private int opcode;
+    
+    /**
+     * Возвращает код инстркуции
+     * <p>
+     * см
+    * {@link OpCode#IFEQ},
+    * {@link OpCode#IFNE},
+    * {@link OpCode#IFLT},
+    * {@link OpCode#IFGE},
+    * {@link OpCode#IFGT},
+    * {@link OpCode#IFLE},
+    * {@link OpCode#IF_ICMPEQ},
+    * {@link OpCode#IF_ICMPNE},
+    * {@link OpCode#IF_ICMPLT},
+    * {@link OpCode#IF_ICMPGE},
+    * {@link OpCode#IF_ICMPGT},
+    * {@link OpCode#IF_ICMPLE},
+    * {@link OpCode#IF_ACMPEQ},
+    * {@link OpCode#IF_ACMPNE},
+    *
+    * {@link OpCode#GOTO},
+    *
+    * {@link OpCode#JSR},
+    *
+    * {@link OpCode#IFNULL} or 
+    * {@link OpCode#IFNONNULL}.
+     * @return код инструкции
+     */
     public int getOpcode(){
         return opcode;
     }
+    
+    /**
+     * Указывает код инструкции
+     * <p>
+     * см
+    * {@link OpCode#IFEQ},
+    * {@link OpCode#IFNE},
+    * {@link OpCode#IFLT},
+    * {@link OpCode#IFGE},
+    * {@link OpCode#IFGT},
+    * {@link OpCode#IFLE},
+    * {@link OpCode#IF_ICMPEQ},
+    * {@link OpCode#IF_ICMPNE},
+    * {@link OpCode#IF_ICMPLT},
+    * {@link OpCode#IF_ICMPGE},
+    * {@link OpCode#IF_ICMPGT},
+    * {@link OpCode#IF_ICMPLE},
+    * {@link OpCode#IF_ACMPEQ},
+    * {@link OpCode#IF_ACMPNE},
+    *
+    * {@link OpCode#GOTO},
+    *
+    * {@link OpCode#JSR},
+    *
+    * {@link OpCode#IFNULL} or 
+    * {@link OpCode#IFNONNULL}.
+     * @param opcode код инструкции
+     */
     public void setOpcode(int opcode){
         this.opcode = opcode;
     }
     //endregion
     //region label : String
     private String label;
+    
+    /**
+     * Возвращает метку перехода
+     * @return метка перехода
+     */
     public String getLabel(){
         return label;
     }
 
+    /**
+     * Указывает метку перехода
+     * @param label метка перехода
+     */
     public void setLabel(String label){
         this.label = label;
     }

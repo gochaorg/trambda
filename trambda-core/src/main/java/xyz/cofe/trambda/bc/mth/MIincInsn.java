@@ -58,17 +58,44 @@ public class MIincInsn extends MAbstractBC implements MethodWriter {
     @SuppressWarnings("MethodDoesntCallSuperMethod") public MIincInsn clone(){ return new MIincInsn(this); }
 
     //region variable : int
+    /**
+     * Индекс переменной
+     */
     private int variable;
+    
+    /**
+     * Возвращает индекс переменной
+     * @return индекс переменной
+     */
     public int getVariable(){
         return variable;
     }
+    
+    /**
+     * Указывает индекс переменной
+     * @param variable индекс переменной
+     */
     public void setVariable(int variable){
         this.variable = variable;
     }
     //endregion
     //region increment : int
+    
+    /**
+     * Указывает величину увеличения значения переменной
+     */
     private int increment;
+    
+    /**
+     * Возвращает величину увеличения значения переменной
+     * @return значение
+     */
     public int getIncrement(){ return increment; }
+    
+    /**
+     * Указывает величину увеличения значения переменной
+     * @param increment значение
+     */
     public void setIncrement(int increment){ this.increment = increment; }
     //endregion
 

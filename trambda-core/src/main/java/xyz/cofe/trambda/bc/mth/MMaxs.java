@@ -1,8 +1,10 @@
 package xyz.cofe.trambda.bc.mth;
 
 import org.objectweb.asm.MethodVisitor;
-import xyz.cofe.trambda.bc.ByteCode;
 
+/**
+ * максимальный размер стека и максимальное количество локальных переменных метода.
+ */
 public class MMaxs extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;
 
@@ -12,6 +14,11 @@ public class MMaxs extends MAbstractBC implements MethodWriter {
     public MMaxs(){
     }
 
+    /**
+     * Конструктор
+     * @param maxStack максимальный размер стека метода.
+     * @param maxLocals максимальное количество локальных переменных для метода.
+     */
     public MMaxs(int maxStack, int maxLocals){
         this.maxLocals = maxLocals;
         this.maxStack = maxStack;
@@ -31,18 +38,38 @@ public class MMaxs extends MAbstractBC implements MethodWriter {
 
     //region maxStack : int
     private int maxStack;
+    
+    /**
+     * Возвращает максимальный размер стека метода.
+     * @return максимальный размер стека метода.
+     */
     public int getMaxStack(){
         return maxStack;
     }
+    
+    /**
+     * Указывает максимальный размер стека метода.
+     * @param maxStack максимальный размер стека метода.
+     */
     public void setMaxStack(int maxStack){
         this.maxStack = maxStack;
     }
     //endregion
     //region maxLocals : int
     private int maxLocals;
+    
+    /**
+     * Возвращает максимальное количество локальных переменных для метода.
+     * @return максимальное количество локальных переменных для метода.
+     */
     public int getMaxLocals(){
         return maxLocals;
     }
+    
+    /**
+     * Указывает максимальное количество локальных переменных для метода.
+     * @param maxLocals максимальное количество локальных переменных для метода.
+     */
     public void setMaxLocals(int maxLocals){
         this.maxLocals = maxLocals;
     }
