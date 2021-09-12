@@ -35,33 +35,75 @@ import xyz.cofe.trambda.bc.ByteCode;
  * ...
  * <h2 style="font-weight: bold">Description</h2>
  *
- * A lookupswitch is a variable-length instruction. Immediately after the lookupswitch opcode, between zero and three bytes must act as padding, such that defaultbyte1 begins at an address that is a multiple of four bytes from the start of the current method (the opcode of its first instruction). Immediately after the padding follow a series of signed 32-bit values: default, npairs, and then npairs pairs of signed 32-bit values. The npairs must be greater than or equal to 0. Each of the npairs pairs consists of an int match and a signed 32-bit offset. Each of these signed 32-bit values is constructed from four unsigned bytes as (byte1 &lt;&lt; 24) | (byte2 &lt;&lt; 16) | (byte3 &lt;&lt; 8) | byte4.
+ * A lookupswitch is a variable-length instruction. Immediately after the 
+ * lookupswitch opcode, between zero and three bytes must act as padding, such 
+ * that defaultbyte1 begins at an address that is a multiple of four bytes from 
+ * the start of the current method (the opcode of its first instruction). 
+ * Immediately after the padding follow a series of signed 32-bit values: 
+ * default, npairs, and then npairs pairs of signed 32-bit values. The npairs 
+ * must be greater than or equal to 0. Each of the npairs pairs consists of an 
+ * int match and a signed 32-bit offset. Each of these signed 32-bit values is 
+ * constructed from four unsigned bytes as (byte1 &lt;&lt; 24) | (byte2 &lt;&lt; 16) | (byte3 &lt;&lt; 8) | byte4.
  *
  * <p>
- * The table match-offset pairs of the lookupswitch instruction must be sorted in increasing numerical order by match.
+ * The table match-offset pairs of the lookupswitch instruction must be sorted 
+ * in increasing numerical order by match.
  *
  * <p>
- * The key must be of type int and is popped from the operand stack. The key is compared against the match values. If it is equal to one of them, then a target address is calculated by adding the corresponding offset to the address of the opcode of this lookupswitch instruction. If the key does not match any of the match values, the target address is calculated by adding default to the address of the opcode of this lookupswitch instruction. Execution then continues at the target address.
+ * The key must be of type int and is popped from the operand stack. The key is 
+ * compared against the match values. If it is equal to one of them, then a target 
+ * address is calculated by adding the corresponding offset to the address of the 
+ * opcode of this lookupswitch instruction. If the key does not match any of the 
+ * match values, the target address is calculated by adding default to the address 
+ * of the opcode of this lookupswitch instruction. Execution then continues at 
+ * the target address.
  *
  * <p>
- * The target address that can be calculated from the offset of each match-offset pair, as well as the one calculated from default, must be the address of an opcode of an instruction within the method that contains this lookupswitch instruction.
+ * The target address that can be calculated from the offset of each match-offset 
+ * pair, as well as the one calculated from default, must be the address of an 
+ * opcode of an instruction within the method that contains this lookupswitch instruction.
  * <h2 style="font-weight: bold">Notes</h2>
  *
- * The alignment required of the 4-byte operands of the lookupswitch instruction guarantees 4-byte alignment of those operands if and only if the method that contains the lookupswitch is positioned on a 4-byte boundary.
+ * The alignment required of the 4-byte operands of the lookupswitch instruction 
+ * guarantees 4-byte alignment of those operands if and only if the method that 
+ * contains the lookupswitch is positioned on a 4-byte boundary.
  *
  * <p>
  * The match-offset pairs are sorted to support lookup routines that are quicker than linear search.
  * 
  * <hr>
- * Поисковый переключатель - это инструкция переменной длины. Сразу после кода операции lookupswitch от нуля до трех байтов должны действовать как заполнители, так что defaultbyte1 начинается с адреса, кратного четырем байтам от начала текущего метода (кода операции его первой инструкции). Сразу после заполнения следует ряд 32-битных значений со знаком: default, npairs, а затем npairs пары 32-битных значений со знаком. Число npairs должно быть больше или равно 0. Каждая из пар npairs состоит из соответствия int и 32-битного смещения со знаком. Каждое из этих 32-битных значений со знаком состоит из четырех байтов без знака как (byte1 & lt; & lt; 24) | (byte2 & lt; & lt; 16) | (byte3 & lt; & lt; 8) | байт4.
+ * Поисковый переключатель - это инструкция переменной длины. 
+ * Сразу после кода операции lookupswitch от нуля до трех байтов должны действовать 
+ * как заполнители, так что defaultbyte1 начинается с адреса, кратного четырем байтам 
+ * от начала текущего метода (кода операции его первой инструкции). Сразу после заполнения следует 
+ * ряд 32-битных значений со знаком: default, npairs, а затем npairs пары 32-битных значений со 
+ * знаком. Число npairs должно быть больше или равно 0. Каждая из пар npairs состоит из 
+ * соответствия int и 32-битного смещения со знаком. Каждое из этих 32-битных значений со 
+ * знаком состоит из четырех байтов без знака 
+ * как (byte1 &lt;&lt; 24) | (byte2 &lt;&lt; 16) | (byte3 &lt;&lt; 8) | байт4.
  * 
- * <p> Пары совпадения-смещения таблицы инструкции lookupswitch должны быть отсортированы в возрастающем числовом порядке по совпадению.
- * <p> Ключ должен иметь тип int и извлекается из стека операндов. Ключ сравнивается со значениями соответствия. Если он равен одному из них, то целевой адрес вычисляется путем добавления соответствующего смещения к адресу кода операции этой инструкции lookupswitch. Если ключ не соответствует ни одному из значений соответствия, целевой адрес вычисляется путем добавления значения по умолчанию к адресу кода операции этой инструкции lookupswitch. Затем выполнение продолжается по целевому адресу.
- * <p> Целевой адрес, который может быть вычислен по смещению каждой пары совпадение-смещение, а также адрес, вычисленный по умолчанию, должен быть адресом кода операции инструкции в методе, который содержит эту инструкцию переключателя поиска.
+ * <p> Пары совпадения-смещения таблицы инструкции lookupswitch должны 
+ * быть отсортированы в возрастающем числовом порядке по совпадению.
+ * 
+ * <p> Ключ должен иметь тип int и извлекается из стека операндов. 
+ * Ключ сравнивается со значениями соответствия. Если он равен одному из них, 
+ * то целевой адрес вычисляется путем добавления соответствующего смещения к адресу 
+ * кода операции этой инструкции lookupswitch. Если ключ не соответствует ни одному 
+ * из значений соответствия, целевой адрес вычисляется путем добавления значения 
+ * по умолчанию к адресу кода операции этой инструкции lookupswitch. Затем 
+ * выполнение продолжается по целевому адресу.
+ * 
+ * <p> Целевой адрес, который может быть вычислен по смещению каждой пары 
+ * совпадение-смещение, а также адрес, вычисленный по умолчанию, должен быть 
+ * адресом кода операции инструкции в методе, который содержит эту инструкцию 
+ * переключателя поиска.
  * 
  * <h2 style = "font-weight: bold"> Примечания </h2>
- * Выравнивание, необходимое для 4-байтовых операндов инструкции lookupwitch, гарантирует 4-байтовое выравнивание этих операндов тогда и только тогда, когда метод, который содержит lookupswitch, расположен на 4-байтовой границе.
- * <p> Пары совпадения-смещения сортируются для поддержки процедур поиска, которые работают быстрее, чем линейный поиск.
+ * Выравнивание, необходимое для 4-байтовых операндов инструкции lookupwitch, 
+ * гарантирует 4-байтовое выравнивание этих операндов тогда и только тогда, когда 
+ * метод, который содержит lookupswitch, расположен на 4-байтовой границе.
+ * <p> Пары совпадения-смещения сортируются для поддержки процедур поиска, 
+ * которые работают быстрее, чем линейный поиск.
  */
 public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
     private static final long serialVersionUID = 1;

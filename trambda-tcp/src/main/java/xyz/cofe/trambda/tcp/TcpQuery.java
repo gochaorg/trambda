@@ -17,6 +17,15 @@ import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.log.api.Logger;
 
+/**
+ * Клиент для выполнения лямбд на сервере
+ * <p>
+ * Для создания простого клиента посмотрите описание сервера
+ * {@link TcpServer}.
+ * <p> Так же сервер может не допускать выполнение клиентского 
+ * кода по соображениям безопасности. см {@link SecurError}
+ * @param <ENV> Сервис который предоставляется сервером
+ */
 public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     private static final Logger log = Logger.of(TcpQuery.class);
 

@@ -92,11 +92,30 @@ public class TcpProtocol {
         socket = null;
     }
 
-    private final Socket socket;
-    private final Supplier<OutputStream> getOutput;
-    private final Supplier<InputStream> getInput;
-    private final Supplier<Logger> getLogger;
-    private final AtomicInteger sid = new AtomicInteger(0);
+    /**
+     * Сокет с которым производится работа
+     */
+    protected final Socket socket;
+    
+    /**
+     * Канал/поток исходящих сообщений
+     */
+    protected final Supplier<OutputStream> getOutput;
+    
+    /**
+     * Канал/поток входящих сообщений
+     */
+    protected final Supplier<InputStream> getInput;
+    
+    /**
+     * Логирование
+     */
+    protected final Supplier<Logger> getLogger;
+    
+    /**
+     * Счетчик/генератор идентификаторов сообщений
+     */
+    protected final AtomicInteger sid = new AtomicInteger(0);
 
     /**
      * Возвращает исходящий поток данных
