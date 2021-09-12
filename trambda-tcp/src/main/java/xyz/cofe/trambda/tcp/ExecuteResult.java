@@ -1,5 +1,7 @@
 package xyz.cofe.trambda.tcp;
 
+import java.util.function.Consumer;
+
 /**
  * Результат выполнения {@link Execute}
  */
@@ -99,4 +101,23 @@ public class ExecuteResult implements Message {
         this.value = value;
     }
     //endregion
+
+    /**
+     * Подписка на события Compile
+     * @param evPublisher издатель событий
+     * @param listener подписчик
+     * @return отписка от событий
+     */
+    public static AutoCloseable listen(TrEventPublisher evPublisher, Consumer<ExecuteResult> listener ){
+        if( evPublisher==null )throw new IllegalArgumentException( "evPublisher==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        return evPublisher.addListener( ev -> {
+            if( ev instanceof TcpSession.MessageEvent ){
+                var msg = (((TcpSession.MessageEvent<?, ?>) ev).message);
+                if( msg instanceof ExecuteResult ){
+                    listener.accept((ExecuteResult) msg);
+                }
+            }
+        });
+    }
 }

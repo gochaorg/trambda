@@ -6,6 +6,7 @@ import xyz.cofe.trambda.LambdaDump;
 
 import java.lang.invoke.SerializedLambda;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Запрос выполнения скомпилированной лямбды,
@@ -70,4 +71,24 @@ public class Execute implements Message {
     public String toString(){
         return "Execute key="+key+" hash="+hash+" args="+capturedArgs;
     }
+
+    /**
+     * Подписка на события Compile
+     * @param evPublisher издатель событий
+     * @param listener подписчик
+     * @return отписка от событий
+     */
+    public static AutoCloseable listen(TrEventPublisher evPublisher, Consumer<Execute> listener ){
+        if( evPublisher==null )throw new IllegalArgumentException( "evPublisher==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        return evPublisher.addListener( ev -> {
+            if( ev instanceof TcpSession.MessageEvent ){
+                var msg = (((TcpSession.MessageEvent<?, ?>) ev).message);
+                if( msg instanceof Execute ){
+                    listener.accept((Execute) msg);
+                }
+            }
+        });
+    }
+
 }

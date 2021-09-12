@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import xyz.cofe.ecolls.ListenersHelper;
@@ -35,7 +36,7 @@ import xyz.cofe.trambda.sec.SecurityFilter;
  * @param <ENV> Класс сервиса предоставляемого клиенту
  */
 @SuppressWarnings("unused")
-public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV>> {
+public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV>>, TrEventPublisher {
     private static final Logger log = Logger.of(TcpSession.class);
 
     /**
@@ -69,12 +70,20 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     protected final TcpServer<ENV> server;
 
     /**
+     * Передача событий от сессии к подписчикам сервера
+     */
+    protected final Consumer<TrEvent> popupEvent;
+
+    /**
      * Конструктор
      * @param socket сокет
      * @param envBuilder функция получения сервиса
+     * @param popupEvent функция передачи события сессии в сервер
      */
-    public TcpSession(TcpServer<ENV> server, Socket socket, Function<TcpSession<ENV>,ENV> envBuilder){
-        this(server, socket,envBuilder,null);
+    public TcpSession(TcpServer<ENV> server, Socket socket,
+                      Function<TcpSession<ENV>,ENV> envBuilder,
+                      Consumer<TrEvent> popupEvent){
+        this(server, socket,envBuilder,null, popupEvent);
     }
 
     /**
@@ -85,14 +94,26 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
      */
     public TcpSession(TcpServer<ENV> server, Socket socket,
                       Function<TcpSession<ENV>,ENV> envBuilder,
-                      SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter){
+                      SecurityFilter<String, Tuple2<LambdaDump, LambdaNode>> securityFilter,
+                      Consumer<TrEvent> popupEvent
+    ){
         if( server==null )throw new IllegalArgumentException( "server==null" );
         if( socket==null )throw new IllegalArgumentException( "socket==null" );
         if( envBuilder==null )throw new IllegalArgumentException( "envBuilder==null" );
         this.server = server;
         this.securityFilter = Objects.requireNonNullElseGet(securityFilter, () -> x -> List.of());
         this.socket = socket;
-        this.proto = new TcpProtocol(socket);
+        this.proto = new TcpProtocol(socket, sentRawData -> {
+            if (sentRawData!=null && sentRawData.message!=null){
+                fireEvent(new OutgoingMessageEvent<>(
+                    TcpSession.this,
+                    sentRawData.message,
+                    sentRawData.messageId,
+                    sentRawData.headerValues
+                ));
+            }
+        });
+        this.popupEvent = popupEvent;
         this.service = envBuilder.apply(this);
     }
 
@@ -197,6 +218,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
      */
     protected void fireEvent(TrEvent event){
         listeners.fireEvent(event);
+        if( popupEvent!=null )popupEvent.accept(event);
     }
 
     /**
@@ -205,6 +227,7 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
      */
     protected void addEvent(TrEvent ev){
         listeners.addEvent(ev);
+        if( popupEvent!=null )popupEvent.accept(ev);
     }
 
     /**
@@ -391,6 +414,83 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     }
     //endregion
 
+    //region SessionFinished - Событие завершения сессии
+    /**
+     * Событие завершения сессии
+     */
+    public static class SessionFinished implements TrEvent {
+        /**
+         * Конструктор
+         * @param session сессия
+         */
+        public SessionFinished(TcpSession<?> session){
+            if( session==null )throw new IllegalArgumentException( "session==null" );
+            this.session = session;
+        }
+
+        private final TcpSession<?> session;
+
+        /**
+         * Возвращает ссылку на сессию
+         * @return сессия
+         */
+        public TcpSession<?> getSession(){ return session; }
+    }
+    //endregion
+
+    /**
+     * Сообщение
+     * @param <T> тип сообщения
+     * @param <ENV> тип сервиса
+     */
+    public abstract static class MessageEvent<T extends Message, ENV> implements TrEvent {
+        protected final TcpSession<ENV> session;
+        protected final T message;
+
+        /**
+         * Конструктор
+         * @param session сессия
+         * @param message сообщение
+         */
+        public MessageEvent(TcpSession<ENV> session, T message) {
+            if( message==null )throw new IllegalArgumentException( "message==null" );
+            if( session==null )throw new IllegalArgumentException( "session==null" );
+            this.session = session;
+            this.message = message;
+        }
+    }
+
+    /**
+     * Входящие сообщение
+     * @param <T> тип сообщения
+     * @param <ENV> тип сервиса
+     */
+    public static class IncomingMessageEvent<T extends Message, ENV> extends MessageEvent<T,ENV> {
+        protected final TcpHeader header;
+        public IncomingMessageEvent(TcpSession<ENV> session, T message, TcpHeader header) {
+            super(session, message);
+            if( header==null )throw new IllegalArgumentException( "header==null" );
+            this.header = header;
+        }
+    }
+
+    /**
+     * Исходящие сообщение
+     * @param <T> тип сообщения
+     * @param <ENV> тип сервиса
+     */
+    public static class OutgoingMessageEvent<T extends Message, ENV> extends MessageEvent<T,ENV> {
+        protected final T message;
+        protected final int messageId;
+        protected final HeaderValue<?>[] headerValues;
+        public OutgoingMessageEvent(TcpSession<ENV> session, T message, int msgId, HeaderValue<?> ... headerValues) {
+            super(session, message);
+            this.message = message;
+            this.messageId = msgId;
+            this.headerValues = headerValues;
+        }
+    }
+
     //region processing message
     //region decode message
     protected void received(RawPackReadonly pack){
@@ -414,6 +514,9 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         process(msg, pack.getHeader());
     }
     protected void process(Message msg, TcpHeader header){
+        fireEvent(new IncomingMessageEvent<Message,ENV>(
+            this, msg, header
+        ));
         if(msg instanceof Ping ){
             process((Ping) msg, header);
         }else if(msg instanceof Compile){
@@ -638,36 +741,14 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
     }
     //endregion
-    //endregion
-
-    //region SessionFinished - Событие завершения сессии
-    /**
-     * Событие завершения сессии
-     */
-    public static class SessionFinished implements TrEvent {
-        /**
-         * Конструктор
-         * @param session сессия
-         */
-        public SessionFinished(TcpSession<?> session){
-            if( session==null )throw new IllegalArgumentException( "session==null" );
-            this.session = session;
-        }
-
-        private final TcpSession<?> session;
-
-        /**
-         * Возвращает ссылку на сессию
-         * @return сессия
-         */
-        public TcpSession<?> getSession(){ return session; }
-    }
-    //endregion
-
+    //region Subscribe / UnSubscribe processing
     protected final Map<String,
         Tuple3<Publisher.Subscriber<Serializable>, Long, AutoCloseable>
         > subscribers = new HashMap<>();
 
+    /**
+     * Удаление всех подписчиков на события сервера
+     */
     protected void unsubscribeAll(){
         synchronized( subscribers ){
             subscribers.forEach( (pubName,s)->{
@@ -680,6 +761,11 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
     }
 
+    /**
+     * Обработка запроса подписки на события сервера, см {@link Subscribe}
+     * @param msg запрос подписки
+     * @param header заголовок запроса
+     */
     protected void process(Subscribe msg, TcpHeader header){
         var sid = header.getSid();
         var pubName = msg.getPublisher();
@@ -733,6 +819,12 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             }
         }
     }
+
+    /**
+     * Отписка от событий сервера
+     * @param msg запрос
+     * @param header заголовок запроса
+     */
     protected void process(UnSubscribe msg, TcpHeader header){
         var sid = header.getSid();
         var pubName = msg.getPublisher();
@@ -791,6 +883,11 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
         }
     }
 
+    /**
+     * Создание proxy подписчика
+     * @param name имя издателя
+     * @return proxy подписчика
+     */
     protected Publisher.Subscriber<Serializable> subscriber(String name){
         return new Publisher.Subscriber<Serializable>() {
             @Override
@@ -809,4 +906,6 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
             }
         };
     }
+    //endregion
+    //endregion
 }

@@ -47,6 +47,17 @@ import static xyz.cofe.trambda.tcp.TcpHeader.encode;
  * </ul>
  */
 public class TcpProtocol {
+    public static class SentRawData {
+        public Message message;
+        public String method;
+        public byte[] payload;
+        public int messageId;
+        public HeaderValue<?>[] headerValues;
+        public byte[] header;
+    }
+
+    public final Consumer<SentRawData> sentRawDataConsumer;
+
     /**
      * Конструктор
      * @param socket сокет
@@ -59,6 +70,23 @@ public class TcpProtocol {
         getInput = null;
         var l = Logger.of(TcpProtocol.class);
         getLogger = ()->l;
+        sentRawDataConsumer = null;
+    }
+
+    /**
+     * Конструктор
+     * @param socket сокет
+     * @param sentRawDataConsumer подписчик на отправленные сообщения
+     */
+    public TcpProtocol(Socket socket, Consumer<SentRawData> sentRawDataConsumer){
+        if( socket==null )throw new IllegalArgumentException( "socket==null" );
+        this.socket = socket;
+
+        getOutput = null;
+        getInput = null;
+        var l = Logger.of(TcpProtocol.class);
+        getLogger = ()->l;
+        this.sentRawDataConsumer = sentRawDataConsumer;
     }
 
     /**
@@ -73,6 +101,7 @@ public class TcpProtocol {
         getOutput = null;
         getInput = null;
         getLogger = ()->logger;
+        sentRawDataConsumer = null;
     }
 
     /**
@@ -90,6 +119,26 @@ public class TcpProtocol {
         getInput = ()->inputStream;
         getLogger = ()->logger;
         socket = null;
+        sentRawDataConsumer = null;
+    }
+
+    /**
+     * Конструктор
+     * @param outputStream исходящий поток данных
+     * @param inputStream входящий поток данных
+     * @param logger логгер
+     * @param sentRawDataConsumer подписчик на отправленные сообщения
+     */
+    public TcpProtocol(OutputStream outputStream, InputStream inputStream, Logger logger, Consumer<SentRawData> sentRawDataConsumer){
+        if( outputStream==null )throw new IllegalArgumentException( "outputStream==null" );
+        if( inputStream==null )throw new IllegalArgumentException( "inputStream==null" );
+        if( logger==null )throw new IllegalArgumentException( "logger==null" );
+
+        getOutput = ()->outputStream;
+        getInput = ()->inputStream;
+        getLogger = ()->logger;
+        socket = null;
+        this.sentRawDataConsumer = sentRawDataConsumer;
     }
 
     /**
@@ -184,16 +233,29 @@ public class TcpProtocol {
         //noinspection unchecked
         byte[] header = encode(method, payload, hvals);
 
-        log().trace("send header {} {}", header.length, Text.encodeHex(header));
+        if( log().isTraceEnabled() )log().trace("send header {} {}", header.length, Text.encodeHex(header));
         output().write(header);
 
         // write payload
         if( payload!=null && payload.length>0 ){
-            log().trace("send payload {} {}", payload.length, Text.encodeHex(payload));
+            if( log().isTraceEnabled() ) {
+                log().trace("send payload {} {}", payload.length, Text.encodeHex(payload));
+            }
             output().write(payload);
         }
 
         output().flush();
+
+        if( sentRawDataConsumer!=null ){
+            SentRawData ev = new SentRawData();
+            ev.message = sendMessage.get();
+            ev.header = header;
+            ev.payload = payload;
+            ev.headerValues = headerValues;
+            ev.messageId = id;
+            ev.method = method;
+            sentRawDataConsumer.accept(ev);
+        }
 
         return id;
     }
@@ -218,6 +280,8 @@ public class TcpProtocol {
             headerValues);
     }
 
+    protected final ThreadLocal<Message> sendMessage = new ThreadLocal<>();
+
     /**
      * Отправка сообщения
      * @param message сообщение
@@ -230,6 +294,7 @@ public class TcpProtocol {
     @SafeVarargs
     public final int send(Message message,Consumer<Integer> sid, HeaderValue<? extends Object> ... headerValues) throws IOException {
         if( message==null )throw new IllegalArgumentException( "message==null" );
+        if( sentRawDataConsumer!=null )sendMessage.set(message);
 
         log().debug("send {}", message);
         return sendRaw(

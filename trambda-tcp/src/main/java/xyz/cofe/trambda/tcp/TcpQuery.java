@@ -29,35 +29,90 @@ import xyz.cofe.trambda.log.api.Logger;
 public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     private static final Logger log = Logger.of(TcpQuery.class);
 
+    /**
+     * клиент TCP
+     */
     protected final TcpClient client;
+
+    /**
+     * Возвращает ссылку на клиента TCP
+     * @return клиент TCP
+     */
     public TcpClient getClient(){ return client; }
 
+    /**
+     * Конструктор
+     * @param client клиент TCP
+     */
     public TcpQuery(TcpClient client){
         if( client==null )throw new IllegalArgumentException( "client==null" );
         this.client = client;
     }
 
+    /**
+     * Завершение работы
+     * @throws Exception какие-то ошибки
+     */
     @Override
     public void close() throws Exception {
         client.close();
     }
 
+    /**
+     * Создание клиента
+     * @param c Сервис предоставляемый сервером
+     * @param <ENV> Класс сервиса
+     * @return Создатель клиента
+     */
     public static <ENV> Builder<ENV> create(Class<ENV> c){
         return new Builder<>();
     }
+
+    /**
+     * Создатель клиента
+     * @param <ENV> Класс сервиса
+     */
     public static class Builder<ENV> {
         protected String host = "localhost";
+
+        /**
+         * Возвращает адрес расположения сервера
+         * @return адрес расположения сервера
+         */
+        public String host(){ return this.host; }
+
+        /**
+         * Указывает адрес расположения сервера
+         * @param address адрес расположения сервера
+         * @return SELF ссылка
+         */
         public Builder<ENV> host(String address){
             this.host = address;
             return this;
         }
 
         protected int port;
+
+        /**
+         * Возвращает порт расположения сервера
+         * @return порт расположения сервера
+         */
+        public int port(){ return port; }
+
+        /**
+         * Указывает порт расположения сервера
+         * @param port порт расположения сервера
+         * @return SELF ссылка
+         */
         public Builder<ENV> port(int port){
             this.port = port;
             return this;
         }
 
+        /**
+         * Создание клиента
+         * @return клиент
+         */
         public TcpQuery<ENV> build(){
             if( host==null )throw new IllegalStateException("host==nulll");
             try{
@@ -70,17 +125,33 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     }
     protected final Map<Fn1<?,?>,CompileResult> fnKeys = new ConcurrentHashMap<>();
 
+    /**
+     * Реализация вызова лямбды
+     * @param fn лямбда
+     * @param sl лямбда-сериализация
+     * @param dump дамп лямбды
+     * @param <RES> результат вызова
+     * @return результат вызова
+     */
     @Override
-    protected <RES> RES call(Fn1<ENV, RES> fn, SerializedLambda sl, LambdaDump mdef){
+    protected <RES> RES call(Fn1<ENV, RES> fn, SerializedLambda sl, LambdaDump dump){
         var key = fnKeys.get(fn);
         if( key!=null ){
             return call(key,sl);
         }else{
-            var ckey = client.compile(mdef).fetch();
+            var ckey = client.compile(dump).fetch();
             fnKeys.put(fn,ckey);
             return call(ckey,sl);
         }
     }
+
+    /**
+     * Реализация вызова лямбды
+     * @param key результат компиляции
+     * @param sl лямбда-сериализация
+     * @param <RES> результат вызова
+     * @return результат вызова
+     */
     protected <RES> RES call(CompileResult key,SerializedLambda sl){
         var execRes = client.execute(key).configure( exec -> {
             if( sl.getCapturedArgCount()>0 ){
@@ -118,6 +189,12 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
     private static final WeakHashMap<Publisher.Subscriber<?>, Consumer<ServerEvent>> subs =
         new WeakHashMap<>();
 
+    /**
+     * Подписка на события сервера, см {@link Subscribe}
+     * @param cls Класс событий
+     * @param <T> Класс событий
+     * @return Интерфейс подписки
+     */
     public <T> T subscribe( Class<T> cls ){
         if( cls==null )throw new IllegalArgumentException( "cls==null" );
         var pub = new PubProxy(){
@@ -159,6 +236,14 @@ public class TcpQuery<ENV> extends AsmQuery<ENV> implements AutoCloseable {
         };
         return pub.proxy(cls);
     }
+
+    /**
+     * Подписка на события сервера, см {@link Subscribe}
+     * @param cls Класс событий
+     * @param publishers подписчик
+     * @param <T> Класс событий
+     * @return SELF ссылка
+     */
     public <T> TcpQuery<ENV> subscribe(Class<T> cls, Consumer<T> publishers ){
         if( cls==null )throw new IllegalArgumentException( "cls==null" );
         if( publishers==null )throw new IllegalArgumentException( "publishers==null" );

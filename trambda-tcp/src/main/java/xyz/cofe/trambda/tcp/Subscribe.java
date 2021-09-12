@@ -143,4 +143,24 @@ public class Subscribe implements Serializable, Message {
      * @param publisher имя издателя
      */
     public void setPublisher(String publisher){ this.publisher = publisher; }
+
+    /**
+     * Подписка на события Compile
+     * @param evPublisher издатель событий
+     * @param listener подписчик
+     * @return отписка от событий
+     */
+    public static AutoCloseable listen(TrEventPublisher evPublisher, Consumer<Subscribe> listener ){
+        if( evPublisher==null )throw new IllegalArgumentException( "evPublisher==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        return evPublisher.addListener( ev -> {
+            if( ev instanceof TcpSession.MessageEvent ){
+                var msg = (((TcpSession.MessageEvent<?, ?>) ev).message);
+                if( msg instanceof Subscribe ){
+                    listener.accept((Subscribe) msg);
+                }
+            }
+        });
+    }
+
 }
