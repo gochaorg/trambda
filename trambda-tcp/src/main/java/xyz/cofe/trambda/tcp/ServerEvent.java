@@ -1,6 +1,7 @@
 package xyz.cofe.trambda.tcp;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 /**
  * <p>Событие сервера
@@ -38,4 +39,24 @@ public class ServerEvent implements Message {
     public String toString(){
         return "ServerEvent{ publisher="+publisher+" event="+event+" }";
     }
+
+    /**
+     * Подписка на события Compile
+     * @param evPublisher издатель событий
+     * @param listener подписчик
+     * @return отписка от событий
+     */
+    public static AutoCloseable listen(TrEventPublisher evPublisher, Consumer<ServerEvent> listener ){
+        if( evPublisher==null )throw new IllegalArgumentException( "evPublisher==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        return evPublisher.addListener( ev -> {
+            if( ev instanceof TcpSession.MessageEvent ){
+                var msg = (((TcpSession.MessageEvent<?, ?>) ev).message);
+                if( msg instanceof ServerEvent ){
+                    listener.accept((ServerEvent) msg);
+                }
+            }
+        });
+    }
+
 }

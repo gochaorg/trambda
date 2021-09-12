@@ -205,7 +205,7 @@ query.apply( env -&gt;
 * </ul>
  * @param <ENV> Класс сервиса
  */
-public class TcpServer<ENV> extends Thread implements AutoCloseable {
+public class TcpServer<ENV> extends Thread implements AutoCloseable, TrEventPublisher {
     private static final Logger log = Logger.of(TcpServer.class);
 
     /**
@@ -337,7 +337,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * @see SessionCreated
      */
     protected TcpSession<ENV> create(Socket sock){
-        TcpSession<ENV> ses = new TcpSession<>(this, sock,envBuilder, securityFilter);
+        TcpSession<ENV> ses = new TcpSession<>(this, sock,envBuilder, securityFilter, this::fireEvent);
         try{
             sock.setSoTimeout(sessionSoTimeout());
         } catch( SocketException e ) {
@@ -514,7 +514,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     /**
      * Добавление подписчика.
      * @param listener Подписчик.
-     * @return Интерфес для отсоединения подписчика
+     * @return Интерфейс для отсоединения подписчика
      */
     @SuppressWarnings("UnusedReturnValue")
     public AutoCloseable addListener(TrListener listener){
@@ -525,7 +525,7 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
      * Добавление подписчика.
      * @param listener Подписчик.
      * @param weakLink true - добавить как weak ссылку / false - как hard ссылку
-     * @return Интерфес для отсоединения подписчика
+     * @return Интерфейс для отсоединения подписчика
      */
     public AutoCloseable addListener(TrListener listener, boolean weakLink){
         return listeners.addListener(listener, weakLink);

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
+
 import xyz.cofe.fn.Pair;
 
 /**
@@ -106,5 +108,24 @@ public class ErrMessage implements Message {
             this.message = sb.toString();
         }
         return this;
+    }
+
+    /**
+     * Подписка на события Compile
+     * @param evPublisher издатель событий
+     * @param listener подписчик
+     * @return отписка от событий
+     */
+    public static AutoCloseable listen(TrEventPublisher evPublisher, Consumer<ErrMessage> listener ){
+        if( evPublisher==null )throw new IllegalArgumentException( "evPublisher==null" );
+        if( listener==null )throw new IllegalArgumentException( "listener==null" );
+        return evPublisher.addListener( ev -> {
+            if( ev instanceof TcpSession.MessageEvent ){
+                var msg = (((TcpSession.MessageEvent<?, ?>) ev).message);
+                if( msg instanceof ErrMessage ){
+                    listener.accept((ErrMessage) msg);
+                }
+            }
+        });
     }
 }
