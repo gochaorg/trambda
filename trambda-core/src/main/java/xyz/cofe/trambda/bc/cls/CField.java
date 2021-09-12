@@ -49,7 +49,7 @@ import xyz.cofe.trambda.bc.fld.FieldEnd;
    access="2"
    accessDecode="[Private]"
    descriptor="Ljava/lang/String;"
-   />
+   /&gt;
  </pre>
  */
 public class CField implements ClsByteCode, ClazzWriter, AccFlagsProperty, FieldFlags {

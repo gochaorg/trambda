@@ -20,13 +20,13 @@ import xyz.cofe.trambda.log.api.Logger;
  * </ol>
  *
  * <pre>
- * AtomicReference&lt;MethodDef&gt; mdefRef = new AtomicReference&lt;&gt;();
+ * AtomicReference&lt;LambdaDump&gt; mdefRef = new AtomicReference&lt;&gt;();
  * var res =
  *   new AsmQuery&lt;IEnv&gt;(){
  *       &#64;Override
- *       protected <RES> RES call(Fn&lt;IEnv, RES&gt; fn, SerializedLambda sl, MethodDef mdef){
+ *       protected <RES> RES call(Fn&lt;IEnv, RES&gt; fn, SerializedLambda sl, LambdaDump dump){
  *           // Сохранение представления байт кода
- *           mdefRef.set(mdef);
+ *           mdefRef.set(dump);
  *           return super.call(fn, sl, mdef);
  *       }
  *   }.apply(

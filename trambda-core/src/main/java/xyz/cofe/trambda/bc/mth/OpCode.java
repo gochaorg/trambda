@@ -920,14 +920,14 @@ public enum OpCode {
      * <p>Стек → address
      * <hr>
      * <b>Description</b>
-     * <p> The address of the opcode of the instruction immediately following this jsr instruction is pushed onto the operand stack as a value of type returnAddress. The unsigned branchbyte1 and branchbyte2 are used to construct a signed 16-bit offset, where the offset is (branchbyte1 << 8) | branchbyte2. Execution proceeds at that offset from the address of this jsr instruction. The target address must be that of an opcode of an instruction within the method that contains this jsr instruction.
+     * <p> The address of the opcode of the instruction immediately following this jsr instruction is pushed onto the operand stack as a value of type returnAddress. The unsigned branchbyte1 and branchbyte2 are used to construct a signed 16-bit offset, where the offset is (branchbyte1 &lt;&lt; 8) | branchbyte2. Execution proceeds at that offset from the address of this jsr instruction. The target address must be that of an opcode of an instruction within the method that contains this jsr instruction.
      * <p> <b>Notes</b>
      * <p> Note that jsr pushes the address onto the operand stack and ret (§ret) gets it out of a local variable. This asymmetry is intentional.
      * <p> In Oracle's implementation of a compiler for the Java programming language prior to Java SE 6, the jsr instruction was used with the ret instruction in the implementation of the finally clause (§3.13, §4.10.2.5).
      * 
      * <hr>
      * <b>Описание</b>
-     * <p> Адрес кода операции инструкции, следующей сразу за этой инструкцией jsr, помещается в стек операндов как значение типа returnAddress. Беззнаковые branchbyte1 и branchbyte2 используются для создания подписанного 16-битного смещения, где смещение равно (branchbyte1 << 8) | branchbyte2. Выполнение продолжается с этого смещения от адреса этой инструкции jsr. Целевой адрес должен соответствовать коду операции инструкции в методе, который содержит эту инструкцию jsr.
+     * <p> Адрес кода операции инструкции, следующей сразу за этой инструкцией jsr, помещается в стек операндов как значение типа returnAddress. Беззнаковые branchbyte1 и branchbyte2 используются для создания подписанного 16-битного смещения, где смещение равно (branchbyte1 &lt;&lt; 8) | branchbyte2. Выполнение продолжается с этого смещения от адреса этой инструкции jsr. Целевой адрес должен соответствовать коду операции инструкции в методе, который содержит эту инструкцию jsr.
      * <p> <b>Примечания</b>
      * <p> Обратите внимание, что jsr помещает адрес в стек операндов, а ret (§ret) получает его из локальной переменной. Эта асимметрия преднамеренная.
      * <p> В реализации Oracle компилятора для языка программирования Java до Java SE 6 инструкция jsr использовалась с инструкцией ret в реализации предложения finally (§3.13, §4.10.2.5).
@@ -1151,7 +1151,7 @@ public enum OpCode {
      * The dimensions operand is an unsigned byte that must be greater than or equal to 1. It represents the number of dimensions of the array to be created. The operand stack must contain dimensions values. Each such value represents the number of components in a dimension of the array to be created, must be of type int, and must be non-negative. The count1 is the desired length in the first dimension, count2 in the second, etc.
      * 
      * <p>
-     * All of the count values are popped off the operand stack. The unsigned indexbyte1 and indexbyte2 are used to construct an index into the run-time constant pool of the current class (§2.6), where the value of the index is (indexbyte1 << 8) | indexbyte2. The run-time constant pool item at the index must be a symbolic reference to a class, array, or interface type. The named class, array, or interface type is resolved (§5.4.3.1). The resulting entry must be an array class type of dimensionality greater than or equal to dimensions.
+     * All of the count values are popped off the operand stack. The unsigned indexbyte1 and indexbyte2 are used to construct an index into the run-time constant pool of the current class (§2.6), where the value of the index is (indexbyte1 &lt;&lt; 8) | indexbyte2. The run-time constant pool item at the index must be a symbolic reference to a class, array, or interface type. The named class, array, or interface type is resolved (§5.4.3.1). The resulting entry must be an array class type of dimensionality greater than or equal to dimensions.
      * 
      * <p>
      * A new multidimensional array of the array type is allocated from the garbage-collected heap. If any count value is zero, no subsequent dimensions are allocated. The components of the array in the first dimension are initialized to subarrays of the type of the second dimension, and so on. The components of the last allocated dimension of the array are initialized to the default initial value (§2.3, §2.4) for the element type of the array type. A reference arrayref to the new array is pushed onto the operand stack.
@@ -1180,7 +1180,7 @@ public enum OpCode {
      * <p>Стек value →
      * <p><a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ifnull">Из оф доки</a>
      * Description
-     * <p>The value must of type reference. It is popped from the operand stack. If value is null, the unsigned branchbyte1 and branchbyte2 are used to construct a signed 16-bit offset, where the offset is calculated to be (branchbyte1 << 8) | branchbyte2. Execution then proceeds at that offset from the address of the opcode of this ifnull instruction. The target address must be that of an opcode of an instruction within the method that contains this ifnull instruction.
+     * <p>The value must of type reference. It is popped from the operand stack. If value is null, the unsigned branchbyte1 and branchbyte2 are used to construct a signed 16-bit offset, where the offset is calculated to be (branchbyte1 &lt;&lt; 8) | branchbyte2. Execution then proceeds at that offset from the address of the opcode of this ifnull instruction. The target address must be that of an opcode of an instruction within the method that contains this ifnull instruction.
      * <p>Otherwise, execution proceeds at the address of the instruction following this ifnull instruction.
      */
     IFNULL(198), // visitJumpInsn
@@ -1191,7 +1191,7 @@ public enum OpCode {
      * <p>Параметры 2: branchbyte1, branchbyte2
      * <p>Стек value →
      * <p>Description
-     * <p>The value must be of type reference. It is popped from the operand stack. If value is not null, the unsigned branchbyte1 and branchbyte2 are used to construct a signed 16-bit offset, where the offset is calculated to be (branchbyte1 << 8) | branchbyte2. Execution then proceeds at that offset from the address of the opcode of this ifnonnull instruction. The target address must be that of an opcode of an instruction within the method that contains this ifnonnull instruction.
+     * <p>The value must be of type reference. It is popped from the operand stack. If value is not null, the unsigned branchbyte1 and branchbyte2 are used to construct a signed 16-bit offset, where the offset is calculated to be (branchbyte1 &lt;&lt; 8) | branchbyte2. Execution then proceeds at that offset from the address of the opcode of this ifnonnull instruction. The target address must be that of an opcode of an instruction within the method that contains this ifnonnull instruction.
      * <p>Otherwise, execution proceeds at the address of the instruction following this ifnonnull instruction.
      */
     IFNONNULL(199), 

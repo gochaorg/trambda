@@ -39,7 +39,7 @@ import static xyz.cofe.trambda.tcp.Hash.md5;
  *     </li>
  *     <li>extra = Если есть дополнительные {@link HeaderValue} то они кодируются:
  *         <code>
- *             headerValues.map { hv -> ';' + hv.getName() + '=' + hv.getValue() }
+ *             headerValues.map { hv -&gt; ';' + hv.getName() + '=' + hv.getValue() }
  *         </code>
  *     </li>
  * </ul>
@@ -51,7 +51,47 @@ import static xyz.cofe.trambda.tcp.Hash.md5;
  * Потом данная строка кодируется в байты, кодировка ISO_8859_1
  *
  * <br>
- *
+ * Формально можно преставить пакет таким образом
+ * 
+ * <table border="1">
+ * <tr>
+ * <td rowspan="3">0 ... HeadSize</td>
+ * <td colspan="2">Заголовок</td>
+ * </tr>
+ * 
+ * <tr>
+ * <td colspan="2">Кодированная строка в ISO_8859_1 с одим переводом строки '\n'.
+ * <br>
+ * Содержит:
+ * </td>
+ * </tr>
+ * 
+ * <tr>
+ * <td>Имя метода/класса + пробел</td>
+ * <td>
+ * Пары ключ/значение разделенные точкой с запятой '<b>;</b>'
+ * <p> Ключ от значения отделяются знаком равно '<b>=</b>'
+ * <p>
+ * Есть обязательные и опциональные значения:
+ * <ul>
+ * <li><b>payload-size</b> = размер полезной нагрузки</li>
+ * <li><b>payload-md5</b> = md5 хеш полезной нагрузки</li>
+ * <li><b>sid</b> = идентификатор сообщения</li>
+ * <li><b>referrer</b> = на какое сообщение-запрос ссылается это сообщение-ответ</li>
+ * </ul>
+ * </td>
+ * </tr>
+ * 
+ * <tr>
+ * <td>HeadSize ... HeadSize + payload-size</td>
+ * <td colspan="2">
+ * Полезные данные, 
+ * обычно это должно быть <a href="https://docs.oracle.com/javase/7/docs/api/java/io/Serializable.html">сериализованное</a> представление
+ * {@link Message}
+ * </td>
+ * </tr>
+ * 
+ * </table>
  */
 public class TcpHeader {
     private static final Logger log = Logger.of(TcpHeader.class);

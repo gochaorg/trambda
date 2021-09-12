@@ -140,8 +140,8 @@ import xyz.cofe.trambda.bc.ByteCode;
  * The value of the local variable at &lt;n&gt; is pushed onto the operand stack.
  *
  * <h2 style="font-weight:bold">Notes</h2>
- * Each of the fload_&lt;n&gt; instructions is the same as fload with an index of &lt;n>,
- * except that the operand &lt;n> is implicit.
+ * Each of the fload_&lt;n&gt; instructions is the same as fload with an index of &lt;n&gt;,
+ * except that the operand &lt;n&gt; is implicit.
  *
  * <hr>
  * dload {@link OpCode#DLOAD}

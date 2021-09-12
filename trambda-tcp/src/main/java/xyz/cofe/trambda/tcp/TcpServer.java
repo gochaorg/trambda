@@ -24,7 +24,185 @@ import xyz.cofe.trambda.log.api.Logger;
 import xyz.cofe.trambda.sec.SecurityFilter;
 
 /**
- * TCP Сервер для предоставления сервиса
+ * TCP Сервер для предоставления сервиса.
+ * <p>
+ * <h2>Создание простого клиент/сервера</h2>
+ * В первую очередь необходимо 
+ * <ul>
+ * <li>созданный {@link ServerSocket}</li>
+ * <li>сам сервис или функция возвращающая ссылку на сервис</li>
+ * </ul>
+ * 
+ * В качестве примера создадим простой сервис,
+ * который будет отображать информацию о запущенных
+ * процессах в ОС:
+ * 
+<pre>
+<i>// Содержит описание процесса ОС</i>
+public class OsProc implements Serializable {
+    private final Integer ppid;
+    private final Integer pid;
+    private final String name;
+    private final String cmdLine;
+    
+    public OsProc(int ppid,int pid,String name,String cmdLine){
+        this.ppid = ppid;
+        this.pid = pid;
+        this.name = name;
+        this.cmdLine = cmdLine;
+    }
+
+    public Optional&lt;Integer&gt; getPpid(){ 
+      return ppid!=null ? Optional.of(ppid) : Optional.empty(); 
+    }
+    
+    public int getPid(){ return pid; }
+    public String getName(){ return name; }
+    public Optional&lt;String&gt; getCmdline(){ 
+      return cmdLine!=null ? Optional.of(cmdLine) : Optional.empty(); 
+    }
+    
+        public static OsProc linuxProc(File file){
+        if( file.isDir() ){
+            try{
+                var statusFile = file.resolve("status");
+                
+                var status = statusFile.isFile() ? 
+                  statusFile.readText(Charset.defaultCharset()) : "";
+                  
+                var cmdLineFile = file.resolve("cmdline");
+                var cmdLine = cmdLineFile.isFile() ? 
+                  cmdLineFile.readText(Charset.defaultCharset()) : "";
+
+                var keyVals = Text.splitNewLinesIterable(status)
+                    .map(line -&gt; line.split("\\s*:\\s*",2))
+                    .filter(kv -&gt; kv.length==2)
+                    .map(kv -&gt; Tuple2.of(kv[0].toLowerCase(), kv[1]));
+
+                String name = keyVals.filter(
+                  kv-&gt;kv.a().equals("name"))
+                  .map(Tuple2::b).first().orElse("?");
+                  
+                String pid = keyVals.filter(
+                  kv-&gt;kv.a().equals("pid"))
+                  .map(Tuple2::b).first().orElse("-1");
+                  
+                String ppid = keyVals.filter(
+                  kv-&gt;kv.a().equals("ppid"))
+                  .map(Tuple2::b).first().orElse("-1");
+
+                return new OsProc(
+                  Integer.parseInt(ppid), 
+                  Integer.parseInt(pid),
+                  name,
+                  cmdLine.replace((char)0,' ')
+                );
+            } catch( Throwable err ){
+                System.err.println("err for "+file+": "+err.getMessage());
+            }
+        }
+        return new OsProc(-1,"?");
+    }
+}
+
+<i>// Это будет интерфейсом нашого сервиса, 
+// через который будет происходить общение</i>
+public interface IEnv {
+  <i>// Возвращает список процессов</i>
+  public List&lt;OsProc&gt; processes();
+}
+
+<i>// Это реализация нашего сервиса для Linux</i>
+public class LinuxEnv implements IEnv {
+    &#64;Override
+    public List&lt;OsProc&gt; processes(){
+        ArrayList&lt;OsProc&gt; procs = new ArrayList&lt;&gt;();
+        File procDir = new File("/proc");
+        procDir.dirList().stream()
+            .filter( d -&gt; d.getName().matches("\\d+") && d.isDir() )
+            .map(OsProc::linuxProc)
+            .forEach(procs::add);
+        return procs;
+    }
+}
+</pre>
+ *
+ * Далее поднимим Tcp сервер
+ * <pre>
+import java.io.IOException;
+import java.net.ServerSocket;
+import xyz.cofe.trambda.tcp.TcpServer;
+
+...
+TcpServer&lt;IEnv&gt; createServer(IEnv myService, int port){
+    ...
+    ServerSocket ssocket = null;
+    TcpServer&lt;IEnv&gt; server = null;
+    try{
+        <i>// Создаем сокет</i>
+        ssocket = new ServerSocket(port);
+        
+        <i>// Указываем SoTimeout что бы</i>
+        <i>// сервер не повис в ожидании пакета</i>
+        ssocket.setSoTimeout(1000*5);
+
+        <i>// Создаем сам сервер</i>
+        server = new TcpServer&lt;IEnv&gt;(
+            <i>// Передаем сокет, который уже привязан к порту</i>
+            ssocket,
+            
+            <i>// ссылку на сервис</i>
+            session -> myService
+        );
+        
+        <i>// Указывем характеристики Thread</i>
+        server.setDaemon(true);
+        server.setName("server");
+        
+        <i>// Добавляем подписчиков на сообытия сервера</i>
+        server.addListener(System.out::println);
+        
+        <i>// Запускаем сервер</i>
+        server.start();
+        return server;
+    } catch( IOException error ) {
+        log.error( "can't start server", error );
+        return;
+    }
+}
+</pre>
+* 
+* <p> Сервис готов и поднят, осталось написать клиента:
+<pre>
+Query&lt;IEnv&gt; query = TcpQuery
+    // Указываем интерфейс сервиса
+    .create(IEnv.class)
+    // Указывам адрес и порт, на котором располагается сервис
+    .host("localhost")
+    .port(port)
+    // Создаем клиента
+    .build();
+
+// Указываем какие процессы нас интересуют на сервере
+var qRegex = "chrome|java";
+
+// Выполняем запрос к серверу
+query.apply( env -&gt;
+    // Данный код выполняется на сервере
+    env.processes().stream()
+        .filter( p -&gt; p.getName().matches("(?is).*("+qRegex+").*") )
+        .collect(Collectors.toList())
+)
+// Получаем результат выполнения в клиенте
+// И отображаем его в логе
+.stream().map(OsProc::toString).forEach(log::info);
+</pre>
+* 
+* <h2>Дополнительные темы</h2>
+* <ul>
+* <li>Настройка безопасности, см {@link SecurError}</li>
+* <li>Подписка на события сервера, см {@link Subscribe}</li>
+* </ul>
  * @param <ENV> Класс сервиса
  */
 public class TcpServer<ENV> extends Thread implements AutoCloseable {
@@ -481,27 +659,70 @@ public class TcpServer<ENV> extends Thread implements AutoCloseable {
     }
     //endregion
 
+    /**
+     * Список именнованых издателей серверных событий
+     */
     protected final Map<String,Publisher<?>> publishers = new ConcurrentHashMap<>();
+    
+    /**
+     * Создание нового или получение уже существующего издалетя серверных событий
+     * @param <T> Тип события
+     * @param name Имя издателя
+     * @return Издатель
+     */
     public <T extends Serializable> Publisher<T> publisher(String name){
         if( name==null )throw new IllegalArgumentException( "name==null" );
         var pub = publishers.computeIfAbsent( name, n -> (Publisher<?>) createPublisher(n) );
         //noinspection unchecked
         return (Publisher<T>) pub;
     }
-
+    
     protected Publisher<?> createPublisher(String name){
         log.info("create publisher {}",name);
         return new Publisher<>();
     }
 
-    private final Map<Class<?>,Object> proxyPublishers = new ConcurrentHashMap<>();
-
+    protected final Map<Class<?>,Object> proxyPublishers = new ConcurrentHashMap<>();
+    
+    /**
+     * Создание нового или получение уже существующего издалетя класса серверных событий.
+     * <p>
+     * Издатель заданный классом - это интерфейс, например такой
+     * <pre>
+     * public interface Events {
+     *   Publisher&lt;ServerDemoEvent&gt; defaultPublisher();
+     *   Publisher&lt;ServerDemoEvent2&gt; timedEvents();
+     * }
+     * </pre>
+     * Для каждого метода (в данном примере для defaultPublisher и timedEvents)
+     * будет зарегистриован ({@link #publisher(java.lang.String) }) свой издатель,
+     * имя издателя будет совпадать с именем метода.
+     * <p> Грубо будет так:
+     * <pre>
+     * proxy = new {@link PubProxy}(){
+     *   &#64;Override
+     *   protected Publisher&lt;?&gt; publisher(Method method){
+     *     String publisherName = method.getName();
+     *     return TcpServer.this.publisher(publisherName);
+     *   }
+     * };
+     * </pre>
+     * @param <T> Класс серверных событий - интерфейс c методами без параметра
+     * @param cls Класс серверных событий
+     * @return Издатель
+     */
     public <T> T publishers(Class<T> cls){
         if( cls==null )throw new IllegalArgumentException( "cls==null" );
         //noinspection unchecked
         return (T)proxyPublishers.computeIfAbsent(cls, this::createProxyPublisher);
     }
 
+    /**
+     * Создание прокси для класса событий
+     * @param <T> Класс серверных событий - интерфейс c методами без параметра
+     * @param cls Класс серверных событий 
+     * @return Издатель
+     */
     protected <T> T createProxyPublisher(Class<T> cls){
         if( cls==null )throw new IllegalArgumentException( "cls==null" );
         var pub = new PubProxy(){
