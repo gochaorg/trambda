@@ -6,6 +6,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+/**
+ * Прокси для создания/получения {@link Publisher "издателя"}
+ * <p>
+ *     см {@link Subscribe}
+ */
 public class PubProxy {
     private static final Logger log = Logger.of(PubProxy.class);
 

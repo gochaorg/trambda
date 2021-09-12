@@ -640,14 +640,26 @@ public class TcpSession<ENV> extends Thread implements Comparable<TcpSession<ENV
     //endregion
     //endregion
 
-    //region SessionFinished
+    //region SessionFinished - Событие завершения сессии
+    /**
+     * Событие завершения сессии
+     */
     public static class SessionFinished implements TrEvent {
+        /**
+         * Конструктор
+         * @param session сессия
+         */
         public SessionFinished(TcpSession<?> session){
             if( session==null )throw new IllegalArgumentException( "session==null" );
             this.session = session;
         }
 
         private final TcpSession<?> session;
+
+        /**
+         * Возвращает ссылку на сессию
+         * @return сессия
+         */
         public TcpSession<?> getSession(){ return session; }
     }
     //endregion

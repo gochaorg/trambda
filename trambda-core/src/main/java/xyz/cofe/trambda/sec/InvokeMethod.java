@@ -5,15 +5,31 @@ import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.mth.MMethodInsn;
 
+/**
+ * Инструкция вызова метода
+ */
 public class InvokeMethod extends Invoke<MMethodInsn> {
+    /**
+     * Конструктор
+     * @param methodInsn байт-код инструкция вызова метода
+     * @param scope область определения инструкции
+     */
     public InvokeMethod(MMethodInsn methodInsn, Tuple2<LambdaDump, LambdaNode> scope){
         super(methodInsn, scope);
     }
 
+    /**
+     * Конструктор копирования
+     * @param sample образец
+     */
     public InvokeMethod(InvokeMethod sample){
         super(sample.instruction, sample.scope);
     }
 
+    /**
+     * Клонирование
+     * @return клон
+     */
     @Override
     public InvokeMethod clone(){
         return new InvokeMethod(this);
@@ -32,6 +48,10 @@ public class InvokeMethod extends Invoke<MMethodInsn> {
         return sb.toString();
     }
 
+    /**
+     * Возвращает имя вызываемого класса / интерфейса
+     * @return имя класса
+     */
     public String getOwner(){
         if( instruction.getOwner()!=null ){
             return instruction.getOwner().replace("/",".");
@@ -39,10 +59,18 @@ public class InvokeMethod extends Invoke<MMethodInsn> {
         return "?";
     }
 
+    /**
+     * Возвращает имя вызываемого метода
+     * @return имя метода
+     */
     public String getMethodName(){
         return instruction.getName();
     }
 
+    /**
+     * Возвращает сигнатуру вызываемого метода
+     * @return описание сигнатуры
+     */
     public MethodDescTypes getMethodTypes(){
         return MethodDescTypes.parse(instruction.getDescriptor());
     }

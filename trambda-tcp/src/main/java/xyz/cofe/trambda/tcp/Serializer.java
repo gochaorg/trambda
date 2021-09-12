@@ -7,7 +7,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+/**
+ * Простая сериализация объекта в байты и обратно.
+ * Используется стандартные средства сериализации {@link ObjectInputStream}
+ */
 public class Serializer {
+    /**
+     * Сериализация объекта в массив байтов
+     * @param obj объект
+     * @return массив байтов
+     */
     public static byte[] toBytes(Object obj){
         if( obj==null )throw new IllegalArgumentException( "obj==null" );
         ByteArrayOutputStream ba = new ByteArrayOutputStream();
@@ -21,6 +30,12 @@ public class Serializer {
         }
     }
 
+    /**
+     * Десериализация из массива байтов в объект
+     * @param bytes массив байтов
+     * @param <T> тип объекта
+     * @return объект
+     */
     public static <T> T fromBytes(byte[] bytes){
         if( bytes==null )throw new IllegalArgumentException( "bytes==null" );
         ByteArrayInputStream ba = new ByteArrayInputStream(bytes);

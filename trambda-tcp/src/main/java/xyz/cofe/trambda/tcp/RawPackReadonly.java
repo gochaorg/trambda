@@ -7,6 +7,9 @@ import java.io.ObjectInputStream;
 import xyz.cofe.text.Text;
 import xyz.cofe.trambda.log.api.Logger;
 
+/**
+ * Сырой пакет доступный только для чтения
+ */
 public class RawPackReadonly extends RawPack {
     private static final Logger log = Logger.of(TcpSession.class);
 
@@ -43,6 +46,10 @@ public class RawPackReadonly extends RawPack {
     private volatile boolean hashComputed = false;
     private volatile boolean hashMatched = false;
 
+    /**
+     * Проверяет что контрольная сумма указанная в заголовке совпадает с хешем полезной нагрузкой
+     * @return true - совпадает
+     */
     public boolean isPayloadChecksumMatched(){
         if( hashComputed )return hashMatched;
         synchronized( this ){
@@ -55,6 +62,11 @@ public class RawPackReadonly extends RawPack {
 
     private volatile Message message;
     private volatile boolean messageComputed = false;
+
+    /**
+     * Возвращает сообщение из пакета
+     * @return сообщение
+     */
     public Message payloadMessage() {
         if( messageComputed )return message;
         synchronized( this ){

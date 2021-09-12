@@ -119,7 +119,7 @@ public class LinuxEnv implements IEnv {
         ArrayList&lt;OsProc&gt; procs = new ArrayList&lt;&gt;();
         File procDir = new File("/proc");
         procDir.dirList().stream()
-            .filter( d -&gt; d.getName().matches("\\d+") && d.isDir() )
+            .filter( d -&gt; d.getName().matches("\\d+") &amp;&amp; d.isDir() )
             .map(OsProc::linuxProc)
             .forEach(procs::add);
         return procs;
@@ -152,7 +152,7 @@ TcpServer&lt;IEnv&gt; createServer(IEnv myService, int port){
             ssocket,
             
             <i>// ссылку на сервис</i>
-            session -> myService
+            session -&gt; myService
         );
         
         <i>// Указывем характеристики Thread</i>
