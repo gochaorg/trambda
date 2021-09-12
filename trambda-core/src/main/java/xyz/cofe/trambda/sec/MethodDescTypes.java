@@ -2,18 +2,42 @@ package xyz.cofe.trambda.sec;
 
 import java.util.ArrayList;
 
+/**
+ * Описание сигнатуры метода
+ */
 public class MethodDescTypes {
+    /**
+     * Тип аргументов
+     */
     public final TypeDesc[] params;
+    
+    /**
+     * Тип результата
+     */
     public final TypeDesc returns;
 
+    /**
+     * Неопределенная сигнатура метода
+     */
     public static final MethodDescTypes undefined = new MethodDescTypes(new TypeDesc[0], new TypeDesc("?"));
 
+    /**
+     * Конструктор
+     * @param params Тип аргументов
+     * @param returns Тип результата
+     */
     public MethodDescTypes(TypeDesc[] params, TypeDesc returns){
         if( params == null ) throw new IllegalArgumentException("params==null");
         if( returns == null ) throw new IllegalArgumentException("returns==null");
         this.params = params;
         this.returns = returns;
     }
+    
+    /**
+     * Парсинг сигнатуры метода
+     * @param desc сигнатура 
+     * @return описание сигнатуры метода
+     */
     public static MethodDescTypes parse( String desc ){
         if( desc==null )throw new IllegalArgumentException( "desc==null" );
         if( !desc.startsWith("(") )throw new IllegalArgumentException("desc not start with '('");

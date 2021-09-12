@@ -1,9 +1,7 @@
 package xyz.cofe.trambda.sec;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import xyz.cofe.fn.Tuple2;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.LambdaNode;
@@ -11,17 +9,31 @@ import xyz.cofe.trambda.bc.ByteCode;
 import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 import xyz.cofe.trambda.bc.mth.MMethodInsn;
 
+/**
+ * Вызов метода / конструктора / BootStrap
+ * @param <INSTR> Инструкция вызова
+ */
 public abstract class Invoke<INSTR extends ByteCode> extends SecurAccess<INSTR, Tuple2<LambdaDump,LambdaNode>> {
-    public Invoke(INSTR instr, Tuple2<LambdaDump,LambdaNode> mdef){
-        super(instr,mdef);
+    /**
+     * Конструктор
+     * @param instr инструкция
+     * @param dump дамп лямбды
+     */
+    public Invoke(INSTR instr, Tuple2<LambdaDump,LambdaNode> dump){
+        super(instr,dump);
     }
 
+    /**
+     * Получение списка подозрительных вызовов
+     * @param dump лямбда
+     * @return список вызовов
+     */
     public static List<Invoke<?>> inspectCall(LambdaDump dump){
         if( dump==null )throw new IllegalArgumentException( "dump==null" );
         List<Invoke<?>> result = new ArrayList<>();
         inspectCall(result,dump);
         return result;
-    }
+    }    
     private static void inspectCall(List<Invoke<?>> result, LambdaDump dump){
         if( result==null )throw new IllegalArgumentException( "result==null" );
         if( dump==null )throw new IllegalArgumentException( "dump==null" );
@@ -54,7 +66,21 @@ public abstract class Invoke<INSTR extends ByteCode> extends SecurAccess<INSTR, 
         });
     }
 
+    /**
+     * Возвращает имя вызываемого класса / интерфейса
+     * @return имя класса
+     */
     public abstract String getOwner();
+    
+    /**
+     * Возвращает имя вызываемого метода
+     * @return имя метода
+     */
     public abstract String getMethodName();
+    
+    /**
+     * Возвращает сигнатуру вызываемого метода
+     * @return описание сигнатуры
+     */
     public abstract MethodDescTypes getMethodTypes();
 }

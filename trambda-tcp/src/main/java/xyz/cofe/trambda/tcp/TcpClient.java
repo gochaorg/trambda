@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.log.api.Logger;
 
@@ -345,6 +346,7 @@ public class TcpClient implements AutoCloseable {
 
     /**
      * Компиляция лямбды
+     * <p> см. {@link Compile}, {@link CompileResult}, {@link TcpClient#compile(LambdaDump)}, {@link AsmQuery см call(Fn1, SerializedLambda, LambdaDump)} ()}
      * @param methodDef лямбда
      * @return выполнение запроса
      */
@@ -357,6 +359,7 @@ public class TcpClient implements AutoCloseable {
 
     /**
      * Выполнение ранее скомпилированной лямбды ({@link #compile(LambdaDump)})
+     * <p> см. {@link Compile}, {@link CompileResult}, {@link TcpClient#compile(LambdaDump)}, {@link AsmQuery см call(Fn1, SerializedLambda, LambdaDump)} ()}
      * @param cres результат компиляции
      * @return выполнение запроса
      */

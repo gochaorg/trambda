@@ -5,6 +5,9 @@ import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.LambdaNode;
 import xyz.cofe.trambda.bc.mth.MInvokeDynamicInsn;
 
+/**
+ * Инструкция вызова bootstrap метода
+ */
 public class InvokeDynamicCall extends Invoke<MInvokeDynamicInsn> {
     public InvokeDynamicCall(MInvokeDynamicInsn invokeDynamicInsn, Tuple2<LambdaDump,LambdaNode> scope){
         super(invokeDynamicInsn, scope);

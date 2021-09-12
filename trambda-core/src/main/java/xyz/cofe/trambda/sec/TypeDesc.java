@@ -1,12 +1,34 @@
 package xyz.cofe.trambda.sec;
 
+/**
+ * Описание типа поля/параметра/...
+ */
 public class TypeDesc {
+    /**
+     * Тип не определен
+     */
     public static final TypeDesc undefined = new TypeDesc("?", 0);
 
+    /**
+     * Имя типа
+     */
     public final String name;
+    
+    /**
+     * Размерность массива
+     */
     public final int dimension;
+    
+    /**
+     * Является массивом или нет
+     */
     public final boolean array;
 
+    /**
+     * Конструктор
+     * @param name Имя типа
+     * @param dimension Размерность массива, 0 - не является массивом
+     */
     public TypeDesc(String name, int dimension){
         if( name == null ) throw new IllegalArgumentException("name==null");
         if( dimension < 0 ) throw new IllegalArgumentException("dimension<0");
@@ -14,11 +36,22 @@ public class TypeDesc {
         this.dimension = dimension;
         array = dimension>0;
     }
+    
+    /**
+     * Конструктор
+     * @param name Имя типа
+     */
     public TypeDesc(String name){
         this(name,0);
     }
 
+    /**
+     * Результат парсинга
+     */
     public static class Parse {
+        /**
+         * Описание типа
+         */
         public final TypeDesc type;
         public final int from;
         public final int to;
@@ -102,6 +135,12 @@ public class TypeDesc {
             new TypeDesc(type,arr)
             ,from,ptr+1);
     }
+    
+    /**
+     * Парсинг типа
+     * @param raw Raw название типа
+     * @return описание типа
+     */
     public static TypeDesc parse(String raw){
         if( raw==null )throw new IllegalArgumentException( "raw==null" );
         return parse(raw,0).type;
