@@ -14,7 +14,7 @@
     <!--
     2.0 - rewrited model
     2.1 - rewrited log api
-    2.2 - append javadoc
+    2.2 - append javadoc, extends tcp api (listeners)
     -->
     <version>2.2</version>
 
