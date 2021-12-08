@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class DemoTest {
     private static final Logger log = LoggerFactory.getLogger(DemoTest.class);
     private int port = ThreadLocalRandom.current().nextInt(40000)+10000;
 
+    @Tag(T.Auto)
     @Test
     public void demo01(){
         System.out.println("demo01");
