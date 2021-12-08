@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import xyz.cofe.ecolls.ListenersHelper;
 import xyz.cofe.fn.Tuple2;
+import xyz.cofe.trambda.AsmQuery;
 import xyz.cofe.trambda.LambdaDump;
 import xyz.cofe.trambda.log.api.Logger;
 
@@ -26,6 +27,105 @@ import xyz.cofe.trambda.log.api.Logger;
  *
  * <br>
  * Содержит в себе фоновый поток ос ({@link #socketReaderThread}) для чтения входящих сообщений
+ *
+ * <hr>
+ * <h2>Протокол</h2>
+ * TcpClient оперирует понятием сообщения {@link Message}.
+ *
+ * <p> Сообщение -
+ * это объект который серилизован стандартным механизмом сериализации
+ * Java {@link java.io.ObjectOutputStream}
+ *
+ * <p> Сообщения передаются в обе стороны
+ *
+ * <p>
+ * Клиент хранит счетчик сообщений ({@link TcpProtocol#sid}) на основании которого ведет свою уникальность идентификаторов.
+ * Данный счет увеличивает свои номера линейно вверх, без повторений.
+ *
+ * <p> При посылке сообщения на сервер
+ * {@link TcpProtocol#send(xyz.cofe.trambda.tcp.Message, java.util.function.Consumer, xyz.cofe.trambda.tcp.HeaderValue...)}
+ * К каждому сообщению прикрепляется уникальный номер и дополнительная карта (ключ/значение) связанное с сообщением.
+ *
+ * <p> Так же сервер отвечает на это сообщение.
+ * Сервер вместе с ответным сообщением может ссылаться на исходное сообщение - то на что ответ приходиться.
+ *
+ * <p> Пример посылки сообщения
+ *
+ * <table>
+ * <tr>
+ * <th>Клиент</th>
+ * <th>Сервер</th>
+ * </tr>
+ *
+ * <tr>
+ * <td>
+ * 1. увеличивает счетчик sid на 1
+ * <br> {@code sid++}
+ *
+ * <br> 2. текущее значение sid сохраняет в msgId:
+ * <br>{@code msgId = sid}
+ *
+ * <br> 3. сериализует сообщения
+ * <br> {@code byte[] payload = serialize(msg)}
+ *
+ * <br> 4. формирует заголовок {@link TcpHeader}
+ * <br> 4.1 В заголовке указывает тип сообщения
+ * <br> {@code header.method = msg.getClass().getSimpleName()}
+ * <br> 4.2 В заголовке указывает идентификатор сообщения
+ * <br> {@code header,msgId = msgId}
+ * <br> 4.3 В заголовке указывает дополнительную информацию
+ * <br> например md5, размер payload, ...
+ *
+ * <br> 5. сфорримированные данные склеивает и отсылает на сервер
+ * <br> {@code byte[] tcpPackage = header + payload }
+ *
+ * </td>
+ * <td></td>
+ * </tr>
+ *
+ * <tr>
+ * <td></td>
+ * <td>
+ * 6. Принимает заголовок, из которого узнает размер полезных данных
+ * <br> {@code payloadSize = payloadSizeOf(tcpPackage)}
+ * <br> {@code headerSize = headerSizeOf(tcpPackage)}
+ *
+ * <br> 7. Считывает недостающие данные в буфер
+ * <pre>
+ * while(readed &lt; payloadSize+headerSize) {
+ *   readed += read( buffer )
+ * }
+ * </pre>
+ *
+ * 8. Восстаналивает из буфера сообщение
+ * и выполняет полезное действие связанное с сообщением
+ * <br> 9. Если в результате действий есть результат который
+ * надо отправить клиенту, то формируется ответное сообщение
+ * по аналогии как формирует клиент, и отправляется обратно клиенту.
+ * </pre>
+ *
+ * </td>
+ * </tr>
+ *
+ * <tr>
+ * <td>
+ * 10. Фоновый поток принимает ответное сообщение
+ * и восстанавливает его {@link TcpProtocol#readNow}, так же как сервер
+ *
+ * <br> 11. Если с данным ответом были связаны подписчики,
+ * то вызывает их {@link TcpProtocol#getResponseConsumers()}
+ * </td>
+ * <td>
+ * </td>
+ * </tr>
+ * </table>
+ *
+ * <p> За связку конкретного запроса
+ * и ответа на него в синхронном/асинхронном режиме
+ * на клиенте отвечает класс {@link ResultConsumer}
+ *
+ * <p> За структуру TCP сообщения следует смотреть
+ * класс {@link TcpHeader}
  */
 public class TcpClient implements AutoCloseable {
     private static final Logger log = Logger.of(TcpClient.class);
@@ -246,6 +346,7 @@ public class TcpClient implements AutoCloseable {
 
     /**
      * Компиляция лямбды
+     * <p> см. {@link Compile}, {@link CompileResult}, {@link TcpClient#compile(LambdaDump)}, {@link AsmQuery см call(Fn1, SerializedLambda, LambdaDump)} ()}
      * @param methodDef лямбда
      * @return выполнение запроса
      */
@@ -258,6 +359,7 @@ public class TcpClient implements AutoCloseable {
 
     /**
      * Выполнение ранее скомпилированной лямбды ({@link #compile(LambdaDump)})
+     * <p> см. {@link Compile}, {@link CompileResult}, {@link TcpClient#compile(LambdaDump)}, {@link AsmQuery см call(Fn1, SerializedLambda, LambdaDump)} ()}
      * @param cres результат компиляции
      * @return выполнение запроса
      */

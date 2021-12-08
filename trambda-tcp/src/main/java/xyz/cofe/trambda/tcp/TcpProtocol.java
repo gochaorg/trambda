@@ -237,8 +237,10 @@ public class TcpProtocol {
         output().write(header);
 
         // write payload
-        if( payload!=null && payload.length>0 && log().isTraceEnabled() ){
-            log().trace("send payload {} {}", payload.length, Text.encodeHex(payload));
+        if( payload!=null && payload.length>0 ){
+            if( log().isTraceEnabled() ) {
+                log().trace("send payload {} {}", payload.length, Text.encodeHex(payload));
+            }
             output().write(payload);
         }
 
