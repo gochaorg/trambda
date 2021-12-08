@@ -6,7 +6,11 @@ import java.net.ServerSocket;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +64,41 @@ public class DemoTest {
 
         Query<IEnv> query =  TcpQuery.create(IEnv.class).host("localhost").port(port).build();
         var qRegex = "chrome|java";
+        var responseSize = new AtomicInteger(0);
+        var responseAcceptTime = new AtomicLong(0);
 
-        query.apply( env ->
-            env.processes().stream()
-                .filter( p -> p.getName().matches("(?is).*("+qRegex+").*") )
-                .collect(Collectors.toList())
-        ).stream().map(OsProc::toString).forEach(log::info);
+        Thread testRespTh = new Thread(()->{
+            var response = query.apply( env ->
+                env.processes().stream()
+                    .filter( p -> p.getName().matches("(?is).*("+qRegex+").*") )
+                    .collect(Collectors.toList())
+            );
+
+            responseAcceptTime.set(System.currentTimeMillis());
+
+            response.stream()
+                .map(OsProc::toString)
+                .forEach(System.out::println);
+
+            responseSize.set(response.size());
+        });
+
+        var requestSendTime = System.currentTimeMillis();
+
+        testRespTh.setName("send query");
+        testRespTh.setDaemon(true);
+        testRespTh.start();
+        try {
+            testRespTh.join(1000L*10L);
+        } catch (InterruptedException e) {
+            System.out.println("close thread "+testRespTh.getName()+" by timeout");
+            testRespTh.interrupt();
+            try {
+                testRespTh.join(1000L*3L);
+            } catch (InterruptedException ex) {
+                testRespTh.stop();
+            }
+        }
 
         log.info("shutdown");
         serv.shutdown();
@@ -77,71 +110,14 @@ public class DemoTest {
         }
 
         closeables.close();
-    }
 
-//    @Test
-//    public void demo02(){
-//        System.out.println("demo02");
-//        System.out.println("=".repeat(80));
-//
-//        level(Level.INFO, TcpProtocol.class);
-//
-//        Closeables closeables = new Closeables();
-//
-//        log.info("create server");
-//
-//        ServerSocket ssocket = null;
-//        TcpServer<IEnv> server = null;
-//        try{
-//            ssocket = new ServerSocket(port+1);
-//            ssocket.setSoTimeout(1000*5);
-//
-//            server = new TcpServer<IEnv>(ssocket,
-//                s -> new LinuxEnv(
-//                    s.getServer().publisher("defaultPublisher")
-//                )
-//            );
-//            server.setDaemon(true);
-//            server.start();
-//            server.setName("server");
-//            server.addListener(System.out::println);
-//            closeables.add((AutoCloseable) server);
-//        } catch( IOException e ) {
-//            e.printStackTrace();
-//            return;
-//        }
-//
-//        log.info("subscribe");
-//
-//        var query = TcpQuery.create(IEnv.class).host("localhost").port(port+1).build();
-//        query.<ServerDemoEvent>subscribe(msg -> {
-//            System.out.println("message "+msg.message);
-//        });
-//
-//        closeables.add(query);
-//
-//        log.info("send notify");
-//        query.apply( env -> {
-//            env.notifyMe(10,100);
-//            return List.of();
-//        });
-//        log.info("sent notify");
-//
-//        try{
-//            log.info("close query");
-//            query.close();
-//        } catch( Exception e ) {
-//            e.printStackTrace();
-//        }
-//
-//        server.shutdown();
-//
-//        try{
-//            server.join(1000L * 5L);
-//        } catch( InterruptedException e ) {
-//            log.error("serv join");
-//        }
-//    }
+        boolean requestFinished = responseAcceptTime.get()>0 && responseAcceptTime.get() >= requestSendTime;
+        boolean responseAccepted = responseSize.get()>0;
+        System.out.println("requestFinished = "+requestFinished);
+        System.out.println("responseAccepted = "+responseAccepted);
+        Assertions.assertTrue(requestFinished);
+        Assertions.assertTrue(responseAccepted);
+    }
 
     @Test
     public void demo03(){
