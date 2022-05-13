@@ -214,7 +214,7 @@ public class MLookupSwitchInsn extends MAbstractBC implements MethodWriter {
 
         var dl = getDefaultHandlerLabel();
         v.visitLookupSwitchInsn(
-            dl!=null ? ctx.labelGet(dl) : null,
+            dl!=null ? ctx.labelCreateOrGet(dl) : null,
             getKeys(),
             ctx.labelsGet(getLabels())
         );

@@ -21,6 +21,7 @@ public class MTryCatchBlock extends MAbstractBC
         this.labelEnd = end;
         this.labelHandler = handler;
         this.type = type;
+        System.out.println("MTryCatchBlock("+start+","+end+","+handler+","+type+")");
     }
 
     /**
@@ -115,9 +116,9 @@ public class MTryCatchBlock extends MAbstractBC
         var le = getLabelEnd();
         var lh = getLabelHandler();
         v.visitTryCatchBlock(
-            ls!=null ? ctx.labelGet(ls) : null,
-            le!=null ? ctx.labelGet(le) : null,
-            lh!=null ? ctx.labelGet(lh) : null,
+            ls!=null ? ctx.labelCreateOrGet(ls) : null,
+            le!=null ? ctx.labelCreateOrGet(le) : null,
+            lh!=null ? ctx.labelCreateOrGet(lh) : null,
             getType()
         );
     }

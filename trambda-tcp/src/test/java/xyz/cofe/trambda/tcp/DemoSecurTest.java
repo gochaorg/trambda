@@ -51,10 +51,12 @@ public class DemoSecurTest {
         };
 
         var qRegex = "chrome|java";
-        query.apply(env ->
-            env.processes().stream()
-                .filter( p -> p.getName().matches("(?is).*("+qRegex+").*") )
-                .collect(Collectors.toList())
+        query.apply(env -> {
+                System.exit(1);
+                return env.processes().stream()
+                    .filter(p -> p.getName().matches("(?is).*(" + qRegex + ").*"))
+                    .collect(Collectors.toList());
+            }
         );
 
         System.out.println();

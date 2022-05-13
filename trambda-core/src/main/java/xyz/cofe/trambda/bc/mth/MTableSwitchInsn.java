@@ -214,7 +214,7 @@ public class MTableSwitchInsn extends MAbstractBC implements ByteCode, MethodWri
 
         v.visitTableSwitchInsn(
             getMin(), getMax(),
-            dl!=null ? ctx.labelGet(dl) : null,
+            dl!=null ? ctx.labelCreateOrGet(dl) : null,
             ctx.labelsGet(ls)
         );
     }

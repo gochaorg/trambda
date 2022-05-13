@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.cofe.ecolls.Closeables;
 import xyz.cofe.trambda.Query;
+import xyz.cofe.trambda.sec.SecurityFilters;
 import xyz.cofe.trambda.tcp.demo.Events;
 import xyz.cofe.trambda.tcp.demo.IEnv;
 import xyz.cofe.trambda.tcp.demo.LinuxEnv;
@@ -50,7 +51,17 @@ public class DemoTest {
             server = new TcpServer<IEnv>(ssocket,
                 s -> new LinuxEnv(
                     s.getServer().publisher("defaultPublisher")
-                )
+                ),
+                SecurityFilters.create(s -> {
+                    s.allow( a -> {
+                        a.invoke("demo api", c->c.getOwner().matches("xyz\\.cofe\\.trambda\\.tcp\\.demo\\.([\\w\\d]+)"));
+                        a.invoke("java collections api", c->c.getOwner().matches(
+                            "java\\.util\\.(List)|java\\.util\\.stream\\.([\\w\\d]+)"));
+                        a.invoke("java lang api", c->c.getOwner().matches("java\\.lang\\.(String)"));
+                        a.invoke("java compiler", c->c.getOwner().matches("java\\.lang\\.invoke\\.(LambdaMetafactory|StringConcatFactory)"));
+                    });
+                    s.deny().any("by default");
+                })
             );
             server.setDaemon(true);
             server.start();
